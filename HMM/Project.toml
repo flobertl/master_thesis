@@ -1,0 +1,7 @@
+name = "HMM"
+uuid = "04106d75-f712-409f-a05b-b781c35bc52c"
+authors = ["Flo Schimek <florian.schimek@gmx.at>"]
+version = "0.1.0"
+
+[deps]
+XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
