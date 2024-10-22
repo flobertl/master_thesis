@@ -1,14 +1,11 @@
-include("calc.jl")
-include("data.jl")
-
-
-using Main.Types
-using Main.Data
-using Main.Calc
-
 # Module For Productive Use
 module Prod 
 
+using Main.HMM.Types
+using Main.HMM.Data
+using Main.HMM.Calc
+
+export runSingleTraining
 
 function runSingleTraining()
     # Set Parameter
@@ -16,14 +13,14 @@ function runSingleTraining()
 
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
-    observations = Main.Data.loadObservations(path)
+    observations = loadObservations(path)
 
     # Convert Data
-    discreteObser = Main.Data.discretize(observations)
-    observationSpace = Set(discreteObser) |> Main.Types.ObservationSpace
+    discreteObser = discretize(observations)
+    observationSpace = Set(discreteObser) |> ObservationSpace
 
     # Run Algo
-    hmm = Main.Calc.BaumWelchAlgo(discreteObser, observationSpace, N)
+    hmm = BaumWelchAlgo(discreteObser, observationSpace, N)
 
     # Store Output
 

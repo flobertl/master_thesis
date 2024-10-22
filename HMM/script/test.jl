@@ -1,5 +1,7 @@
-include("../src/prod.jl")
+include("../src/main.jl")
 
-x = Prod.runSingleTraining()
-x.transitionMatrix.transitionMatrix[1,2]=2
-t = sum(x.transitionMatrix.transitionMatrix, dims=2)
+using .HMM
+
+x = runSingleTraining() 
+
+

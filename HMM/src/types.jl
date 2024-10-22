@@ -1,5 +1,6 @@
 module Types
-export Probability, A, B, HMM, ObservationSpace
+
+export Probability, A, B, HMM, StochasticVector, ObservationSpace
 
 struct Probability
     value::Float64

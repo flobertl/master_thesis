@@ -1,25 +1,26 @@
-include("types.jl")
-using .Types
-
 module Calc 
 
-function forward(T, HMM::Main.Types.HMM, observations::Array{Int})
-    alpha = zeros(T,HMM.numberOfStateSpace)
-    for i in 1:HMM.numberOfStateSpace
-        alpha[1,i] = HMM.startingDistribution[i]*HMM.observationMatrix[i]
+using Main.HMM.Types
+
+export forward, BaumWelchAlgo
+
+function forward(T, hmm::HMM, observations::Array{Int})
+    alpha = zeros(T,hmm.numberOfStateSpace)
+    for i in 1:hmm.numberOfStateSpace
+        alpha[1,i] = hmm.startingDistribution[i]*hmm.observationMatrix[i]
     end
 end
 
 function BaumWelchAlgo(Z, V, N::Int)
     # Init
     transMatrixA = ones(N,N) ./ N
-    A = Main.Types.A(N, transMatrixA)
+    a = Main.HMM.Types.A(N, transMatrixA)
 
     M = length(V.observations)
     transMatrixB =  ones(N,M) ./ M
-    B = Main.Types.B((N,M), transMatrixB)
+    b = B((N,M), transMatrixB)
 
-    pi = transMatrixA[1,:] |> Main.Types.StochasticVector
+    pi = transMatrixA[1,:] |> StochasticVector
     # Expecatation 
 
 
@@ -28,7 +29,7 @@ function BaumWelchAlgo(Z, V, N::Int)
     # Terminate
 
     # Return Value
-    return Main.Types.HMM(N,A,B,pi,V)
+    return HMM(N,a,b,pi,V)
 end
 
 end

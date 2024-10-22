@@ -1,12 +1,9 @@
-include("types.jl")
-using .Types
-
 module Data
 
-export loadObservations
-export discretize
-
+using Main.HMM.Types
 using XLSX
+
+export loadObservations, discretize
 
 function loadObservations(path::String)
     # Öffnen einer Excel-Datei
