@@ -45,17 +45,25 @@ struct B
 end
 
 
-
 struct ObservationSpace
     observations::Set{Int}
     mapObservationToIndex::Dict{Int, Int}
+    mapIndexToObservation::Dict{Int, Int}
+
     function ObservationSpace(observations::Set{Int})
         sortedObservations = observations |> collect |> sort
         mapObservationToIndex = Dict()
+        mapIndexToObservation = Dict()
         for i in 1:(length(sortedObservations)) 
             mapObservationToIndex[sortedObservations[i]] = i
         end
-        new(observations, mapObservationToIndex)
+
+        mapIndexToObservation = Dict()
+        for i in 1:(length(sortedObservations)) 
+            mapIndexToObservation[i] = sortedObservations[i]
+        end
+
+        new(observations, mapObservationToIndex, mapIndexToObservation)
     end
 end
 
