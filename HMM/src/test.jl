@@ -34,6 +34,26 @@ function testForwardCalc()
     testingEquality(name, value, 63)    
 end
 
+function testBackwardCalc()
+    name = "Helper backwardCalc1"
+
+    beta_tplus1 = ones(7)
+    a_i_point = ones(7)
+    b_point_o_tplus1 = ones(7)
+    value = sum(Main.HMM.Helpers.backwardCalc(beta_tplus1, a_i_point, b_point_o_tplus1))
+
+    testingEquality(name, value, 7)
+
+    name = "Helper backwardCalc2"
+
+    beta_tplus1 = [1., 2.]
+    a_i_point = [3., 4.]
+    b_point_o_tplus1 = [5., 6.]
+    value = sum(Main.HMM.Helpers.backwardCalc(beta_tplus1, a_i_point, b_point_o_tplus1))
+
+    testingEquality(name, value, 63)    
+end
+
 function testObservationToIndexMapping()
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
@@ -52,6 +72,7 @@ end
 function testAll()
     testForwardCalc()
     testObservationToIndexMapping()
+    testBackwardCalc()
 end
 
 end
