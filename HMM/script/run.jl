@@ -4,4 +4,4 @@ using .HMM
 
 x = runSingleTraining() 
 
-# x.observationSpace.mapObservationToIndex
+x.observationMatrix

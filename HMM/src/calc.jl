@@ -1,7 +1,6 @@
 module Calc 
 
-using Main.HMM.Types
-using Main.HMM.Helpers
+using Main.HMM.Types, Main.HMM.Helpers
 
 export forwardAlgo, BaumWelchAlgo
 
@@ -18,7 +17,8 @@ function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
     # Calc
     for t in 2:T
         for i in 1:hmm.numberOfStateSpace
-            alpha[t,i] = sum(forwardCalc, (alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[t]]) )
+            zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[t]])
+            alpha[t,i] = sum(zwischenresultat)
         end 
     end
 
