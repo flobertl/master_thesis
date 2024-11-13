@@ -74,7 +74,7 @@ function testBackwardVsForwardAlgo()
 
     # Convert Data
     Z = discretize(observations)
-    V = Set(discreteObser) |> ObservationSpace
+    V = Set(Z) |> ObservationSpace
 
     # Init
     N = 10

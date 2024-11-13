@@ -2,7 +2,7 @@ module Calc
 
 using Main.HMM.Types, Main.HMM.Helpers
 
-export forwardAlgo, BaumWelchAlgo
+export forwardAlgo, backwardAlgo, BaumWelchAlgo
 
 function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
     observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
