@@ -69,7 +69,6 @@ function BaumWelchAlgo(Z, V, N::Int)
     (alpha, likelihood1) = forwardAlgo(T, hmm_init, Z)
     (beta, likelihood2) = backwardAlgo(T, hmm_init, Z)
 
-    println( (likelihood1 == likelihood2) )
     # Maximization
 
     # Terminate

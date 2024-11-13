@@ -7,10 +7,10 @@ export testAll
 epsilon = 1E-10
 
 function testingEquality(testName::String, testingValue, expectedResult)
-    if (expectedResult < testingValue) & (expectedResult > testingValue)  #evtl muss mann Epsilon einbauen
-        println("Test:", testName, " FAILED")
+    if (expectedResult < testingValue - epsilon) & (expectedResult > testingValue + epsilon)  #evtl muss mann Epsilon einbauen
+        println("FAILED Test:", testName)
     else
-        println("Test: ", testName, " succeded")
+        println("Sucess Test: ", testName)
     end
 end
 
@@ -66,6 +66,34 @@ function testObservationToIndexMapping()
     observationsAsIndices = translateObservationsToIndex(discreteObser, observationSpace)
     reconvertedObservations = translateIndexToObservations(observationsAsIndices, observationSpace)
     testingEquality("ObservationToIndexMapping1", reconvertedObservations, discreteObser)
+end
+
+function testBackwardVsForwardAlgo()
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
+    observations = loadObservations(path)
+
+    # Convert Data
+    Z = discretize(observations)
+    V = Set(discreteObser) |> ObservationSpace
+
+    # Init
+    N = 10
+    transMatrixA = ones(N,N) ./ N
+    a = A(N, transMatrixA)
+    M = length(V.observations)
+    transMatrixB =  ones(N,M) ./ M
+    b = B((N,M), transMatrixB)
+    pi = transMatrixA[1,:] |> StochasticVector
+    T = length(Z)
+    hmm_init = HMM(N, a, b, pi, V)
+
+    # Running Algos 
+    (alpha, likelihood1) = forwardAlgo(T, hmm_init, Z)
+    (beta, likelihood2) = backwardAlgo(T, hmm_init, Z)
+
+    # Test equality
+    testingEquality("Back vs Forward Algo via Likelihood", likelihood1, likelihood2)
+    
 end
 
 

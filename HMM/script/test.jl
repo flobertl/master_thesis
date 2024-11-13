@@ -2,4 +2,5 @@ include("../src/main.jl")
 
 using .HMM.Test
 
-testAll()
+Main.HMM.Test.testBackwardVsForwardAlgo()
+#testAll()
