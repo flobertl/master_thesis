@@ -2,7 +2,7 @@ module Helpers
 
 using Main.HMM.Types
 
-export translateObservationsToIndex, translateIndexToObservations, forwardCalc
+export translateObservationsToIndex, translateIndexToObservations, forwardCalc, backwardCalc
 
 function translateObservationsToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
     T = length(observations)

@@ -6,10 +6,9 @@ export forwardAlgo, BaumWelchAlgo
 
 function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
     observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
-    alpha = zeros(T, hmm.numberOfStateSpace)
 
-    println(observationsAsIndeces)
     # Init
+    alpha = zeros(T, hmm.numberOfStateSpace)
     for i in 1:hmm.numberOfStateSpace
         alpha[1,i] = hmm.startingDistribution.probabilities[i]*hmm.observationMatrix.transitionMatrix[i,observationsAsIndeces[1]]
     end
@@ -23,33 +22,34 @@ function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
     end
 
     # Terminate
-    liklihood = sum(alpha[T,:])
+    likelihood = sum(alpha[T,:])
 
-    return (alpha, liklihood)
+    return (alpha, likelihood)
 end
 
 function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
     observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
-    alpha = zeros(T, hmm.numberOfStateSpace)
 
-    println(observationsAsIndeces)
-    # Init
+    #Init - 
+    beta = ones(T, hmm.numberOfStateSpace)
+    #= wird von alokaliesierung übernommen
     for i in 1:hmm.numberOfStateSpace
-        alpha[1,i] = hmm.startingDistribution.probabilities[i]*hmm.observationMatrix.transitionMatrix[i,observationsAsIndeces[1]]
+        beta[T,i] = 1
     end
+    =#
 
     # Calc
-    for t in 2:T
+    for t in T-1:-1:1
         for i in 1:hmm.numberOfStateSpace
-            zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[t]])
-            alpha[t,i] = sum(zwischenresultat)
+            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[t+1]])
+            beta[t,i] = sum(summenTerme)
         end 
     end
 
     # Terminate
-    liklihood = sum(alpha[T,:])
+    likelihood = backwardCalc(beta[1,:], hmm.startingDistribution.probabilities[:], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[1]]) |> sum
 
-    return (alpha, liklihood)
+    return (beta, likelihood)
 end
 
 function BaumWelchAlgo(Z, V, N::Int)
@@ -66,8 +66,10 @@ function BaumWelchAlgo(Z, V, N::Int)
 
     hmm_init = HMM(N, a, b, pi, V)
     # Expecatation 
-    results = forwardAlgo(T, hmm_init, Z)
+    (alpha, likelihood1) = forwardAlgo(T, hmm_init, Z)
+    (beta, likelihood2) = backwardAlgo(T, hmm_init, Z)
 
+    println( (likelihood1 == likelihood2) )
     # Maximization
 
     # Terminate
