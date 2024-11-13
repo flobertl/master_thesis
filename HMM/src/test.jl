@@ -101,6 +101,7 @@ function testAll()
     testForwardCalc()
     testObservationToIndexMapping()
     testBackwardCalc()
+    testBackwardVsForwardAlgo()
 end
 
 end
