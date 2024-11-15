@@ -5,18 +5,16 @@ using Main.HMM.Types, Main.HMM.Helpers
 export forwardAlgo, backwardAlgo, BaumWelchAlgo
 
 function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
-    observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
-
     # Init
     alpha = zeros(T, hmm.numberOfStateSpace)
     for i in 1:hmm.numberOfStateSpace
-        alpha[1,i] = hmm.startingDistribution.probabilities[i]*hmm.observationMatrix.transitionMatrix[i,observationsAsIndeces[1]]
+        alpha[1,i] = hmm.startingDistribution.probabilities[i]*hmm.observationMatrix.transitionMatrix[i,observations[1]]
     end
 
     # Calc
     for t in 2:T
         for i in 1:hmm.numberOfStateSpace
-            zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[t]])
+            zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[:,observations[t]])
             alpha[t,i] = sum(zwischenresultat)
         end 
     end
@@ -28,8 +26,6 @@ function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
 end
 
 function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
-    observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
-
     #Init - 
     beta = ones(T, hmm.numberOfStateSpace)
     #= wird von alokaliesierung übernommen
@@ -41,13 +37,13 @@ function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
     # Calc
     for t in T-1:-1:1
         for i in 1:hmm.numberOfStateSpace
-            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[t+1]])
+            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observations[t+1]])
             beta[t,i] = sum(summenTerme)
         end 
     end
 
     # Terminate
-    likelihood = backwardCalc(beta[1,:], hmm.startingDistribution.probabilities[:], hmm.observationMatrix.transitionMatrix[:,observationsAsIndeces[1]]) |> sum
+    likelihood = backwardCalc(beta[1,:], hmm.startingDistribution.probabilities[:], hmm.observationMatrix.transitionMatrix[:,observations[1]]) |> sum
 
     return (beta, likelihood)
 end

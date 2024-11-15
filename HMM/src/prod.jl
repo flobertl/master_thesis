@@ -4,6 +4,7 @@ module Prod
 using Main.HMM.Types
 using Main.HMM.Data
 using Main.HMM.Calc
+using Main.HMM.Helpers
 
 export runSingleTraining
 
@@ -18,9 +19,10 @@ function runSingleTraining()
     # Convert Data
     discreteObser = discretize(observations)
     observationSpace = Set(discreteObser) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
 
     # Run Algo
-    hmm = BaumWelchAlgo(discreteObser, observationSpace, N)
+    hmm = BaumWelchAlgo(observationsAsIndeces, observationSpace, N)
 
     # Store Output
 
