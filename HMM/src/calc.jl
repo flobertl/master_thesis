@@ -48,29 +48,87 @@ function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
     return (beta, likelihood)
 end
 
-function BaumWelchAlgo(Z, V, N::Int)
+function BaumWelchAlgo(observations, observationSpace, N::Int)
+    # parameter für Abbruchbedingung
+    convergenceKoeff = 1E-18
+
     # Init
-    transMatrixA = ones(N,N) ./ N
-    a = A(N, transMatrixA)
+    pi = [1; zeros(N-1)] |> StochasticVector
+    
+    T = length(observations)
 
-    M = length(V.observations)
-    transMatrixB =  ones(N,M) ./ M
-    b = B((N,M), transMatrixB)
+    M = length(observationSpace.observations)
 
-    pi = transMatrixA[1,:] |> StochasticVector
-    T = length(Z)
+    # Init
+    transMatrixA_hat = ones(N,N) ./ N
+    transMatrixB_hat =  ones(N,M) ./ M
+    a = A(N, transMatrixA_hat)
+    b = B((N,M), transMatrixB_hat)
+    hmm = HMM(N, a, b, pi, observationSpace)
 
-    hmm_init = HMM(N, a, b, pi, V)
-    # Expecatation 
-    (alpha, likelihood1) = forwardAlgo(T, hmm_init, Z)
-    (beta, likelihood2) = backwardAlgo(T, hmm_init, Z)
+    likelihood_old = 0
+    likelihood_next = 1
 
+    # Init values for tracking iteration and time
+    iter = 1
+    time_prev = time()
+
+    for x in 1:10
+        # Expecatation 
+        (alpha, likelihood1) = forwardAlgo(T, hmm, observations)
+        (beta, likelihood2) = backwardAlgo(T, hmm, observations)
+
+        gamma = zeros(T-1, N, N)
+        transMatrixA_hat = zeros(N,N)
+        transMatrixB_hat = zeros(N,M)
+
+        # Calculation of gamma
+        for t in 1:(T-1)
+            for i in 1:N 
+                for j in 1:N 
+                    gamma[t,i,j] = alpha[t,i] * a.transitionMatrix[i,j] * b.transitionMatrix[j, observations[t+1]] * beta[t+1,j]
+                end
+            end
+        end
+
+        # Calculation of A_hat
+        for i in 1:N
+            summe = sum(gamma[:,i,:])
+            if (summe != 0)
+                for j in 1:N
+                    transMatrixA_hat[i,j] = sum(gamma[:,i,j]) / summe
+                end
+            end
+        end
+
+        # Calculation of B_hat
+        for l in 1:M
+            accurances = findall(obs -> obs == l, observations[1:end-1])
+            for i in 1:N
+                summe = sum(gamma[:,i,:])
+                if (summe != 0)
+                   transMatrixB_hat[i,l] = sum(gamma[accurances,i,:])/summe
+                end
+            end
+        end
+
+        a = A(N, transMatrixA_hat)
+        b = B((N,M), transMatrixB_hat)
+        hmm = HMM(N, a, b, pi, observationSpace)
+
+        # Tracking iteration and timing
+        now = time()
+        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), likelihood1)
+        time_prev = now
+        iter += 1
+    end
     # Maximization
 
     # Terminate
 
+
     # Return Value
-    return HMM(N,a,b,pi,V)
+    return HMM(N,a,b,pi,observationSpace)
 end
 
 end

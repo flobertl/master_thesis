@@ -4,4 +4,4 @@ using .HMM
 
 x = runSingleTraining() 
 
-x.observationMatrix
+x.observationMatrix.transitionMatrix
