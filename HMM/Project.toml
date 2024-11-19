@@ -4,4 +4,5 @@ authors = ["Flo Schimek <florian.schimek@gmx.at>"]
 version = "0.1.0"
 
 [deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
