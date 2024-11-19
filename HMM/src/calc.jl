@@ -60,8 +60,9 @@ function BaumWelchAlgo(observations, observationSpace, N::Int)
     M = length(observationSpace.observations)
 
     # Init
-    transMatrixA_hat = ones(N,N) ./ N
-    transMatrixB_hat =  ones(N,M) ./ M
+    Random.seed!(1234)
+    transMatrixA_hat = createRandomTransitionMatrixViaDirichlet(N,N)
+    transMatrixB_hat =  createRandomTransitionMatrixViaDirichlet(N,M)
     a = A(N, transMatrixA_hat)
     b = B((N,M), transMatrixB_hat)
     hmm = HMM(N, a, b, pi, observationSpace)
@@ -73,9 +74,9 @@ function BaumWelchAlgo(observations, observationSpace, N::Int)
     iter = 1
     time_prev = time()
 
-    for x in 1:10
+    for x in 1:1000
         # Expecatation 
-        (alpha, likelihood1) = forwardAlgo(T, hmm, observations)
+        (alpha, likelihood_next) = forwardAlgo(T, hmm, observations)
         (beta, likelihood2) = backwardAlgo(T, hmm, observations)
 
         gamma = zeros(T-1, N, N)
@@ -118,7 +119,7 @@ function BaumWelchAlgo(observations, observationSpace, N::Int)
 
         # Tracking iteration and timing
         now = time()
-        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), likelihood1)
+        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " Liklihood: ",likelihood_next)
         time_prev = now
         iter += 1
     end
