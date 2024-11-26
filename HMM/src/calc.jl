@@ -2,7 +2,7 @@ module Calc
 
 using Main.HMM.Types, Main.HMM.Helpers, Random
 
-export forwardAlgo, backwardAlgo, baumWelchAlgo
+export forwardAlgo, backwardAlgo, baumWelchAlgo, bestPathPrognosis
 
 function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
@@ -129,6 +129,12 @@ function baumWelchAlgo(observations, observationSpace, N::Int)
     end
     # Return Value
     return HMM(N,a,b,pi,observationSpace)
+end
+
+function bestPathPrognosis(hmm, observations, forecastHorizon::Int)
+    T = length(observations)
+    # Step 0: Calc alpha(T)
+    alpha_T = forwardAlgo(hmm, observations)[1][T,:]
 end
 
 end

@@ -6,28 +6,40 @@ using Main.HMM.Data
 using Main.HMM.Calc
 using Main.HMM.Helpers
 
-export runSingleTraining
+export runSingleTraining, runBestPathPrognosis
+
+function getTestDataDay()
+        # Load Data
+        path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
+        observations = loadObservations(path)
+    
+        # Convert Data
+        discreteObser = discretize(observations)
+        observationSpace = Set(discreteObser) |> ObservationSpace
+        observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
+
+        return(observationSpace, observationsAsIndeces)
+end
 
 function runSingleTraining()
     # Set Parameter
     N = 10
 
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
-    observations = loadObservations(path)
-
-    # Convert Data
-    discreteObser = discretize(observations)
-    observationSpace = Set(discreteObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
+    (observationSpace, observationsAsIndeces) = getTestDataDay()
 
     # Run Algo
-    hmm = BaumWelchAlgo(observationsAsIndeces, observationSpace, N)
+    hmm = baumWelchAlgo(observationsAsIndeces, observationSpace, N)
 
     # Store Output
 
     # Return Output
     return hmm
+end
+
+function runBestPathPrognosis(hmm, forecastHorizon::int)
+    (_, observationsAsIndeces) = getTestDataDay()
+
+    bestPath = bestPathPrognosis(hmm, observationsAsIndeces, forecastHorizon)
 end
 
 end
