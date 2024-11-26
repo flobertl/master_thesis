@@ -1,6 +1,6 @@
 module Calc 
 
-using Main.HMM.Types, Main.HMM.Helpers
+using Main.HMM.Types, Main.HMM.Helpers, Random
 
 export forwardAlgo, backwardAlgo, BaumWelchAlgo
 
@@ -28,11 +28,6 @@ end
 function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
     #Init - 
     beta = ones(T, hmm.numberOfStateSpace)
-    #= wird von alokaliesierung übernommen
-    for i in 1:hmm.numberOfStateSpace
-        beta[T,i] = 1
-    end
-    =#
 
     # Calc
     for t in T-1:-1:1
@@ -49,9 +44,6 @@ function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
 end
 
 function BaumWelchAlgo(observations, observationSpace, N::Int)
-    # parameter für Abbruchbedingung
-    convergenceKoeff = 1E-18
-
     # Init
     pi = [1; zeros(N-1)] |> StochasticVector
     
@@ -67,17 +59,25 @@ function BaumWelchAlgo(observations, observationSpace, N::Int)
     b = B((N,M), transMatrixB_hat)
     hmm = HMM(N, a, b, pi, observationSpace)
 
-    likelihood_old = 0
-    likelihood_next = 1
+    likelihood_prev_prev = 0
+    likelihood_prev = 0
+    likelihood_next = nextfloat(0.0)
 
     # Init values for tracking iteration and time
     iter = 1
     time_prev = time()
 
-    for x in 1:1000
+    for x in 1:200
         # Expecatation 
         (alpha, likelihood_next) = forwardAlgo(T, hmm, observations)
         (beta, likelihood2) = backwardAlgo(T, hmm, observations)
+
+        # Termination Condition
+        # if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
+        #     break
+        # end
+        likelihood_prev_prev = likelihood_prev
+        likelihood_prev = likelihood_next
 
         gamma = zeros(T-1, N, N)
         transMatrixA_hat = zeros(N,N)
@@ -122,12 +122,9 @@ function BaumWelchAlgo(observations, observationSpace, N::Int)
         println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " Liklihood: ",likelihood_next)
         time_prev = now
         iter += 1
+
+
     end
-    # Maximization
-
-    # Terminate
-
-
     # Return Value
     return HMM(N,a,b,pi,observationSpace)
 end

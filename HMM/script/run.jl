@@ -1,7 +1,5 @@
-include("../src/main.jl")
+includet("../src/HMM.jl")
 
-using .HMM
+using Main.HMM
 
-x = runSingleTraining() 
-
-x.observationMatrix.transitionMatrix
+x = runSingleTraining();
