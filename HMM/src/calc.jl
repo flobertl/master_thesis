@@ -2,9 +2,10 @@ module Calc
 
 using Main.HMM.Types, Main.HMM.Helpers, Random
 
-export forwardAlgo, backwardAlgo, BaumWelchAlgo
+export forwardAlgo, backwardAlgo, baumWelchAlgo
 
-function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
+function forwardAlgo(hmm::HMM, observations::Vector{Int})
+    T = length(observations)
     # Init
     alpha = zeros(T, hmm.numberOfStateSpace)
     for i in 1:hmm.numberOfStateSpace
@@ -25,7 +26,8 @@ function forwardAlgo(T, hmm::HMM, observations::Vector{Int})
     return (alpha, likelihood)
 end
 
-function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
+function backwardAlgo(hmm::HMM, observations::Vector{Int})
+    T = length(observations)
     #Init - 
     beta = ones(T, hmm.numberOfStateSpace)
 
@@ -43,7 +45,7 @@ function backwardAlgo(T, hmm::HMM, observations::Vector{Int})
     return (beta, likelihood)
 end
 
-function BaumWelchAlgo(observations, observationSpace, N::Int)
+function baumWelchAlgo(observations, observationSpace, N::Int)
     # Init
     pi = [1; zeros(N-1)] |> StochasticVector
     
@@ -69,8 +71,8 @@ function BaumWelchAlgo(observations, observationSpace, N::Int)
 
     for x in 1:200
         # Expecatation 
-        (alpha, likelihood_next) = forwardAlgo(T, hmm, observations)
-        (beta, likelihood2) = backwardAlgo(T, hmm, observations)
+        (alpha, likelihood_next) = forwardAlgo(hmm, observations)
+        (beta, likelihood2) = backwardAlgo(hmm, observations)
 
         # Termination Condition
         # if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
