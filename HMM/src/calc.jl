@@ -75,9 +75,9 @@ function baumWelchAlgo(observations, observationSpace, N::Int)
         (beta, likelihood2) = backwardAlgo(hmm, observations)
 
         # Termination Condition
-        # if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
-        #     break
-        # end
+        if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
+            break
+        end
         likelihood_prev_prev = likelihood_prev
         likelihood_prev = likelihood_next
 
@@ -131,10 +131,36 @@ function baumWelchAlgo(observations, observationSpace, N::Int)
     return HMM(N,a,b,pi,observationSpace)
 end
 
-function bestPathPrognosis(hmm, observations, forecastHorizon::Int)
+function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)
+    # Set parameter
     T = length(observations)
+    N, M = hmm.observationMatrix.dimensions  # N = #hiddenStates, B = #observationStates
+    
     # Step 0: Calc alpha(T)
     alpha_T = forwardAlgo(hmm, observations)[1][T,:]
-end
 
+    # Init Step: Alocate alpha_i^k(T+1), Z_hat
+    alpha_i_k = zeros(N, M)
+    Z_hat = zeros(Int, forecastHorizon)
+    alpha_prev = alpha_T
+
+    # Rec Step:
+    for t in 1:forecastHorizon 
+        # Calc alpha_i_k
+        for i in 1:N
+            for k in 1:M
+                alpha_i_k[i, k] = sum(alpha_prev .* hmm.transitionMatrix.transitionMatrix[:,i]) * hmm.observationMatrix.transitionMatrix[i, k]
+            end
+        end
+        # Select the most likely observation state as path prognosis
+        alpha_i_t = sum(alpha_i_k, dims = 1) |> vec
+        Z_hat[t] = argmax(alpha_i_t)
+        # Use selcted column as new alpha_prev
+        alpha_prev = alpha_i_k[:, Z_hat[t]]
+    end
+
+    # Calc likelihood and return result
+    likelihood = sum(alpha_prev)/sum(alpha_T)
+    return Z_hat, likelihood
+end
 end

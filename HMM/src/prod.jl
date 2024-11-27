@@ -23,7 +23,7 @@ end
 
 function runSingleTraining()
     # Set Parameter
-    N = 10
+    N = 100
 
     (observationSpace, observationsAsIndeces) = getTestDataDay()
 
@@ -36,7 +36,7 @@ function runSingleTraining()
     return hmm
 end
 
-function runBestPathPrognosis(hmm, forecastHorizon::int)
+function runBestPathPrognosis(hmm, forecastHorizon::Int)
     (_, observationsAsIndeces) = getTestDataDay()
 
     bestPath = bestPathPrognosis(hmm, observationsAsIndeces, forecastHorizon)
