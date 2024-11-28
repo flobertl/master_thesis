@@ -3,9 +3,9 @@ module Data
 using Main.HMM.Types
 using XLSX
 
-export loadObservations, discretize
+export loadObservations2, loadObservations1 , discretize
 
-function loadObservations(path::String)
+function loadObservations1(path::String)
     # Öffnen einer Excel-Datei
     xf = XLSX.readxlsx(path)
     sh = xf["UserCustom"] 
@@ -13,6 +13,16 @@ function loadObservations(path::String)
         
     return(data)
 end
+
+function loadObservations2(path::String)
+    # Öffnen einer Excel-Datei
+    xf = XLSX.readxlsx(path)
+    sh = xf["sers"] 
+    data = sh["B1:B5000"] |> vec
+        
+    return(data)
+end
+
 
 function discretize(observations)
     discreteObs = map(round, observations)

@@ -31,7 +31,7 @@ struct A
 end
 
 struct B
-    dimensions::Tuple{Int,Int}
+    dimension::Tuple{Int,Int}
     transitionMatrix::Array{Float64, 2}
 
     function B((dim1, dim2), transMatrix)
