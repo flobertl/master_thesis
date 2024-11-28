@@ -15,9 +15,10 @@ function forwardAlgo(hmm::HMM, observations::Vector{Int})
     # Calc
     for t in 2:T
         for i in 1:hmm.numberOfStateSpace
-            zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[:,observations[t]])
+            zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[i, observations[t]])
             alpha[t,i] = sum(zwischenresultat)
         end 
+        #alpha[t,:] = alpha[t,:] ./ sum(alpha[t,:])
     end
 
     # Terminate
@@ -34,9 +35,10 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     # Calc
     for t in T-1:-1:1
         for i in 1:hmm.numberOfStateSpace
-            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observations[t+1]])
+            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[i,observations[t]])
             beta[t,i] = sum(summenTerme)
         end 
+        #beta[t,:] = beta[t,:] ./ sum(beta[t,:])
     end
 
     # Terminate
@@ -69,7 +71,9 @@ function baumWelchAlgo(observations, observationSpace, N::Int)
     iter = 1
     time_prev = time()
 
-    for x in 1:200
+    alpha = zeros(T, N)
+
+    for x in 1:10
         # Expecatation 
         (alpha, likelihood_next) = forwardAlgo(hmm, observations)
         (beta, likelihood2) = backwardAlgo(hmm, observations)
@@ -128,7 +132,7 @@ function baumWelchAlgo(observations, observationSpace, N::Int)
 
     end
     # Return Value
-    return HMM(N,a,b,pi,observationSpace)
+    return HMM(N,a,b,pi,observationSpace), alpha
 end
 
 function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)

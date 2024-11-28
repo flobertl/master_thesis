@@ -23,12 +23,12 @@ function translateIndexToObservations(observationsAsIndex::Array{Int, 1}, observ
     return observations
 end
 
-function forwardCalc(alpha_tminus1::Array{Float64, 1}, a_point_i::Array{Float64, 1}, b_point_o_t::Array{Float64, 1})
+function forwardCalc(alpha_tminus1::Array{Float64, 1}, a_point_i::Array{Float64, 1}, b_point_o_t::Float64)
     alpha_tminus1 .* a_point_i .* b_point_o_t
 end
 
-function backwardCalc(beta_tplus1::Array{Float64, 1}, a_i_point::Array{Float64, 1}, b_point_o_tplus1::Array{Float64, 1})
-    beta_tplus1 .* a_i_point .* b_point_o_tplus1
+function backwardCalc(beta_tplus1::Array{Float64, 1}, a_i_point::Array{Float64, 1}, b_i_o_t::Float64)
+    beta_tplus1 .* a_i_point * b_i_o_t
 end
 
 
