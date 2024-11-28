@@ -42,7 +42,7 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     end
 
     # Terminate
-    likelihood = backwardCalc(beta[1,:], hmm.startingDistribution.probabilities[:], hmm.observationMatrix.transitionMatrix[:,observations[1]]) |> sum
+    likelihood = (beta[1,:] .* hmm.startingDistribution.probabilities[:])|> sum
 
     return (beta, likelihood)
 end

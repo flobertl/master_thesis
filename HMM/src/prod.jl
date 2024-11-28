@@ -38,7 +38,7 @@ function runSingleTraining()
     # Set Parameter
     N = 10
 
-    (observationSpace, observationsAsIndeces) = getTestData2Month()
+    (observationSpace, observationsAsIndeces) = getTestDataDay()
 
     # Run Algo
     hmm = baumWelchAlgo(observationsAsIndeces, observationSpace, N)
