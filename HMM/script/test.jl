@@ -1,6 +1,6 @@
-include("../src/main.jl")
+include("../src/HMM.jl")
 
 using .HMM.Test
 
-Main.HMM.Test.testBackwardVsForwardAlgo()
-#testAll()
+runUEAll()
+testAll()
