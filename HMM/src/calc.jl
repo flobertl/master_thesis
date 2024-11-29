@@ -35,7 +35,7 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     # Calc
     for t in T-1:-1:1
         for i in 1:hmm.numberOfStateSpace
-            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[i,observations[t]])
+            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observations[t]])
             beta[t,i] = sum(summenTerme)
         end 
         #beta[t,:] = beta[t,:] ./ sum(beta[t,:])
