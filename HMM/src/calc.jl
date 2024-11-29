@@ -47,16 +47,15 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     return (beta, likelihood)
 end
 
-function baumWelchAlgo(observations, observationSpace, N::Int)
-    # Init
-    pi = [1; zeros(N-1)] |> StochasticVector
-    
+function baumWelchAlgo(observations, observationSpace, numberOfHiddenStates::Int, maxIter::Int = 100)
+    # Parameters
     T = length(observations)
-
+    N = numberOfHiddenStates
     M = length(observationSpace.observations)
 
     # Init
-    Random.seed!(1234)
+    Random.seed!(123)
+    pi = [1; zeros(N-1)] |> StochasticVector
     transMatrixA_hat = createRandomTransitionMatrixViaDirichlet(N,N)
     transMatrixB_hat =  createRandomTransitionMatrixViaDirichlet(N,M)
     a = A(N, transMatrixA_hat)
@@ -73,15 +72,15 @@ function baumWelchAlgo(observations, observationSpace, N::Int)
 
     alpha = zeros(T, N)
 
-    for x in 1:10
+    for x in 1:maxIter
         # Expecatation 
         (alpha, likelihood_next) = forwardAlgo(hmm, observations)
         (beta, likelihood2) = backwardAlgo(hmm, observations)
 
         # Termination Condition
-        if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
-            break
-        end
+        # if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
+        #     break
+        # end
         likelihood_prev_prev = likelihood_prev
         likelihood_prev = likelihood_next
 
@@ -138,7 +137,7 @@ end
 function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)
     # Set parameter
     T = length(observations)
-    N, M = hmm.observationMatrix.dimensions  # N = #hiddenStates, B = #observationStates
+    N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
     
     # Step 0: Calc alpha(T)
     alpha_T = forwardAlgo(hmm, observations)[1][T,:]
