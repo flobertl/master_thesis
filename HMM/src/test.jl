@@ -1,13 +1,13 @@
 module Test
 
-using Main.HMM.Types, Main.HMM.Helpers, Main.HMM.Calc, Main.HMM.Data
+using Main.HMM.Types, Main.HMM.Helpers, Main.HMM.Calc, Main.HMM.Data, Main.HMM.Prod
 
 export testAll, runUEAll
 
 epsilon = 1E-10
 
 function testingEquality(testName::String, testingValue, expectedResult)
-    if (expectedResult .< testingValue .- epsilon) .& (expectedResult .> testingValue .+ epsilon)  #evtl muss mann Epsilon einbauen
+    if all((expectedResult .< testingValue .- epsilon) .& (expectedResult .> testingValue .+ epsilon))  #evtl muss mann Epsilon einbauen
         println("FAILED Test:", testName)
     else
         println("Sucess Test: ", testName)
@@ -16,42 +16,35 @@ end
 
 function testForwardCalc()
     name = "Helper forwardCalc1"
-
     alpha_tminus1 = ones(4)
     a_point_i = ones(4)
     b_i_o_t = 1.
     value = sum(Main.HMM.Helpers.forwardCalc(alpha_tminus1, a_point_i, b_i_o_t))
-
     testingEquality(name, value, 4)
 
     name = "Helper forwardCalc2"
-
     alpha_tminus1 = [1., 2.]
     a_point_i = [3., 4.]
     b_i_o_t = 5.
     value = sum(Main.HMM.Helpers.forwardCalc(alpha_tminus1, a_point_i, b_i_o_t))
-
     testingEquality(name, value, 55)    
 end
 
 function testBackwardCalc()
     name = "Helper backwardCalc1"
-
     beta_tplus1 = ones(7)
     a_i_point = ones(7)
-    b_point_i_tplus1 = 1.
+    b_point_o_tplus1 = ones(7)
     value = sum(Main.HMM.Helpers.backwardCalc(beta_tplus1, a_i_point, b_point_o_tplus1))
-
     testingEquality(name, value, 7)
 
     name = "Helper backwardCalc2"
-
     beta_tplus1 = [1., 2.]
     a_i_point = [3., 4.]
-    b_point_o_tplus1 = 5.
-    value = sum(Main.HMM.Helpers.backwardCalc(beta_tplus1, a_i_point, b_i_o_tplus1))
-
-    testingEquality(name, value, 55)    
+    b_point_o_tplus1 = [5. , 6.]
+    value = sum(Main.HMM.Helpers.backwardCalc(beta_tplus1, a_i_point, b_point_o_tplus1))
+    testingEquality(name, value, 63)   
+     
 end
 
 function testObservationToIndexMapping()
@@ -68,28 +61,46 @@ function testObservationToIndexMapping()
     testingEquality("ObservationToIndexMapping1", reconvertedObservations, discreteObser)
 end
 
+function testBackwardAndForwardAlgo()
+    A_ = A(2,[0.5 0.5; 0.5 0.5])
+    B_ = B((2,2), [2/3 1/3; 1/3 2/3])
+    pi = StochasticVector([3/4, 1/4])
+    obserSpace = ObservationSpace(Set([1,2]))
+    hmm = HMM(2, A_, B_, pi, obserSpace)
+    observations = [2, 2]
+
+    name = "forwardAlgo"
+    alpha, likelihood = forwardAlgo(hmm, observations)
+    expectedResult = 5/24
+    testingEquality(name, likelihood, expectedResult)
+
+    name = "backwardAlgo"
+    alpha, likelihood = backwardAlgo(hmm, observations)
+    expectedResult = 5/24
+    testingEquality(name, likelihood, expectedResult)
+end
+
 function testBackwardVsForwardAlgo()
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
-    observations = loadObservations(path)
+    observations = loadObservations1(path)
 
     # Convert Data
-    Z = discretize(observations)
-    V = Set(Z) |> ObservationSpace
+    V, Z = getTestDataDay()
 
     # Init
     N = 10
-    transMatrixA = ones(N,N) ./ N
+    transMatrixA = createRandomTransitionMatrixViaDirichlet(N, N)
     a = A(N, transMatrixA)
     M = length(V.observations)
-    transMatrixB =  ones(N,M) ./ M
+    transMatrixB =  createRandomTransitionMatrixViaDirichlet(N, M)
     b = B((N,M), transMatrixB)
     pi = transMatrixA[1,:] |> StochasticVector
     T = length(Z)
     hmm_init = HMM(N, a, b, pi, V)
 
     # Running Algos 
-    (alpha, likelihood1) = forwardAlgo(T, hmm_init, Z)
-    (beta, likelihood2) = backwardAlgo(T, hmm_init, Z)
+    (alpha, likelihood1) = forwardAlgo(hmm_init, Z)
+    (beta, likelihood2) = backwardAlgo(hmm_init, Z)
 
     # Test equality
     testingEquality("Back vs Forward Algo via Likelihood", likelihood1, likelihood2)
@@ -130,6 +141,7 @@ function testAll()
     testForwardCalc()
     testObservationToIndexMapping()
     testBackwardCalc()
+    testBackwardAndForwardAlgo()
     testBackwardVsForwardAlgo()
 end
 

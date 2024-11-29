@@ -1,8 +1,8 @@
 module HMM
 
 include("types.jl")
-include("data.jl")
 include("helpers.jl")
+include("data.jl")
 include("calc.jl")
 include("prod.jl")
 include("test.jl")
