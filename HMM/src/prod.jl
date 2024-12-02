@@ -9,13 +9,14 @@ using Main.HMM.Helpers
 export runSingleTraining, runBestPathPrognosis,forwardAlgo
 
 function runSingleTraining()
-    # Set Parameter
-    N = 10
-
     (observationSpace, observationsAsIndeces) = getTestDataDay()
 
+    # Set Parameter
+    N = 10
+    initHMM = createRandomHMM(N, observationSpace)
+
     # Run Algo
-    hmm = baumWelchAlgo(observationsAsIndeces, observationSpace, N)
+    hmm = baumWelchAlgo(initHMM, observationsAsIndeces)
 
     # Store Output
 

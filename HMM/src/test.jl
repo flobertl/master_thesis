@@ -103,8 +103,22 @@ function testBackwardVsForwardAlgo()
     (beta, likelihood2) = backwardAlgo(hmm_init, Z)
 
     # Test equality
-    testingEquality("Back vs Forward Algo via Likelihood", likelihood1, likelihood2)
-    
+    testingEquality("Back vs Forward Algo via Likelihood", likelihood1, likelihood2)   
+end
+
+function testBackwardVsForwardAlgo()
+    A_ = A(2,[0.75 0.25; 0.45 0.55])
+    B_ = B((2,3), [0.1 0.3 0.6; 0.75 0.2 0.05])
+    pi = StochasticVector([0.5, 0.5])
+    obserSpace = ObservationSpace(Set([1,2, 3]))
+
+    hmm = HMM(2, A_, B_, pi, obserSpace)
+    observations = [1, 2, 2, 3]
+
+    alpha, likelihood = forwardAlgo(hmm, observations)
+    0.011522617187500002
+    expectedResult = 0.011522617187500002
+    testingEquality("Ue Bsp2", likelihood, expectedResult)
 end
 
 function testUeBsp1()
@@ -137,12 +151,30 @@ function testUeBsp2()
 
 end
 
+function testBWAlgo()
+    name = "Test BW-Algo"
+    A_ = A(2,[0.5 0.5; 0.5 0.5])
+    B_ = B((2,2), [2/3 1/3; 1/3 2/3])
+    pi = StochasticVector([3/4, 1/4])
+    obserSpace = ObservationSpace(Set([1,2]))
+
+    hmm = HMM(2, A_, B_, pi, obserSpace)
+    observations = [2, 2]
+
+    hmm, alpha, likelihood = baumWelchAlgo(hmm, observations, 1)
+    expectedResult = 5/24
+    testingEquality(name, likelihood, expectedResult)
+
+    hmm, alpha, likelihood 
+end
+
 function testAll()
     testForwardCalc()
     testObservationToIndexMapping()
     testBackwardCalc()
     testBackwardAndForwardAlgo()
     testBackwardVsForwardAlgo()
+    testBWAlgo()
 end
 
 function runUEAll()

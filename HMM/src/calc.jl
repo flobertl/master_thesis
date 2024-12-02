@@ -1,6 +1,7 @@
 module Calc 
 
-using Main.HMM.Types, Main.HMM.Helpers, Random
+using Main.HMM.Types, Main.HMM.Helpers
+using Random
 
 export forwardAlgo, backwardAlgo, baumWelchAlgo, bestPathPrognosis
 
@@ -47,20 +48,12 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     return (beta, likelihood)
 end
 
-function baumWelchAlgo(observations, observationSpace, numberOfHiddenStates::Int, maxIter::Int = 100)
+function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     # Parameters
     T = length(observations)
-    N = numberOfHiddenStates
-    M = length(observationSpace.observations)
-
-    # Init
-    Random.seed!(123)
-    pi = [1; zeros(N-1)] |> StochasticVector
-    transMatrixA_hat = createRandomTransitionMatrixViaDirichlet(N,N)
-    transMatrixB_hat =  createRandomTransitionMatrixViaDirichlet(N,M)
-    a = A(N, transMatrixA_hat)
-    b = B((N,M), transMatrixB_hat)
-    hmm = HMM(N, a, b, pi, observationSpace)
+    N = initHMM.transitionMatrix.dimension
+    M = initHMM.observationSpace.dimension
+    observationSpace = initHMM.observationSpace
 
     likelihood_prev_prev = 0
     likelihood_prev = 0
@@ -70,19 +63,28 @@ function baumWelchAlgo(observations, observationSpace, numberOfHiddenStates::Int
     iter = 1
     time_prev = time()
 
+    # Init values
+    hmm = initHMM
+    a = hmm.transitionMatrix
+    b = hmm.observationMatrix
+    pi = hmm.startingDistribution
     alpha = zeros(T, N)
+
+    # Init likelihood for tracking convergence
+    likelihood_prev = 0
+    likelihood_next = nextfloat(0.0)
 
     for x in 1:maxIter
         # Expecatation 
         (alpha, likelihood_next) = forwardAlgo(hmm, observations)
         (beta, likelihood2) = backwardAlgo(hmm, observations)
 
-        # Termination Condition
+        # # Termination Condition: termination when likelihood declines two times in a row
         # if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
         #     break
         # end
-        likelihood_prev_prev = likelihood_prev
-        likelihood_prev = likelihood_next
+        # likelihood_prev_prev = likelihood_prev
+        # likelihood_prev = likelihood_next
 
         gamma = zeros(T-1, N, N)
         transMatrixA_hat = zeros(N,N)
@@ -108,12 +110,16 @@ function baumWelchAlgo(observations, observationSpace, numberOfHiddenStates::Int
         end
 
         # Calculation of B_hat
-        for l in 1:M
-            accurances = findall(obs -> obs == l, observations[1:end-1])
-            for i in 1:N
-                summe = sum(gamma[:,i,:])
+        accurances = Array{Any}(undef, M) 
+        for k in 1:M
+            accurances[k] = findall(obs -> obs == k, observations[1:end-1])     # Returns all the times observation k occured.
+        end
+
+        for i in 1:N 
+            summe = sum(gamma[:,i,:])
+            for k in 1:M
                 if (summe != 0)
-                   transMatrixB_hat[i,l] = sum(gamma[accurances,i,:])/summe
+                   transMatrixB_hat[i,k] = sum(gamma[accurances[k],i,:])/summe
                 end
             end
         end
@@ -127,11 +133,10 @@ function baumWelchAlgo(observations, observationSpace, numberOfHiddenStates::Int
         println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " Liklihood: ",likelihood_next)
         time_prev = now
         iter += 1
-
-
     end
+
     # Return Value
-    return HMM(N,a,b,pi,observationSpace), alpha
+    return HMM(N,a,b,pi,observationSpace), alpha, likelihood_next
 end
 
 function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)

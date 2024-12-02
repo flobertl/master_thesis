@@ -1,9 +1,10 @@
 module Helpers
 
 using Main.HMM.Types
-using Distributions
+using Distributions, Random
 
 export translateObservationsToIndex, translateIndexToObservations, forwardCalc, backwardCalc, createRandomTransitionMatrixViaDirichlet
+export createRandomHMM
 
 function translateObservationsToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
     T = length(observations)
@@ -43,6 +44,20 @@ function createRandomTransitionMatrixViaDirichlet(n::Int, m::Int)
         transMatrix[i,:] = randomDirichletVector(m)
     end
     return transMatrix
+end
+
+function createRandomHMM(dimHiddenStateSpace::Int, observationSpace::ObservationSpace)
+    N = dimHiddenStateSpace
+    M = observationSpace.dimension
+    Random.seed!(123)
+    pi = [1; zeros(N-1)] |> StochasticVector
+    transMatrixA_hat = createRandomTransitionMatrixViaDirichlet(N,N)
+    transMatrixB_hat =  createRandomTransitionMatrixViaDirichlet(N,M)
+    a = A(N, transMatrixA_hat)
+    b = B((N,M), transMatrixB_hat)
+    hmm = HMM(N, a, b, pi, observationSpace)
+
+    return hmm
 end
 
 end

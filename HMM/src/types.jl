@@ -46,6 +46,7 @@ end
 
 
 struct ObservationSpace
+    dimension::Int
     observations::Set{Int}
     mapObservationToIndex::Dict{Int, Int}
     mapIndexToObservation::Dict{Int, Int}
@@ -54,7 +55,8 @@ struct ObservationSpace
         sortedObservations = observations |> collect |> sort
         mapObservationToIndex = Dict()
         mapIndexToObservation = Dict()
-        for i in 1:(length(sortedObservations)) 
+        dim = length(sortedObservations)
+        for i in 1:dim 
             mapObservationToIndex[sortedObservations[i]] = i
         end
 
@@ -63,7 +65,7 @@ struct ObservationSpace
             mapIndexToObservation[i] = sortedObservations[i]
         end
 
-        new(observations, mapObservationToIndex, mapIndexToObservation)
+        new(dim, observations, mapObservationToIndex, mapIndexToObservation)
     end
 end
 
