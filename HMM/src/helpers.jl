@@ -2,6 +2,7 @@ module Helpers
 
 using Main.HMM.Types
 using Distributions, Random
+using HiddenMarkovModels: HMM as HMMPkg 
 
 export translateObservationsToIndex, translateIndexToObservations, forwardCalc, backwardCalc, createRandomTransitionMatrixViaDirichlet
 export createRandomHMM
@@ -58,6 +59,19 @@ function createRandomHMM(dimHiddenStateSpace::Int, observationSpace::Observation
     hmm = HMM(N, a, b, pi, observationSpace)
 
     return hmm
+end
+
+function transformHMMToPkgHMM(hmm::HMM)
+    A_ = hmm.transitionMatrix.transitionMatrix
+    b_ = hmm.observationMatrix.transitionMatrix
+    initDistr = hmm.startingDistribution.probabilities
+    (N, M) = hmm.observationMatrix.dimension
+
+    B_ = Array{Categorical}(undef, N)
+    for j in 1:N
+        B_[j] = b_[j, :] |> Categorical
+    end
+    HMMPkg(initDistr, A_, B_)
 end
 
 end

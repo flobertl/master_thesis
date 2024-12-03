@@ -9,6 +9,6 @@ include("test.jl")
 
 using .Prod
 
-export runSingleTraining, runBestPathPrognosis
+export runSingleTraining, runBestPathPrognosis, runSingleTrainingPkg
 
 end

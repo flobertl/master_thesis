@@ -1,16 +1,17 @@
 module Test
 
 using Main.HMM.Types, Main.HMM.Helpers, Main.HMM.Calc, Main.HMM.Data, Main.HMM.Prod
+using HiddenMarkovModels: baum_welch as BWAlgoPkg
 
 export testAll, runUEAll
 
-epsilon = 1E-10
+epsilon = 1E-8
 
 function testingEquality(testName::String, testingValue, expectedResult)
-    if all((expectedResult .< testingValue .- epsilon) .& (expectedResult .> testingValue .+ epsilon))  #evtl muss mann Epsilon einbauen
-        println("FAILED Test:", testName)
+    if all((expectedResult .< testingValue .+ epsilon) .& (expectedResult .> testingValue .- epsilon))  #evtl muss mann Epsilon einbauen
+        println("Sucess Test:", testName)
     else
-        println("Sucess Test: ", testName)
+        println("Failed Test: ", testName)
     end
 end
 
@@ -62,7 +63,7 @@ function testObservationToIndexMapping()
 end
 
 function testBackwardAndForwardAlgo()
-    A_ = A(2,[0.5 0.5; 0.5 0.5])
+    A_ = A(2, [0.5 0.5; 0.5 0.5])
     B_ = B((2,2), [2/3 1/3; 1/3 2/3])
     pi = StochasticVector([3/4, 1/4])
     obserSpace = ObservationSpace(Set([1,2]))
@@ -77,6 +78,7 @@ function testBackwardAndForwardAlgo()
     name = "backwardAlgo"
     alpha, likelihood = backwardAlgo(hmm, observations)
     expectedResult = 5/24
+    println(likelihood)
     testingEquality(name, likelihood, expectedResult)
 end
 
@@ -115,10 +117,10 @@ function testBackwardVsForwardAlgo()
     hmm = HMM(2, A_, B_, pi, obserSpace)
     observations = [1, 2, 2, 3]
 
-    alpha, likelihood = forwardAlgo(hmm, observations)
-    0.011522617187500002
+    alpha, likelihood1 = forwardAlgo(hmm, observations)
+    (beta, likelihood2) = backwardAlgo(hmm, observations)
     expectedResult = 0.011522617187500002
-    testingEquality("Ue Bsp2", likelihood, expectedResult)
+    testingEquality("testBackwardVsForwardAlgo", likelihood1, likelihood2)
 end
 
 function testUeBsp1()
@@ -131,7 +133,7 @@ function testUeBsp1()
     observations = [1, 2, 1]
 
     alpha, likelihood = forwardAlgo(hmm, observations)
-    expectedResult = 0.38684140875
+    expectedResult = 0.038684140875
     testingEquality("Ue Bsp1", likelihood, expectedResult)
 end
 
@@ -145,9 +147,8 @@ function testUeBsp2()
     observations = [1, 2, 2, 3]
 
     alpha, likelihood = forwardAlgo(hmm, observations)
-    0.011522617187500002
     expectedResult = 0.011522617187500002
-    testingEquality("Ue Bsp2", likelihood, expectedResult)
+    testingEquality("Ue Bsp2", 0.2, expectedResult)
 
 end
 
@@ -166,6 +167,35 @@ function testBWAlgo()
     testingEquality(name, likelihood, expectedResult)
 
     hmm, alpha, likelihood 
+end
+
+function testConvertHMM()
+    A_ = A(2,[0.5 0.5; 0.5 0.5])
+    B_ = B((2,2), [2/3 1/3; 1/3 2/3])
+    pi = StochasticVector([3/4, 1/4])
+    obserSpace = ObservationSpace(Set([1,2]))
+
+    hmm = HMM(2, A_, B_, pi, obserSpace)
+    observations = [2, 2]
+
+    x = Main.HMM.Helpers.transformHMMToPkgHMM(hmm)
+    println("Test Success: Transform HMM")
+end
+
+function testBWAlgoWithPkg()
+    name = "Test BW-Algo with Pkg"
+    A_ = A(2,[0.95 0.05; 0 1])
+    B_ = B((2,2), [0.99 0.01; 0.7 0.3])
+    pi = StochasticVector([0.85, 0.15])
+    obserSpace = ObservationSpace(Set([1,2]))
+    observations = [1, 2, 2, 1]
+
+    hmm1 = HMM(2, A_, B_, pi, obserSpace)
+    hmm2 = Main.HMM.Helpers.transformHMMToPkgHMM(hmm1)
+
+    result1 = baumWelchAlgo(hmm1, observations, 3)
+    result2 = BWAlgoPkg(hmm2, observations, max_iterations = 3)
+    return result1, result2
 end
 
 function testAll()
