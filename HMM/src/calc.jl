@@ -36,14 +36,14 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     # Calc
     for t in T-1:-1:1
         for i in 1:hmm.numberOfStateSpace
-            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observations[t]])
+            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observations[t+1]])
             beta[t,i] = sum(summenTerme)
         end 
         #beta[t,:] = beta[t,:] ./ sum(beta[t,:])
     end
 
     # Terminate
-    likelihood = (beta[1,:] .* hmm.startingDistribution.probabilities[:])|> sum
+    likelihood = (beta[1,:] .* hmm.startingDistribution.probabilities[:] .* hmm.observationMatrix.transitionMatrix[:,observations[1]])|> sum
 
     return (beta, likelihood)
 end
@@ -130,7 +130,7 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
 
         # Tracking iteration and timing
         now = time()
-        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " Liklihood: ",likelihood_next)
+        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " LogLiklihood: ",log(likelihood_next))
         time_prev = now
         iter += 1
     end

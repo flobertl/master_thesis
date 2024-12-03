@@ -5,8 +5,9 @@ using Main.HMM.Types
 using Main.HMM.Data
 using Main.HMM.Calc
 using Main.HMM.Helpers
+using HiddenMarkovModels: HMM as HMMPkg, baum_welch as BWAlgoPkg
 
-export runSingleTraining, runBestPathPrognosis,forwardAlgo
+export runSingleTraining, runBestPathPrognosis,forwardAlgo, runSingleTrainingPkg
 
 function runSingleTraining()
     (observationSpace, observationsAsIndeces) = getTestDataDay()
@@ -22,6 +23,25 @@ function runSingleTraining()
 
     # Return Output
     return hmm
+end 
+
+function runSingleTrainingPkg()
+    (observationSpace, observationsAsIndeces) = getTestDataDay()
+
+    # Set Parameter
+    N = 10
+    initHMM = createRandomHMM(N, observationSpace)
+
+    # Run House Algo
+    hmm1 = baumWelchAlgo(initHMM, observationsAsIndeces, 100)
+
+    # Run Pkg Algo
+    initHMMPkg = Main.HMM.Helpers.transformHMMToPkgHMM(initHMM)
+
+    hmm2 = BWAlgoPkg(initHMMPkg, observationsAsIndeces, max_iterations = 100)
+
+    # Return Output
+    return hmm1, hmm2
 end 
 
 function runBestPathPrognosis(hmm, forecastHorizon::Int)
