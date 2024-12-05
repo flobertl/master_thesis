@@ -7,19 +7,21 @@ export forwardAlgo, backwardAlgo, baumWelchAlgo, bestPathPrognosis
 
 function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
+    N = hmm.numberOfStateSpace
+    alpha = zeros(T, N)
+
     # Init
-    alpha = zeros(T, hmm.numberOfStateSpace)
-    for i in 1:hmm.numberOfStateSpace
+    for i in 1:N
         alpha[1,i] = hmm.startingDistribution.probabilities[i]*hmm.observationMatrix.transitionMatrix[i,observations[1]]
     end
 
-    # Calc
+    # Iteration
     for t in 2:T
-        for i in 1:hmm.numberOfStateSpace
+        for i in 1:N    
             zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[i, observations[t]])
             alpha[t,i] = sum(zwischenresultat)
         end 
-        #alpha[t,:] = alpha[t,:] ./ sum(alpha[t,:])
+        alpha[t,:] = alpha[t,:] ./ sum(alpha[t,:])
     end
 
     # Terminate
@@ -30,16 +32,18 @@ end
 
 function backwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
-    #Init - 
-    beta = ones(T, hmm.numberOfStateSpace)
+    N = hmm.numberOfStateSpace
+
+    #Init 
+    beta = ones(T, N)
 
     # Calc
     for t in T-1:-1:1
-        for i in 1:hmm.numberOfStateSpace
+        for i in 1:N
             summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observations[t+1]])
             beta[t,i] = sum(summenTerme)
-        end 
-        #beta[t,:] = beta[t,:] ./ sum(beta[t,:])
+        end
+        beta[t,:] = beta[t,:] ./ sum(beta[t,:])
     end
 
     # Terminate
@@ -97,6 +101,12 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
                     gamma[t,i,j] = alpha[t,i] * a.transitionMatrix[i,j] * b.transitionMatrix[j, observations[t+1]] * beta[t+1,j]
                 end
             end
+            gamma_norm = sum(gamma[t,:,:])
+            for i in 1:N 
+                for j in 1:N 
+                    gamma[t,i,j] = gamma[t,i,j]/gamma_norm
+                end
+            end
         end
 
         # Calculation of A_hat
@@ -130,7 +140,7 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
 
         # Tracking iteration and timing
         now = time()
-        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " LogLiklihood: ",log(likelihood_next))
+        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " LogLiklihood: ", likelihood_next)
         time_prev = now
         iter += 1
     end
