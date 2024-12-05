@@ -148,7 +148,22 @@ function testUeBsp2()
 
     alpha, likelihood = forwardAlgo(hmm, observations)
     expectedResult = 0.011522617187500002
-    testingEquality("Ue Bsp2", 0.2, expectedResult)
+    testingEquality("Ue Bsp2", likelihood, expectedResult)
+end
+
+function testUeBsp3()
+    A_ = A(2,[0.5 0.5; 0.4 0.6])
+    B_ = B((2,4), [0.2 0.3 0.3 0.2; 0.3 0.2 0.2 0.3])
+    pi = StochasticVector([0.5, 0.5])
+    obserSpace = ObservationSpace(Set([1, 2, 3, 4]))
+
+    hmm = HMM(2, A_, B_, pi, obserSpace)
+    observations = [1, 1, 1, 4, 4]
+
+    alpha, likelihood = forwardAlgo(hmm, observations)
+    expectedResult = 0.001081288
+    #println(alpha, likelihood)
+    testingEquality("Ue Bsp3", likelihood, expectedResult)
 
 end
 
@@ -210,6 +225,7 @@ end
 function runUEAll()
     testUeBsp1()
     testUeBsp2()
+    testUeBsp3()
 end
 
 end
