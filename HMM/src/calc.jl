@@ -9,11 +9,14 @@ function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
     N = hmm.numberOfStateSpace
     alpha = zeros(T, N)
+    likelihood_step = zeros(T)
 
     # Init
     for i in 1:N
         alpha[1,i] = hmm.startingDistribution.probabilities[i]*hmm.observationMatrix.transitionMatrix[i,observations[1]]
     end
+    likelihood_step[1] = sum(alpha[1,:])
+    alpha[1,:] = alpha[1,:] / likelihood_step[1] 
 
     # Iteration
     for t in 2:T
@@ -21,13 +24,14 @@ function forwardAlgo(hmm::HMM, observations::Vector{Int})
             zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[i, observations[t]])
             alpha[t,i] = sum(zwischenresultat)
         end 
+        likelihood_step[t] = sum(alpha[t,:])
         alpha[t,:] = alpha[t,:] ./ sum(alpha[t,:])
     end
 
     # Terminate
-    likelihood = sum(alpha[T,:])
+    loglikelihood = map(log, likelihood_step) |> sum
 
-    return (alpha, likelihood)
+    return (alpha, loglikelihood)
 end
 
 function backwardAlgo(hmm::HMM, observations::Vector{Int})
@@ -61,7 +65,7 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
 
     likelihood_prev_prev = 0
     likelihood_prev = 0
-    likelihood_next = nextfloat(0.0)
+    loglikelihood_next = nextfloat(0.0)
 
     # Init values for tracking iteration and time
     iter = 1
@@ -76,12 +80,12 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
 
     # Init likelihood for tracking convergence
     likelihood_prev = 0
-    likelihood_next = nextfloat(0.0)
+    loglikelihood_next = nextfloat(0.0)
 
     for x in 1:maxIter
         # Expecatation 
-        (alpha, likelihood_next) = forwardAlgo(hmm, observations)
-        (beta, likelihood2) = backwardAlgo(hmm, observations)
+        (alpha, loglikelihood_next) = forwardAlgo(hmm, observations)
+        (beta, _) = backwardAlgo(hmm, observations)
 
         # # Termination Condition: termination when likelihood declines two times in a row
         # if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
@@ -140,13 +144,13 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
 
         # Tracking iteration and timing
         now = time()
-        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " LogLiklihood: ", likelihood_next)
+        println("BW-Algo: ", iter, ".iteration taking ", (now - time_prev), " LogLiklihood: ", loglikelihood_next)
         time_prev = now
         iter += 1
     end
 
     # Return Value
-    return HMM(N,a,b,pi,observationSpace), alpha, likelihood_next
+    return HMM(N,a,b,pi,observationSpace), alpha, loglikelihood_next
 end
 
 function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)
