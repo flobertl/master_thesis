@@ -213,6 +213,21 @@ function testBWAlgoWithPkg()
     return result1, result2
 end
 
+function testBestPathPrognosis()
+    name = "Test Best Path Prognosis"
+    A_ = A(3,[0 1 0; 0 0 1; 1 0 0])
+    B_ = B((3,3), [1 0 0; 0 1 0; 0 0 1])
+    pi = StochasticVector([0, 0, 1])
+    obserSpace = ObservationSpace(Set([1, 2, 3]))
+    observations = [3]
+
+    hmm1 = HMM(3, A_, B_, pi, obserSpace)
+
+    result1, liklihood = bestPathPrognosis(hmm1, observations, 3)
+    expectedResult = [1, 2, 3]
+    testingEquality(name, result1, expectedResult)
+end
+
 function testAll()
     testForwardCalc()
     testObservationToIndexMapping()
@@ -220,6 +235,7 @@ function testAll()
     testBackwardAndForwardAlgo()
     testBackwardVsForwardAlgo()
     testBWAlgo()
+    testBestPathPrognosis()
 end
 
 function runUEAll()

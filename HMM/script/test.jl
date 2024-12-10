@@ -2,9 +2,9 @@ include("../src/HMM.jl")
 
 using .HMM.Test
 
-runUEAll()
-testAll()
+# runUEAll()
+# testAll()
 
-res1, res2 = Main.HMM.Test.testBWAlgoWithPkg();
+Main.HMM.Test.testBestPathPrognosis()
 
 println(res2[2])
