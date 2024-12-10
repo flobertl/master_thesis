@@ -74,4 +74,5 @@ function transformHMMToPkgHMM(hmm::HMM)
     HMMPkg(initDistr, A_, B_)
 end
 
+
 end

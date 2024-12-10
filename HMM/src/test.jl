@@ -215,7 +215,7 @@ end
 
 function testBestPathPrognosis()
     name = "Test Best Path Prognosis"
-    A_ = A(3,[0 1 0; 0 0 1; 1 0 0])
+    A_ = A(3,[0.2 0.6 0.2; 0.1 0.1 0.8; 0.8 0.1 0.1])
     B_ = B((3,3), [1 0 0; 0 1 0; 0 0 1])
     pi = StochasticVector([0, 0, 1])
     obserSpace = ObservationSpace(Set([1, 2, 3]))

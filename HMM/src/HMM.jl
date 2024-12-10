@@ -10,6 +10,6 @@ include("test.jl")
 
 using .Prod
 
-export runSingleTraining, runBestPathPrognosis, runSingleTrainingPkg
+export runSingleTraining, runBestPathPrognosis, runSingleTrainingPkg, plots
 
 end
