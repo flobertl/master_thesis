@@ -150,7 +150,7 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     end
 
     # Return Value
-    return HMM(N,a,b,pi,observationSpace), alpha, loglikelihood_next
+    return HMM(N,a,b,pi,observationSpace), loglikelihood_next
 end
 
 function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)

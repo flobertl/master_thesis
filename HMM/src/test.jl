@@ -11,7 +11,7 @@ function testingEquality(testName::String, testingValue, expectedResult)
     if all((expectedResult .< testingValue .+ epsilon) .& (expectedResult .> testingValue .- epsilon))  #evtl muss mann Epsilon einbauen
         println("Sucess Test:", testName)
     else
-        println("Failed Test: ", testName)
+        println("FAILED Test: ", testName)
     end
 end
 
@@ -72,7 +72,7 @@ function testBackwardAndForwardAlgo()
 
     name = "forwardAlgo"
     alpha, likelihood = forwardAlgo(hmm, observations)
-    expectedResult = 5/24
+    expectedResult = log(5/24)
     testingEquality(name, likelihood, expectedResult)
 
     name = "backwardAlgo"
@@ -105,7 +105,7 @@ function testBackwardVsForwardAlgo()
     (beta, likelihood2) = backwardAlgo(hmm_init, Z)
 
     # Test equality
-    testingEquality("Back vs Forward Algo via Likelihood", likelihood1, likelihood2)   
+    testingEquality("Back vs Forward Algo via Likelihood", likelihood1, log(likelihood2))
 end
 
 function testBackwardVsForwardAlgo()
@@ -119,8 +119,8 @@ function testBackwardVsForwardAlgo()
 
     alpha, likelihood1 = forwardAlgo(hmm, observations)
     (beta, likelihood2) = backwardAlgo(hmm, observations)
-    expectedResult = 0.011522617187500002
-    testingEquality("testBackwardVsForwardAlgo", likelihood1, likelihood2)
+    expectedResult = log(0.011522617187500002)
+    testingEquality("testBackwardVsForwardAlgo", likelihood1, log(likelihood2))
 end
 
 function testUeBsp1()
@@ -133,7 +133,7 @@ function testUeBsp1()
     observations = [1, 2, 1]
 
     alpha, likelihood = forwardAlgo(hmm, observations)
-    expectedResult = 0.038684140875
+    expectedResult = log(0.038684140875)
     testingEquality("Ue Bsp1", likelihood, expectedResult)
 end
 
@@ -147,7 +147,7 @@ function testUeBsp2()
     observations = [1, 2, 2, 3]
 
     alpha, likelihood = forwardAlgo(hmm, observations)
-    expectedResult = 0.011522617187500002
+    expectedResult = log(0.011522617187500002)
     testingEquality("Ue Bsp2", likelihood, expectedResult)
 end
 
@@ -161,7 +161,7 @@ function testUeBsp3()
     observations = [1, 1, 1, 4, 4]
 
     alpha, likelihood = forwardAlgo(hmm, observations)
-    expectedResult = 0.001081288
+    expectedResult = log(0.001081288)
     #println(alpha, likelihood)
     testingEquality("Ue Bsp3", likelihood, expectedResult)
 
@@ -177,11 +177,9 @@ function testBWAlgo()
     hmm = HMM(2, A_, B_, pi, obserSpace)
     observations = [2, 2]
 
-    hmm, alpha, likelihood = baumWelchAlgo(hmm, observations, 1)
-    expectedResult = 5/24
+    hmm, likelihood = baumWelchAlgo(hmm, observations, 1)
+    expectedResult = log(5/24)
     testingEquality(name, likelihood, expectedResult)
-
-    hmm, alpha, likelihood 
 end
 
 function testConvertHMM()
@@ -208,8 +206,8 @@ function testBWAlgoWithPkg()
     hmm1 = HMM(2, A_, B_, pi, obserSpace)
     hmm2 = Main.HMM.Helpers.transformHMMToPkgHMM(hmm1)
 
-    result1 = baumWelchAlgo(hmm1, observations, 3)
-    result2 = BWAlgoPkg(hmm2, observations, max_iterations = 3)
+    hmm3,_result1 = baumWelchAlgo(hmm1, observations, 3)
+    hmm4, result2 = BWAlgoPkg(hmm2, observations, max_iterations = 3)
     return result1, result2
 end
 
@@ -228,12 +226,31 @@ function testBestPathPrognosis()
     testingEquality(name, result1, expectedResult)
 end
 
+function testSaveAndLoadHMM()
+    name = "Best Path Prognosis"
+    A_ = A(3,[0.2 0.6 0.2; 0.1 0.1 0.8; 0.8 0.1 0.1])
+    B_ = B((3,3), [1 0 0; 0 1 0; 0 0 1])
+    pi = StochasticVector([0, 0, 1])
+    obserSpace = ObservationSpace(Set([1, 2, 3]))
+    hmm1 = HMM(3, A_, B_, pi, obserSpace)
+
+    saveHMM(hmm1, "testSaveAndLoadHmm.txt")
+    hmm = loadHMM("testSaveAndLoadHmm.txt")
+    if (hmm == hmm1)
+        println("Sucess Test: ", name)
+    else
+        println("FAILEDD Test: ", name)
+    end
+end
+
+
 function testAll()
     testForwardCalc()
     testObservationToIndexMapping()
     testBackwardCalc()
     testBackwardAndForwardAlgo()
     testBackwardVsForwardAlgo()
+    testConvertHMM()
     testBWAlgo()
     testBestPathPrognosis()
 end

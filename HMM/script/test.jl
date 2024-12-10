@@ -2,9 +2,7 @@ include("../src/HMM.jl")
 
 using .HMM.Test
 
-# runUEAll()
-# testAll()
+runUEAll()
+testAll()
 
-Main.HMM.Test.testBestPathPrognosis()
-
-println(res2[2])
+Main.HMM.Test.testSaveAndLoadHMM()
