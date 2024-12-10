@@ -2,13 +2,10 @@ include("../src/HMM.jl")
 
 using Main.HMM
 
-hmm1, hmm2 = runSingleTrainingPkg(10);
+p1, p2 = plots()
 
-transMatrix1 = hmm1[1][1].transitionMatrix.transitionMatrix
-transMatrix2 = hmm1[2][1].trans
-
-
-
+p1
+p2
 # runBestPathPrognosis(x, 10)
 
 # x.transitionMatrix.transitionMatrix

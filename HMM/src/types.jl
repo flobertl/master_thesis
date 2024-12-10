@@ -59,13 +59,14 @@ struct ObservationSpace
         for i in 1:dim 
             mapObservationToIndex[sortedObservations[i]] = i
         end
-
         mapIndexToObservation = Dict()
         for i in 1:(length(sortedObservations)) 
             mapIndexToObservation[i] = sortedObservations[i]
         end
-
         new(dim, observations, mapObservationToIndex, mapIndexToObservation)
+    end
+    function ObservationSpace(dim::Int, observations::Set{Int}, mapObserToIndex::Dict{Int, Int}, mapIndexToObser::Dict{Int, Int})
+        new(dim, observations, mapObserToIndex, mapIndexToObser)
     end
 end
 
@@ -81,4 +82,13 @@ struct HMM
     startingDistribution::StochasticVector
     observationSpace::ObservationSpace
 end
+
+function Base.:(==)(x::HMM, y::HMM)
+    a = all(x.transitionMatrix.transitionMatrix .== y.transitionMatrix.transitionMatrix)
+    b = all(x.observationMatrix.transitionMatrix .== y.observationMatrix.transitionMatrix)
+    p = all(x.startingDistribution.probabilities .== y.startingDistribution.probabilities)
+    return (a && b && p)
 end
+
+end
+
