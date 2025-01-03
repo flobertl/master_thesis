@@ -2,7 +2,7 @@ include("../src/HMM.jl")
 
 using Main.HMM
 
-p1, p2 = plots()
+p1, p2 = runSingleTraining(1000)
 
 p1
 p2
