@@ -7,17 +7,17 @@ using Main.HMM.Calc
 using Main.HMM.Helpers, Main.HMM.Plot
 using HiddenMarkovModels: HMM as HMMPkg, baum_welch as BWAlgoPkg
 
-export runSingleTraining, runBestPathPrognosis,forwardAlgo, runSingleTrainingPkg, plots
+export runBWAlgoWithRandomInit, runSingleTraining, runBestPathPrognosis,forwardAlgo, runSingleTrainingPkg, plots
 
 function runSingleTraining(maxIter::Int = 100)
-    (observationSpace, observationsAsIndeces) = getTestData2Month()
+    (observationSpace, observationsAsIndeces) = getTestDataDay()
 
     # Set Parameter
     N = 10
     initHMM = createRandomHMM(N, observationSpace)
 
     # Run Algo
-    hmm = baumWelchAlgo(initHMM, observationsAsIndeces, )
+    hmm = baumWelchAlgo(initHMM, observationsAsIndeces, maxIter)
 
     # Store Output
 
@@ -42,6 +42,16 @@ function runSingleTrainingPkg(maxIter::Int = 100)
 
     # Return Output
     return hmm1, hmm2
+end 
+
+function runBWAlgoWithRandomInit((observationSpace, observationsAsIndeces), numberStates, maxIter::Int = 100)
+    N = numberStates
+    initHMM = createRandomHMM(N, observationSpace)
+    baumWelchAlgo(initHMM, observationsAsIndeces, maxIter)
+end 
+
+function runBWAlgoWithGivenInit(observationsAsIndeces, initHMM, maxIter::Int = 100)
+    baumWelchAlgo(initHMM, observationsAsIndeces, maxIter)
 end 
 
 function runBestPathPrognosis(hmm, forecastHorizon::Int)

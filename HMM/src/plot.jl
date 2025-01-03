@@ -43,18 +43,18 @@ function plotForecast(historyData, forecastData)
         linestyle=:dash
     )
 
-    # Highlight forecast region
-    highlight_area_start = last(historical_dates)
-    highlight_area_end = last(forecast_dates)
-    plot!(
-        [highlight_area_start, highlight_area_end],
-        [minimum(loads), minimum(loads)],
-        color=:gray,
-        alpha=0.2,
-        lw=0,
-        fill_between=(highlight_area_start, highlight_area_end),
-        label=""
-    )
+    # # Highlight forecast region
+    # highlight_area_start = last(historical_dates)
+    # highlight_area_end = last(forecast_dates)
+    # plot!(
+    #     [highlight_area_start, highlight_area_end],
+    #     [minimum(loads), minimum(loads)],
+    #     color=:gray,
+    #     alpha=0.2,
+    #     lw=0,
+    #     fill_between=(highlight_area_start, highlight_area_end),
+    #     label=""
+    # )
     
 
     return p

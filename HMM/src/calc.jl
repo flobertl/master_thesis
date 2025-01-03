@@ -79,7 +79,7 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     alpha = zeros(T, N)
 
     # Init likelihood for tracking convergence
-    likelihood_prev = 0
+    likelihood_prev = -1.7976931348623157e+308
     loglikelihood_next = nextfloat(0.0)
 
     for x in 1:maxIter
@@ -87,12 +87,12 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
         (alpha, loglikelihood_next) = forwardAlgo(hmm, observations)
         (beta, _) = backwardAlgo(hmm, observations)
 
-        # # Termination Condition: termination when likelihood declines two times in a row
-        # if (likelihood_next < likelihood_prev) && (likelihood_prev < likelihood_prev_prev) 
-        #     break
-        # end
-        # likelihood_prev_prev = likelihood_prev
-        # likelihood_prev = likelihood_next
+        # Termination Condition: termination when likelihood declines two times in a row
+        if (loglikelihood_next - likelihood_prev < 0.5)
+            println("Breaking Condition fullfilled.")
+            break
+        end
+        likelihood_prev = loglikelihood_next
 
         gamma = zeros(T-1, N, N)
         transMatrixA_hat = zeros(N,N)
