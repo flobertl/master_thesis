@@ -226,6 +226,22 @@ function testBestPathPrognosis()
     testingEquality(name, result1, expectedResult)
 end
 
+function testForecastDistribution()
+    name = "Test distribution forecast"
+    A_ = A(3,[0.2 0.6 0.2; 0.1 0.1 0.8; 0.8 0.1 0.1])
+    B_ = B((3,3), [1 0 0; 0 1 0; 0 0 1])
+    pi = StochasticVector([0, 0, 1])
+    obserSpace = ObservationSpace(Set([1, 2, 3]))
+    observations = [3]
+
+    hmm1 = HMM(3, A_, B_, pi, obserSpace)
+
+    result = forecastDistribution(hmm1, observations, 2)
+    expectedResult = [[0.8, 0.1, 0.1], [0.25, 0.5, 0.25]]
+    testingEquality(name*"[part 1]", result[1], expectedResult[1])
+    testingEquality(name*"[part 2]", result[2], expectedResult[2])
+end
+
 function testSaveAndLoadHMM()
     name = "Best Path Prognosis"
     A_ = A(3,[0.2 0.6 0.2; 0.1 0.1 0.8; 0.8 0.1 0.1])
@@ -253,6 +269,7 @@ function testAll()
     testConvertHMM()
     testBWAlgo()
     testBestPathPrognosis()
+    testForecastDistribution()
 end
 
 function runUEAll()

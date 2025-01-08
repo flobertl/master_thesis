@@ -3,7 +3,7 @@ module Calc
 using Main.HMM.Types, Main.HMM.Helpers
 using Random
 
-export forwardAlgo, backwardAlgo, baumWelchAlgo, bestPathPrognosis
+export forwardAlgo, backwardAlgo, baumWelchAlgo, bestPathPrognosis, forecastDistribution
 
 function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
@@ -153,13 +153,17 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     return HMM(N,a,b,pi,observationSpace), loglikelihood_next
 end
 
-function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)
+function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.])
     # Set parameter
     T = length(observations)
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
     
     # Step 0: Calc alpha(T)
-    alpha_T = forwardAlgo(hmm, observations)[1][T,:]
+    if initAlpha_T == [0.]
+        alpha_T = forwardAlgo(hmm, observations)[1][T,:]
+    else
+        alpha_T = initAlpha_T
+    end
 
     # Init Step: Alocate alpha_i^k(T+1), Z_hat
     alpha_i_k = zeros(N, M)
@@ -185,4 +189,32 @@ function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int)
     likelihood = sum(alpha_prev)/sum(alpha_T)
     return Z_hat, likelihood
 end
+
+function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.])
+    # Set parameter
+    T = length(observations)
+    N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
+    
+    # Step 0: Calc alpha(T)
+    if initAlpha_T == [0.]
+        alpha_T = forwardAlgo(hmm, observations)[1][T,:]
+    else
+        alpha_T = initAlpha_T
+    end
+
+    # Init Step: Alocate alpha_i^k(T+1), Z_hat
+    forecast = Vector{Vector{Float64}}(undef, forecastHorizon)
+    alpha_prev = alpha_T
+
+    # Rec Step:
+    for t in 1:forecastHorizon 
+        # Calc alpha_i_k
+        alpha_prev = (alpha_prev' * hmm.transitionMatrix.transitionMatrix)'
+        forecast[t] = (alpha_prev' * hmm.observationMatrix.transitionMatrix)'
+    end
+
+    return forecast
+end
+
+
 end
