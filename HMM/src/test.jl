@@ -259,6 +259,15 @@ function testSaveAndLoadHMM()
     end
 end
 
+function testTimestamps()
+    name = "Test adding Timestamps"
+    obser = [10 20 30 10 20 30 10 20 30]
+    result = Main.HMM.Data.addTimestamps(32, obser)
+    expectedResult = [10 20 30 11 21 31 12 22 32]
+    testingEquality(name, result, expectedResult)
+end
+
+
 
 function testAll()
     testForwardCalc()

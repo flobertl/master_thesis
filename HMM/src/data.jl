@@ -3,7 +3,8 @@ module Data
 using Main.HMM.Types, Main.HMM.Helpers
 using XLSX, DataFrames
 
-export loadObservations2, loadObservations1 , discretize, getTestData2Month, getTestDataDay, saveHMM, loadHMM
+export loadObservations2, loadObservations1 , discretize, getTestData2Month
+export getTestDataDay, saveHMM, loadHMM, abstractLoadObservation, getData2Years_Simplified
 
 function loadObservations1(path::String)
     # Öffnen einer Excel-Datei
@@ -27,6 +28,50 @@ end
 function discretize(observations)
     discreteObs = map(round, observations)
     return map(Int, discreteObs)
+end
+
+function abstractLoadObservations(observation::Array{Int64})
+    function roundToGivenDigit(x, stepWidth::Int)
+        x_round = (x/stepWidth) |> round
+        return map(Int, x_round*stepWidth)
+    end
+    function abstractLoad(load::Int64) 
+        # Unter 700 watt in 10er Schritten
+        if load <= 700 
+            load_abstract = roundToGivenDigit(load, 10)
+        # Von 700 bis 1200 watt in 50er Schritten
+        elseif load <= 1200
+            load_abstract = roundToGivenDigit(load, 50)
+        # Von 1200 bis 2500 in 100er Schritten
+        elseif load <= 2500
+            load_abstract = roundToGivenDigit(load, 100)
+        # Ab 2500 in 300er Schritten
+        else 
+            load_abstract = roundToGivenDigit(load, 300)
+        end
+        return load_abstract
+    end
+
+    return abstractLoad.(observation)
+end
+
+function abstractLoadObservations_Simplified(observation::Array{Int64})
+    function roundToGivenDigit(x, stepWidth::Int)
+        x_round = (x/stepWidth) |> round
+        return map(Int, x_round*stepWidth)
+    end
+    function abstractLoad(load::Int64) 
+        # Unter 700 watt in 10er Schritten
+        if load <= 2500
+            load_abstract = roundToGivenDigit(load, 100)
+        # Ab 2500 in 300er Schritten
+        else 
+            load_abstract = roundToGivenDigit(load, 1000)
+        end
+        return load_abstract
+    end
+
+    return abstractLoad.(observation)
 end
 
 function getTestDataDay()
@@ -63,14 +108,90 @@ function getData2Years(householdId::Int64)
     observations = df[:, string(householdId)]
 
     # Convert Data
-    discreteObser = discretize(observations)
-    observationSpace = Set(discreteObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
+    abstractObser = observations |> discretize |> abstractLoadObservations
+    observationSpace = Set(abstractObser) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(abstractObser, observationSpace)
 
-    return(observationSpace, observationsAsIndeces)
+    return(observationSpace, abstractObser, observationsAsIndeces)
 end
 
+function getData2Years_Simplified(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
 
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
+    observationSpace = Set(abstractObser) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(abstractObser, observationSpace)
+
+    return(observationSpace, abstractObser, observationsAsIndeces)
+end
+
+function addTimestamps(timeGranularity::Int, observations::Array{Int})::Array{Int}
+    times = 96/timeGranularity
+    observationWithTimestamp = []
+    count = 0
+    for obser in observations
+       obserWithTimestamp = obser + floor(count/times) |> Int
+       push!(observationWithTimestamp, obserWithTimestamp)
+       count += 1
+       if count == 96
+        count = 0
+       end
+
+    end
+    return observationWithTimestamp
+end
+
+function getData2Years_SimplifiedAndTimestamps(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
+    abstractObserWithTimestamps = addTimestamps(6, abstractObser)
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
+end
+function getData2Years_Timestamps(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations
+    abstractObserWithTimestamps = addTimestamps(8, abstractObser)
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObser, observationsAsIndeces)
+end
+
+function getData2Years_EveryQHTimestamps(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
+    abstractObserWithTimestamps = addTimestamps(96, abstractObser)
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
+end
 
 function saveHMM(hmm::HMM, fileName::String)
     # path of directory

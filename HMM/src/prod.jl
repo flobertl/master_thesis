@@ -79,4 +79,8 @@ function plots()
     p1, p2
 end
 
+function runTrainingAndStoreHMM((observationSpace, observationsAsIndeces), numberStates, maxIter::Int = 100)
+
+end
+
 end

@@ -5,4 +5,4 @@ using .HMM.Test
 runUEAll()
 testAll()
 
-Main.HMM.Test.testSaveAndLoadHMM()
+#Main.HMM.Test.testForecastDistribution()
