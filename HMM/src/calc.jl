@@ -190,7 +190,7 @@ function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlp
     return Z_hat, likelihood
 end
 
-function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.])
+function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.])::Vector{Vector{Float64}}
     # Set parameter
     T = length(observations)
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
@@ -211,6 +211,14 @@ function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, init
         # Calc alpha_i_k
         alpha_prev = (alpha_prev' * hmm.transitionMatrix.transitionMatrix)'
         forecast[t] = (alpha_prev' * hmm.observationMatrix.transitionMatrix)'
+    end
+
+    for index1 in eachindex(forecast)
+        for index2 in eachindex(forecast[index1])
+            if isnan(forecast[index1][index2])
+                forecast[index1][index2] = 0.
+            end
+        end
     end
 
     return forecast

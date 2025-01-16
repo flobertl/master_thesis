@@ -1,9 +1,9 @@
 module Plot
 
-using Plots
-using Main.HMM.Types, Main.HMM.Data
+using Plots, StatsPlots
+using Main.HMM.Types, Main.HMM.Data, Main.HMM.Types, Main.HMM.Helpers
 
-export plotHist, plotForecast
+export plotHist, plotForecast, plotDistributionForecastWithViolin
 
 function plotHist(historyData)
     N = length(historyData)
@@ -56,6 +56,59 @@ function plotForecast(historyData, forecastData)
     #     label=""
     # )
     
+
+    return p
+end
+
+function plotForecastSlidingWindow(hmm::HMM, observations, forecastHorizon::Int, firstIndexToPlot::Int)
+    # Set Parameters
+    T = length(observations)
+    indeces = firstIndexToPlot:T
+    observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
+
+    # Create Base Plot
+    p = plot(
+        indeces, observations[indeces],
+        color=:black,
+        lw=2,
+        xlabel="Index",
+        ylabel="Observation",
+        title="Sliding Window Forecast (Best Path)"
+    )
+
+    # Add Forecastlines
+    for i in indeces 
+        indexForecast = i:(i + forecastHorizon)
+        forecastAsIndeces, likelihood_forecast = Main.HMM.Calc.bestPathPrognosis(hmm, observationsAsIndeces[1:i], forecastHorizon)
+        forecast = translateIndexToObservations(forecastAsIndeces, hmm.observationSpace)
+
+        startPointWithForecast = [observations[i]; forecast]
+        
+        colors = [RGBA(0, 0.0, 1, alpha) for alpha in LinRange(0.5, 0.2, (forecastHorizon+1))]
+
+        plot!(p, 
+            indexForecast, startPointWithForecast,
+            color=colors,
+            lw=2,
+        )
+    end
+
+    return p
+end
+
+function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float64}})
+    T = length(observationHist)
+    H = length(observationFuture)
+
+    # Plot historical data
+    p = plot(collect(1:T), observationHist, label= "historical observations", legend=false) 
+
+    # Plot distribution via violin plots
+    for i in 1:H
+        frequency_i = transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[i])
+        violin!(p, [i+T], frequency_i, color=:lightcyan2)
+    end
+    plot!(p, T:T+H, vcat([observationHist[end]], observationFuture), color = :red )
 
     return p
 end

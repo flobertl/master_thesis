@@ -5,7 +5,7 @@ using Distributions, Random
 using HiddenMarkovModels: HMM as HMMPkg 
 
 export translateObservationsToIndex, translateIndexToObservations, forwardCalc, backwardCalc, createRandomTransitionMatrixViaDirichlet
-export createRandomHMM
+export createRandomHMM, transformDistributionVectorToFrequencyVector
 
 function translateObservationsToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
     T = length(observations)
@@ -18,7 +18,7 @@ end
 
 function translateIndexToObservations(observationsAsIndex::Array{Int, 1}, observationSpace::ObservationSpace)
     T = length(observationsAsIndex)
-    observations = zeros(T)
+    observations = zeros(Int64, T)
     for t in 1:T
         observations[t] = observationSpace.mapIndexToObservation[observationsAsIndex[t]]
     end
@@ -72,6 +72,19 @@ function transformHMMToPkgHMM(hmm::HMM)
         B_[j] = b_[j, :] |> Categorical
     end
     HMMPkg(initDistr, A_, B_)
+end
+
+function transformDistributionVectorToFrequencyVector(observationSpace::ObservationSpace, distribution::Vector{Float64})::Vector{Int}
+    numberOfFrequencies = map(round, distribution .* 1000)
+    index = collect(1:observationSpace.dimension)
+    observationVector = translateIndexToObservations(index, observationSpace)
+    frequencyObs = []
+    for i in index
+        frequencyObs_i = [observationVector[i] for t in 1:numberOfFrequencies[i]]
+        append!(frequencyObs, frequencyObs_i)
+    end
+
+    return frequencyObs
 end
 
 
