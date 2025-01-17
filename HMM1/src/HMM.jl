@@ -1,4 +1,4 @@
-module HMM
+module HMM_Forecast
 
 include("types.jl")
 include("helpers.jl")
