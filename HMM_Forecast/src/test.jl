@@ -12,39 +12,6 @@ function testingEquality(testName::String, testingValue, expectedResult)
     end
 end
 
-function testForwardCalc()
-    name = "Helper forwardCalc1"
-    alpha_tminus1 = ones(4)
-    a_point_i = ones(4)
-    b_i_o_t = 1.
-    value = sum(Main.HMM.Helpers.forwardCalc(alpha_tminus1, a_point_i, b_i_o_t))
-    testingEquality(name, value, 4)
-
-    name = "Helper forwardCalc2"
-    alpha_tminus1 = [1., 2.]
-    a_point_i = [3., 4.]
-    b_i_o_t = 5.
-    value = sum(Main.HMM.Helpers.forwardCalc(alpha_tminus1, a_point_i, b_i_o_t))
-    testingEquality(name, value, 55)    
-end
-
-function testBackwardCalc()
-    name = "Helper backwardCalc1"
-    beta_tplus1 = ones(7)
-    a_i_point = ones(7)
-    b_point_o_tplus1 = ones(7)
-    value = sum(Main.HMM.Helpers.backwardCalc(beta_tplus1, a_i_point, b_point_o_tplus1))
-    testingEquality(name, value, 7)
-
-    name = "Helper backwardCalc2"
-    beta_tplus1 = [1., 2.]
-    a_i_point = [3., 4.]
-    b_point_o_tplus1 = [5. , 6.]
-    value = sum(Main.HMM.Helpers.backwardCalc(beta_tplus1, a_i_point, b_point_o_tplus1))
-    testingEquality(name, value, 63)   
-     
-end
-
 function testObservationToIndexMapping()
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
@@ -74,12 +41,12 @@ function testBackwardAndForwardAlgo()
 
     name = "backwardAlgo"
     alpha, likelihood = backwardAlgo(hmm, observations)
-    expectedResult = 5/24
+    expectedResult = log(5/24)
     println(likelihood)
     testingEquality(name, likelihood, expectedResult)
 end
 
-function testBackwardVsForwardAlgo()
+function testBackwardVsForwardAlgo1()
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
     observations = loadObservations1(path)
 
@@ -98,14 +65,14 @@ function testBackwardVsForwardAlgo()
     hmm_init = HMM(N, a, b, pi, V)
 
     # Running Algos 
-    (alpha, likelihood1) = forwardAlgo(hmm_init, Z)
-    (beta, likelihood2) = backwardAlgo(hmm_init, Z)
+    (alpha, loglikelihood1) = forwardAlgo(hmm_init, Z)
+    (beta, loglikelihood2) = backwardAlgo(hmm_init, Z)
 
     # Test equality
-    testingEquality("Back vs Forward Algo via Likelihood", likelihood1, log(likelihood2))
+    testingEquality("Back vs Forward Algo via Likelihood", loglikelihood1, loglikelihood2)
 end
 
-function testBackwardVsForwardAlgo()
+function testBackwardVsForwardAlgo2()
     A_ = A(2,[0.75 0.25; 0.45 0.55])
     B_ = B((2,3), [0.1 0.3 0.6; 0.75 0.2 0.05])
     pi = StochasticVector([0.5, 0.5])
@@ -117,7 +84,7 @@ function testBackwardVsForwardAlgo()
     alpha, likelihood1 = forwardAlgo(hmm, observations)
     (beta, likelihood2) = backwardAlgo(hmm, observations)
     expectedResult = log(0.011522617187500002)
-    testingEquality("testBackwardVsForwardAlgo", likelihood1, log(likelihood2))
+    testingEquality("testBackwardVsForwardAlgo", likelihood1, likelihood2)
 end
 
 function testUeBsp1()
@@ -188,7 +155,7 @@ function testConvertHMM()
     hmm = HMM(2, A_, B_, pi, obserSpace)
     observations = [2, 2]
 
-    x = Main.HMM.Helpers.transformHMMToPkgHMM(hmm)
+    x = transformHMMToPkgHMM(hmm)
     println("Test Success: Transform HMM")
 end
 
@@ -201,9 +168,9 @@ function testBWAlgoWithPkg()
     observations = [1, 2, 2, 1]
 
     hmm1 = HMM(2, A_, B_, pi, obserSpace)
-    hmm2 = Main.HMM.Helpers.transformHMMToPkgHMM(hmm1)
+    hmm2 = transformHMMToPkgHMM(hmm1)
 
-    hmm3,_result1 = baumWelchAlgo(hmm1, observations, 3)
+    hmm3, result1 = baumWelchAlgo(hmm1, observations, 3)
     hmm4, result2 = BWAlgoPkg(hmm2, observations, max_iterations = 3)
     return result1, result2
 end
@@ -240,7 +207,7 @@ function testForecastDistribution()
 end
 
 function testSaveAndLoadHMM()
-    name = "Best Path Prognosis"
+    name = "Save and Load HMM"
     A_ = A(3,[0.2 0.6 0.2; 0.1 0.1 0.8; 0.8 0.1 0.1])
     B_ = B((3,3), [1 0 0; 0 1 0; 0 0 1])
     pi = StochasticVector([0, 0, 1])
@@ -259,23 +226,25 @@ end
 function testTimestamps()
     name = "Test adding Timestamps"
     obser = [10 20 30 10 20 30 10 20 30]
-    result = Main.HMM.Data.addTimestamps(32, obser)
-    expectedResult = [10 20 30 11 21 31 12 22 32]
+    result = addTimestamps(32, obser)
+    expectedResult = [10, 20, 30, 11, 21, 31, 12, 22, 32]
+    println(result)
     testingEquality(name, result, expectedResult)
 end
 
 
 
 function testAll()
-    testForwardCalc()
     testObservationToIndexMapping()
-    testBackwardCalc()
     testBackwardAndForwardAlgo()
-    testBackwardVsForwardAlgo()
+    testBackwardVsForwardAlgo1()
+    testBackwardVsForwardAlgo1()
     testConvertHMM()
+    testBWAlgoWithPkg()
     testBWAlgo()
     testBestPathPrognosis()
     testForecastDistribution()
+    testTimestamps()
 end
 
 function runUEAll()

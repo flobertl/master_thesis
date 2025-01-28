@@ -1,22 +1,7 @@
-using XLSX, DataFrames
+using XLSX, DataFrames, Dates
 
-function loadObservations1(path::String)
-    # Öffnen einer Excel-Datei
-    xf = XLSX.readxlsx(path)
-    sh = xf["UserCustom"] 
-    data = sh["B3:B100"] |> vec
-        
-    return(data)
-end
-
-function loadObservations2(path::String)
-    # Öffnen einer Excel-Datei
-    xf = XLSX.readxlsx(path)
-    sh = xf["sers"] 
-    data = sh["B1:B5000"] |> vec
-        
-    return(data)
-end
+# --------------------------------------------------------------------------
+# Helpers
 
 function discretize(observations)
     discreteObs = map(round, observations)
@@ -67,37 +52,32 @@ function abstractLoadObservations_Simplified(observation::Array{Int64})
     return abstractLoad.(observation)
 end
 
-function getTestDataDay()
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
-    observations = loadObservations1(path)
-
-    # Convert Data
-    discreteObser = discretize(observations)
-    observationSpace = Set(discreteObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
-
-    return(observationSpace, observationsAsIndeces)
+function addTimestamps(timeGranularity::Int, observations::Array{Int})::Array{Int}
+    times = 96/timeGranularity
+    observationWithTimestamp = []
+    count = 0
+    for obser in observations
+       obserWithTimestamp = obser + floor(count/times) |> Int
+       push!(observationWithTimestamp, obserWithTimestamp)
+       count += 1
+       if count == 96
+        count = 0
+       end
+    end
+    return observationWithTimestamp
 end
 
-function getTestData2Month()
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/verbrauch_schimek_okt_nov.xlsx"
-    observations = loadObservations2(path)
+# ------------------------------------------------------------------------------
+# Productive Load data
 
-    # Convert Data
-    discreteObser = discretize(observations)
-    observationSpace = Set(discreteObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
-
-    return(observationSpace, observationsAsIndeces)
+function dateTimesOf2YearsData()
+    return(DateTime(2018,05,30, 08, 45):Minute(15):DateTime(2021,01,01,00,45))
 end
 
 function getData2Years(householdId::Int64)
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
     df = DataFrame(XLSX.readtable(path, "Sheet1"))
-
     observations = df[:, string(householdId)]
 
     # Convert Data
@@ -123,22 +103,6 @@ function getData2Years_Simplified(householdId::Int64)
     return(observationSpace, abstractObser, observationsAsIndeces)
 end
 
-function addTimestamps(timeGranularity::Int, observations::Array{Int})::Array{Int}
-    times = 96/timeGranularity
-    observationWithTimestamp = []
-    count = 0
-    for obser in observations
-       obserWithTimestamp = obser + floor(count/times) |> Int
-       push!(observationWithTimestamp, obserWithTimestamp)
-       count += 1
-       if count == 96
-        count = 0
-       end
-
-    end
-    return observationWithTimestamp
-end
-
 function getData2Years_SimplifiedAndTimestamps(householdId::Int64)
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
@@ -154,16 +118,16 @@ function getData2Years_SimplifiedAndTimestamps(householdId::Int64)
 
     return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
-function getData2Years_Timestamps(householdId::Int64)
+
+function getData2Years_Timestamps(householdId::Int64, numberOfTimeBlocks::Int64)
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
     df = DataFrame(XLSX.readtable(path, "Sheet1"))
-
     observations = df[:, string(householdId)]
 
     # Convert Data
     abstractObser = observations |> discretize |> abstractLoadObservations
-    abstractObserWithTimestamps = addTimestamps(8, abstractObser)
+    abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
     observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
     observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
 
@@ -186,6 +150,8 @@ function getData2Years_EveryQHTimestamps(householdId::Int64)
     return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
 
+#-------------------------------------------------------------------------
+# Saving and Loading HMMs
 function saveHMM(hmm::HMM, fileName::String)
     # path of directory
     folderPath = ".//tmp//"
@@ -216,11 +182,9 @@ function saveHMM(hmm::HMM, fileName::String)
         println(io, join(["$key:$value" for (key, value) in hmm.observationSpace.mapObservationToIndex], ","))
     end
 end
-
-# Function to load the HMM struct from a file
 function loadHMM(fileName::String)
     # path of directory
-    folderPath = ".//tmp//"
+    folderPath = ".//HMM_Forecast//tmp//"
     filePath = joinpath(folderPath, fileName)
 
     open(filePath, "r") do io
@@ -257,4 +221,50 @@ function loadHMM(fileName::String)
         obsSpace = ObservationSpace(M, observations, mapObserToIndex, mapIndexToObser)
         return HMM(N, A_, B_, startDist, obsSpace)
     end
+end
+
+#-------------------------------------------------------------------------
+# Test data
+function loadObservations1(path::String)
+    # Öffnen einer Excel-Datei
+    xf = XLSX.readxlsx(path)
+    sh = xf["UserCustom"] 
+    data = sh["B3:B100"] |> vec
+        
+    return(data)
+end
+
+function loadObservations2(path::String)
+    # Öffnen einer Excel-Datei
+    xf = XLSX.readxlsx(path)
+    sh = xf["sers"] 
+    data = sh["B1:B5000"] |> vec
+        
+    return(data)
+end
+
+function getTestDataDay()
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/PV_2024_09_22.xlsx"
+    observations = loadObservations1(path)
+
+    # Convert Data
+    discreteObser = discretize(observations)
+    observationSpace = Set(discreteObser) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
+
+    return(observationSpace, observationsAsIndeces)
+end
+
+function getTestData2Month()
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/verbrauch_schimek_okt_nov.xlsx"
+    observations = loadObservations2(path)
+
+    # Convert Data
+    discreteObser = discretize(observations)
+    observationSpace = Set(discreteObser) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
+
+    return(observationSpace, observationsAsIndeces)
 end

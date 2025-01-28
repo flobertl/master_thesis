@@ -16,7 +16,7 @@ function forwardAlgo(hmm::HMM, observations::Vector{Int})
     # Iteration
     for t in 2:T
         for i in 1:N    
-            zwischenresultat = forwardCalc(alpha[t-1,:], hmm.transitionMatrix.transitionMatrix[:,i], hmm.observationMatrix.transitionMatrix[i, observations[t]])
+            zwischenresultat = alpha[t-1,:] .* hmm.transitionMatrix.transitionMatrix[:,i] .* hmm.observationMatrix.transitionMatrix[i, observations[t]]
             alpha[t,i] = sum(zwischenresultat)
         end 
         likelihood_step[t] = sum(alpha[t,:])
@@ -35,20 +35,23 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
 
     #Init 
     beta = ones(T, N)
+    likelihood_step = zeros(T)
 
     # Calc
     for t in T-1:-1:1
         for i in 1:N
-            summenTerme = backwardCalc(beta[t+1,:], hmm.transitionMatrix.transitionMatrix[i,:], hmm.observationMatrix.transitionMatrix[:,observations[t+1]])
-            beta[t,i] = sum(summenTerme)
+            zwischenResultat = beta[t+1,:] .* hmm.transitionMatrix.transitionMatrix[i,:] .* hmm.observationMatrix.transitionMatrix[:,observations[t+1]]
+            beta[t,i] = sum(zwischenResultat)
         end
+        likelihood_step[t+1] = sum(beta[t,:])
         beta[t,:] = beta[t,:] ./ sum(beta[t,:])
     end
 
     # Terminate
-    likelihood = (beta[1,:] .* hmm.startingDistribution.probabilities[:] .* hmm.observationMatrix.transitionMatrix[:,observations[1]])|> sum
+    likelihood_step[1] = (beta[1,:] .* hmm.startingDistribution.probabilities[:] .* hmm.observationMatrix.transitionMatrix[:,observations[1]])|> sum
+    loglikelihood = map(log, likelihood_step) |> sum
 
-    return (beta, likelihood)
+    return (beta, loglikelihood)
 end
 
 function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)

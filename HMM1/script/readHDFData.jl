@@ -30,6 +30,8 @@ end
 
 # Store as .xsxl file
 # Nachbearbeitung der Spaltennummerierung in Excel notwendig
+# Start: 2018-05-30 08:45 (GMT +1)
+# End: 2021-00-01 00:45 
 path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
 
 XLSX.openxlsx(path, mode="w") do file

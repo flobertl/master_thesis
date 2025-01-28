@@ -1,7 +1,5 @@
 using Plots, StatsPlots
 
-export plotHist, plotForecast, plotDistributionForecastWithViolin
-
 function plotHist(historyData)
     N = length(historyData)
     x = 1:N
@@ -76,7 +74,7 @@ function plotForecastSlidingWindow(hmm::HMM, observations, forecastHorizon::Int,
     # Add Forecastlines
     for i in indeces 
         indexForecast = i:(i + forecastHorizon)
-        forecastAsIndeces, likelihood_forecast = Main.HMM.Calc.bestPathPrognosis(hmm, observationsAsIndeces[1:i], forecastHorizon)
+        forecastAsIndeces, likelihood_forecast = bestPathPrognosis(hmm, observationsAsIndeces[1:i], forecastHorizon)
         forecast = translateIndexToObservations(forecastAsIndeces, hmm.observationSpace)
 
         startPointWithForecast = [observations[i]; forecast]
@@ -105,7 +103,10 @@ function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observati
         frequency_i = transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[i])
         violin!(p, [i+T], frequency_i, color=:lightcyan2)
     end
-    plot!(p, T:T+H, vcat([observationHist[end]], observationFuture), color = :red )
-
+    if H < 25 
+        plot!(p, T:T+H, vcat([observationHist[end]], observationFuture), color = :red )
+    else
+        plot!(p, T:T+H, vcat([observationHist[end]], observationFuture), color = :black )
+    end
     return p
 end
