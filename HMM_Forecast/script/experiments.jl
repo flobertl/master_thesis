@@ -1,7 +1,14 @@
 using(Pkg)
+Pkg.activate("HMM_Forecast")
+using Revise
+using HMM_Forecast
 
-Pkg.activate("HMM")
-Pkg.add("HMM")
-using HMM
+# Load data and model
+hh = 1
+states = [50]
 
-x = 45
+HMM_Forecast.runBasisModelAnalysis(states, hh)
+
+
+p = plot(states, sin.(states), label="sin(states)")  # Erstes Element mit Legende
+png(".//HMM_Forecast//tmp//basismodel_hh($hh)//states(1)//pitYear.png")

@@ -27,11 +27,11 @@ hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(200
 hmm = hmm2years_300states_50iter_everyQH 
 
 #Run BW-Algo with random initHMM
-# T = 5000
-# N = 200
-# iter = 20
+T = 5000
+N = 200
+iter = 20
 # hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, observationsAsIndeces[1:T]), N, iter);
-# saveHMM(hmm, "hmm_2years_states($N)_iter($(iter))_hh($hh)_version(2)_observationsStates($(hmm.observationSpace.dimension))_withtimestampseachQH")
+HMM_Forecast.saveHMM(hmm, "test//hmm_2years_states($N)_iter($(iter))_hh($hh)_version(2)_observationsStates($(hmm.observationSpace.dimension))_withtimestampseachQH")
 
 # # # Run BW Algo with given initHMM
 # hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithGivenInit(observationsAsIndeces, hmm2years_100states_100iter, 4);

@@ -66,3 +66,9 @@ function transformDistributionVectorToFrequencyVector(observationSpace::Observat
 
     return frequencyObs
 end
+
+function printTimeAndResetTimeStamp(prevTime)
+    println(" ### Timing: {$(now() - prevTime)} ### ")
+    newTime = now()
+    return newTime
+end

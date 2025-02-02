@@ -127,7 +127,7 @@ function plotDailyDemandStatsByTwoIntervals(((startIndex1, endIndex1), (startInd
                 legend = true, 
                 label = "mean", 
                 ylims = (0,2000), 
-                xticks = dayTimes[1:16:96], 
+                xticks = dayTimes[1:12:96], 
                 title = header)
     plot1
     # Add the days
