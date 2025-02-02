@@ -15,3 +15,25 @@ BW-Algo: 10.iteration taking 15.9760000705719 LogLiklihood: -114150.63959355754
  ### Timing: {7849 milliseconds} ### 
 -------------- Generate PT plots for {50} states------------------
  ### Timing: {7611 milliseconds} ### 
+
+
+///////////////////////////////////////////////
+ Float32 
+ /////////////////////////////////////////////
+ ########################### MODEL 50 states #################################
+-------------- Train Model with 50 states------------------
+BW-Algo: 1.iteration taking 5.707000017166138 LogLiklihood: -161745.70180923346
+BW-Algo: 2.iteration taking 5.947999954223633 LogLiklihood: -122988.15664418566
+BW-Algo: 3.iteration taking 6.682000160217285 LogLiklihood: -122913.02132180452
+BW-Algo: 4.iteration taking 5.972999811172485 LogLiklihood: -122804.80136947178
+BW-Algo: 5.iteration taking 5.315000057220459 LogLiklihood: -122616.88790376048
+BW-Algo: 6.iteration taking 6.266999959945679 LogLiklihood: -122223.67651749372
+BW-Algo: 7.iteration taking 5.707000017166138 LogLiklihood: -121263.44443748408
+BW-Algo: 8.iteration taking 5.361999988555908 LogLiklihood: -119090.20926514697
+BW-Algo: 9.iteration taking 6.177999973297119 LogLiklihood: -116153.80369186739
+BW-Algo: 10.iteration taking 5.827000141143799 LogLiklihood: -114150.64017529917
+ ### Timing: {58968 milliseconds} ###
+-------------- Calc forecast distribution for {50} states------------------
+ ### Timing: {984 milliseconds} ### 
+-------------- Generate PT plots for {50} states------------------
+ ### Timing: {4122 milliseconds} ### 

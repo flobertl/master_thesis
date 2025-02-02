@@ -72,6 +72,8 @@ function testBackwardVsForwardAlgo1()
 
     # Test equality
     testingEquality("Back vs Forward Algo via Likelihood", loglikelihood1, loglikelihood2)
+    println("expected: $loglikelihood1 ; result: $loglikelihood2")
+
 end
 
 function testBackwardVsForwardAlgo2()
