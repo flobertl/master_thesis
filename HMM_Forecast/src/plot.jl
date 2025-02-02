@@ -91,7 +91,7 @@ function plotForecastSlidingWindow(hmm::HMM, observations, forecastHorizon::Int,
     return p
 end
 
-function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float64}})
+function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float32}})
     T = length(observationHist)
     H = length(observationFuture)
 
@@ -111,9 +111,9 @@ function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observati
     return p
 end
 
-function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast::Vector{Vector{Float64}}, header = "")
+function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast::Vector{Vector{Float32}}, header = "")
     N = length(distributionForecast)
-    quantiles = zeros(Float64, N)
+    quantiles = zeros(Float32, N)
     for t in 1:N
         f(x) = x<= observationFuture[t]
         frequencyVector =  transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[t])

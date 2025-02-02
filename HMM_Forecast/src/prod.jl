@@ -9,9 +9,9 @@ function runBWAlgoWithRandomInit((observationSpace, observationsAsIndeces), numb
     baumWelchAlgo(initHMM, observationsAsIndeces, maxIter)
 end 
 
-function createSeveralOneStepPredictions(hmm::HMM, histObservationsAsIndeces, futureObservationsAsIndeces)::Vector{Vector{Float64}}
+function createSeveralOneStepPredictions(hmm::HMM, histObservationsAsIndeces, futureObservationsAsIndeces)::Vector{Vector{Float32}}
     H = length(futureObservationsAsIndeces)
-    forecastVector = Vector{Vector{Float64}}(undef, H)
+    forecastVector = Vector{Vector{Float32}}(undef, H)
     alpha_init = forwardAlgo(hmm, histObservationsAsIndeces)[1][end,:]
     for h in 1:H
         (forecastVectorOfVector, alpha_init) = forecastDistributionWithAlpha(hmm, 1, alpha_init)
@@ -20,9 +20,9 @@ function createSeveralOneStepPredictions(hmm::HMM, histObservationsAsIndeces, fu
     return forecastVector
 end
 
-function calAverageRelativeMeanError(observationSpace::ObservationSpace, observations, forecast)::Float64
+function calAverageRelativeMeanError(observationSpace::ObservationSpace, observations, forecast)::Float32
     H = length(observations)
-    relativeErrors = zeros(Float64, H)
+    relativeErrors = zeros(Float32, H)
     for i in 1:H
         relativeErrors[i] = (mean(observationSpace, forecast[i]) - observations[i])/observations[i] |> abs
     end
