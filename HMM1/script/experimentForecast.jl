@@ -16,7 +16,7 @@ hh = 2
 # W = 96*7
 # violin(observations, ylims = (0,6000))
 # totalWeeks = 50
-# agregated = zeros(Float64, T)
+# agregated = zeros(Float32, T)
 # for i in 1:totalWeeks
 #     observations = Main.HMM.Helpers.translateIndexToObservations(observationsAsIndeces[W*i+1:T+W*i], observationSpace)
 #     agregated = agregated .+ (observations./totalWeeks)

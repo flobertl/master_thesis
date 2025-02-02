@@ -10,7 +10,7 @@ N = length(households)
 T = 105216
 
 # Read form HDF5 dataset
-data = zeros(Float64, (T, N))
+data = zeros(Float32, (T, N))
 for i in 1:N
     household = households[i]
     vector = []

@@ -191,7 +191,7 @@ function loadHMM(fileName::String)
         A_ = zeros(N, N)
         for i in 1:N
             str = split(readline(io), ",")
-            A_[i,:] = parse.(Float64, str)
+            A_[i,:] = parse.(Float32, str)
         end
         A_=A(N, A_)
 
@@ -200,12 +200,12 @@ function loadHMM(fileName::String)
         B_ = zeros(N, M)
         for i in 1:N
             str = split(readline(io), ",")
-            B_[i,:] = parse.(Float64, str)
+            B_[i,:] = parse.(Float32, str)
         end
         B_ = B((N,M), B_)
 
         # Starting Distribution
-        startDist = parse.(Float64, split(readline(io), ",")) |> StochasticVector
+        startDist = parse.(Float32, split(readline(io), ",")) |> StochasticVector
 
         # Observation space
         observations = parse.(Int, split(readline(io), ",")) |> Set

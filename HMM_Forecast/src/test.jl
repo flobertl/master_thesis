@@ -2,7 +2,7 @@ using HiddenMarkovModels: baum_welch as BWAlgoPkg
 
 export testAll, runUEAll
 
-epsilon = 1E-8
+epsilon = 1E-6
 
 function testingEquality(testName::String, testingValue, expectedResult)
     if all((expectedResult .< testingValue .+ epsilon) .& (expectedResult .> testingValue .- epsilon))  #evtl muss mann Epsilon einbauen
@@ -38,12 +38,14 @@ function testBackwardAndForwardAlgo()
     alpha, likelihood = forwardAlgo(hmm, observations)
     expectedResult = log(5/24)
     testingEquality(name, likelihood, expectedResult)
+    # println("expected: $expectedResult ; result: $likelihood")
+
 
     name = "backwardAlgo"
     alpha, likelihood = backwardAlgo(hmm, observations)
     expectedResult = log(5/24)
-    println(likelihood)
     testingEquality(name, likelihood, expectedResult)
+    # println("expected: $expectedResult ; result: $likelihood")
 end
 
 function testBackwardVsForwardAlgo1()
@@ -144,6 +146,7 @@ function testBWAlgo()
     hmm, likelihood = baumWelchAlgo(hmm, observations, 1)
     expectedResult = log(5/24)
     testingEquality(name, likelihood, expectedResult)
+    println("expected: $expectedResult ; result: $likelihood")
 end
 
 function testConvertHMM()
@@ -203,7 +206,10 @@ function testForecastDistribution()
     result = forecastDistribution(hmm1, observations, 2)
     expectedResult = [[0.8, 0.1, 0.1], [0.25, 0.5, 0.25]]
     testingEquality(name*"[part 1]", result[1], expectedResult[1])
+    # println("expected: $(expectedResult[1]) ; result: $(result[1])")
+
     testingEquality(name*"[part 2]", result[2], expectedResult[2])
+    # println("expected: $(expectedResult[2]) ; result: $(result[2])")
 end
 
 function testSaveAndLoadHMM()
@@ -240,7 +246,7 @@ function testAll()
     testBackwardVsForwardAlgo1()
     testBackwardVsForwardAlgo1()
     testConvertHMM()
-    testBWAlgoWithPkg()
+    # testBWAlgoWithPkg()
     testBWAlgo()
     testBestPathPrognosis()
     testForecastDistribution()

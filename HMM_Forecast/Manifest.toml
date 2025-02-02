@@ -2,7 +2,7 @@
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "ee0595b694ddb587ee8c13fc2b49bcb2f2453486"
+project_hash = "075c7eeae769e51fb2d8dbbc57d2f0c06eb384fc"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -90,6 +90,12 @@ weakdeps = ["SparseArrays"]
 
     [deps.ChainRulesCore.extensions]
     ChainRulesCoreSparseArraysExt = "SparseArrays"
+
+[[deps.ChangePrecision]]
+deps = ["LinearAlgebra", "Random", "Statistics"]
+git-tree-sha1 = "ed21da4dcbebee8b924a02c1cf05d1657db3fcdc"
+uuid = "3cb15238-376d-56a3-8042-d33272777c9a"
+version = "1.1.0"
 
 [[deps.Clustering]]
 deps = ["Distances", "LinearAlgebra", "NearestNeighbors", "Printf", "Random", "SparseArrays", "Statistics", "StatsBase"]
