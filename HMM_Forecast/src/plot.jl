@@ -110,3 +110,14 @@ function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observati
     end
     return p
 end
+
+function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast::Vector{Vector{Float64}}, header = "")
+    N = length(distributionForecast)
+    quantiles = zeros(Float64, N)
+    for t in 1:N
+        f(x) = x<= observationFuture[t]
+        frequencyVector =  transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[t])
+        quantiles[t] = count(f, frequencyVector)/length(frequencyVector)
+    end
+    histogram(quantiles, title = header, legend = false)
+end
