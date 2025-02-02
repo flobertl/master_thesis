@@ -5,8 +5,12 @@ include("helpers.jl")
 include("data.jl")
 include("calc.jl")
 include("plot.jl")
+include("dates.jl")
 
 include("prod.jl")
 include("test.jl")
+
+include("model_testing.jl")
+
 
 end # module HMM
