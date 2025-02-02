@@ -5,8 +5,8 @@ using HMM_Forecast
 
 @changeprecision Float32 begin
 # Load data and model
-    hh = 1
-    states = 50:50:200
+hh = 1
+states = [50]
 
     HMM_Forecast.runBasisModelAnalysis(states, hh)
 end
