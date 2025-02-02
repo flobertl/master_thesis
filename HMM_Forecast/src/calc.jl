@@ -221,3 +221,45 @@ function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, init
 
     return forecast
 end
+
+function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha_T::Vector{Float64})
+    # Set parameter
+    N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
+    
+    alpha_T = initAlpha_T
+
+    # Init Step: Alocate alpha_i^k(T+1), Z_hat
+    forecast = Vector{Vector{Float64}}(undef, forecastHorizon)
+    alpha_prev = alpha_T
+
+    # Rec Step:
+    for t in 1:forecastHorizon 
+        # Calc alpha_i_k
+        alpha_prev = (alpha_prev' * hmm.transitionMatrix.transitionMatrix)'
+        forecast[t] = (alpha_prev' * hmm.observationMatrix.transitionMatrix)'
+    end
+
+    for index1 in eachindex(forecast)
+        for index2 in eachindex(forecast[index1])
+            if isnan(forecast[index1][index2])
+                forecast[index1][index2] = 0.
+            end
+        end
+    end
+
+    return forecast, alpha_prev
+end
+
+function mean(observationSpace::ObservationSpace, distribution::Vector{Float64})
+    M = observationSpace.dimension
+    mean = [observationSpace.mapIndexToObservation[i] for i in 1:M]' * distribution
+    return mean
+end
+
+function variance(observationSpace::ObservationSpace, distribution::Vector{Float64})
+    M = observationSpace.dimension
+    mean = [observationSpace.mapIndexToObservation[i] for i in 1:M]' * distribution
+    exp_Xpow2 = [observationSpace.mapIndexToObservation[i]^2 for i in 1:M]' * distribution
+    return exp_Xpow2 - mean^2
+end
+
