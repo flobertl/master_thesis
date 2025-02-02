@@ -70,10 +70,6 @@ end
 # ------------------------------------------------------------------------------
 # Productive Load data
 
-function dateTimesOf2YearsData()
-    return(DateTime(2018,05,30, 08, 45):Minute(15):DateTime(2021,01,01,00,45))
-end
-
 function getData2Years(householdId::Int64)
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
@@ -154,7 +150,7 @@ end
 # Saving and Loading HMMs
 function saveHMM(hmm::HMM, fileName::String)
     # path of directory
-    folderPath = ".//tmp//"
+    folderPath = ".//HMM_Forecast//tmp//"
     filePath = joinpath(folderPath, fileName)
 
     N = string(hmm.numberOfStateSpace)
