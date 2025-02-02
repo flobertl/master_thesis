@@ -3,7 +3,7 @@ using Random
 function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
     N = hmm.numberOfStateSpace
-    alpha = zeros(T, N)
+    alpha = zeros(Float32, T, N)
     likelihood_step = zeros(T)
 
     # Init
@@ -34,8 +34,8 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     N = hmm.numberOfStateSpace
 
     #Init 
-    beta = ones(T, N)
-    likelihood_step = zeros(T)
+    beta = ones(Float32, T, N)
+    likelihood_step = zeros(Float32, T)
 
     # Calc
     for t in T-1:-1:1
@@ -74,11 +74,11 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     a = hmm.transitionMatrix
     b = hmm.observationMatrix
     pi = hmm.startingDistribution
-    alpha = zeros(T, N)
+    alpha = zeros(Float32, T, N)
 
     # Init likelihood for tracking convergence
-    likelihood_prev = -1.7976931348623157e+308
-    loglikelihood_next = nextfloat(0.0)
+    likelihood_prev = -floatmax(Float32)
+    loglikelihood_next = nextfloat(0.f0)
 
     for x in 1:maxIter
         # Expecatation 
@@ -92,9 +92,9 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
         end
         likelihood_prev = loglikelihood_next
 
-        gamma = zeros(T-1, N, N)
-        transMatrixA_hat = zeros(N,N)
-        transMatrixB_hat = zeros(N,M)
+        gamma = zeros(Float32, T-1, N, N)
+        transMatrixA_hat = zeros(Float32, N,N)
+        transMatrixB_hat = zeros(Float32, N,M)
 
         # Calculation of gamma
         for t in 1:(T-1)
@@ -242,7 +242,7 @@ function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha
     for index1 in eachindex(forecast)
         for index2 in eachindex(forecast[index1])
             if isnan(forecast[index1][index2])
-                forecast[index1][index2] = 0.
+                forecast[index1][index2] = 0.f0
             end
         end
     end

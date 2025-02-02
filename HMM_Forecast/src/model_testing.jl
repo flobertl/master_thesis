@@ -5,7 +5,7 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
 
     Random.seed!(42)
 
-    iter = 10
+    iter = 100
 
     # Data
     (observationSpace, observations, observationsAsIndeces) = getData2Years(hh);
