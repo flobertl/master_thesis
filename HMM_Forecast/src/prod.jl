@@ -14,13 +14,16 @@ function createSeveralOneStepPredictions(hmm::HMM, histObservationsAsIndeces, fu
     forecastVector = Vector{Vector{Float32}}(undef, H)
     alpha_init = forwardAlgo(hmm, histObservationsAsIndeces)[1][end,:]
     for h in 1:H
-        (forecastVectorOfVector, alpha_init) = forecastDistributionWithAlpha(hmm, 1, alpha_init)
+        (forecastVectorOfVector, alpha_i_beforeNewInfo) = forecastDistributionWithAlpha(hmm, 1, alpha_init)
+        alpha_i_afterNewInfo = alpha_i_beforeNewInfo .* hmm.observationMatrix.transitionMatrix[:, futureObservationsAsIndeces[h]]
+        normalisingFactor = sum(alpha_i_afterNewInfo)
+        alpha_init = alpha_i_afterNewInfo ./ normalisingFactor
         forecastVector[h] = forecastVectorOfVector[1]
    end
     return forecastVector
 end
 
-function calAverageRelativeMeanError(observationSpace::ObservationSpace, observations, forecast)::Float32
+function calcAverageRelativeMeanError(observationSpace::ObservationSpace, observations, forecast)::Float32
     H = length(observations)
     relativeErrors = zeros(Float32, H)
     for i in 1:H
@@ -28,9 +31,3 @@ function calAverageRelativeMeanError(observationSpace::ObservationSpace, observa
     end
     return sum(relativeErrors)/H
 end
-
-
-
-
-
-
