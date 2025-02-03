@@ -5,7 +5,7 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
 
     Random.seed!(42)
     
-    iter = 10
+    iter = 50
 
     # Data
     (observationSpace, observations, observationsAsIndeces) = getData2Years(hh);
@@ -41,7 +41,7 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
         
         # Calc Prediction
         println("-------------- Calc forecast distribution for {$N} states------------------")
-        distributionForecastVector = createSeveralOneStepPredictions(hmm1, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float32}}
+        distributionForecastVector = createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float32}}
         prevTime = printTimeAndResetTimeStamp(prevTime)
 
         # plotDistributionForecastWithViolin(hmm, dataTraining[end-20:end], dataTests[3301:3320], distributionForecastVector[1:20])
@@ -65,7 +65,7 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
         prevTime = printTimeAndResetTimeStamp(prevTime)
 
         # Calc average mean error
-        push!(carme, N => calAverageRelativeMeanError(observationSpace, dataTests, distributionForecastVector))
+        push!(carme, N => calcAverageRelativeMeanError(observationSpace, dataTests, distributionForecastVector))
     end
 
     println(carme)
