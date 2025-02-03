@@ -91,12 +91,12 @@ function plotForecastSlidingWindow(hmm::HMM, observations, forecastHorizon::Int,
     return p
 end
 
-function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float32}})
+function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float32}}, header = "")
     T = length(observationHist)
     H = length(observationFuture)
 
     # Plot historical data
-    p = plot(collect(1:T), observationHist, label= "historical observations", legend=false) 
+    p = plot(collect(1:T), observationHist, title = header, label= "historical observations", legend=false) 
 
     # Plot distribution via violin plots
     for i in 1:H
@@ -115,9 +115,13 @@ function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast:
     N = length(distributionForecast)
     quantiles = zeros(Float32, N)
     for t in 1:N
-        f(x) = x<= observationFuture[t]
+        f(x) = (x<= observationFuture[t])
         frequencyVector =  transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[t])
         quantiles[t] = count(f, frequencyVector)/length(frequencyVector)
+        if quantiles[t] > 1
+            println("ACHTUNG: $(quantiles[t]) at time instant $N. Data: obs: $(observationFuture[t]) \n forecast: $(frequencyVector)")
+        end
     end
-    histogram(quantiles, title = header, legend = false)
+    histogram(quantiles, title = header, legend = false, bins = range(0, 1, length=10))
 end
+

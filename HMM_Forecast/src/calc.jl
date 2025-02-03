@@ -225,12 +225,10 @@ end
 function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha_T::Vector{Float32})
     # Set parameter
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
-    
-    alpha_T = initAlpha_T
 
     # Init Step: Alocate alpha_i^k(T+1), Z_hat
     forecast = Vector{Vector{Float32}}(undef, forecastHorizon)
-    alpha_prev = alpha_T
+    alpha_prev = initAlpha_T
 
     # Rec Step:
     for t in 1:forecastHorizon 
