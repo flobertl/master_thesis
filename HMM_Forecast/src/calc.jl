@@ -3,7 +3,7 @@ using Random
 function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
     N = hmm.numberOfStateSpace
-    alpha = zeros(Float32, T, N)
+    alpha = zeros(Float64, T, N)
     likelihood_step = zeros(T)
 
     # Init
@@ -34,8 +34,8 @@ function backwardAlgo(hmm::HMM, observations::Vector{Int})
     N = hmm.numberOfStateSpace
 
     #Init 
-    beta = ones(Float32, T, N)
-    likelihood_step = zeros(Float32, T)
+    beta = ones(Float64, T, N)
+    likelihood_step = zeros(Float64, T)
 
     # Calc
     for t in T-1:-1:1
@@ -74,11 +74,11 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     a = hmm.transitionMatrix
     b = hmm.observationMatrix
     pi = hmm.startingDistribution
-    alpha = zeros(Float32, T, N)
+    alpha = zeros(Float64, T, N)
 
     # Init likelihood for tracking convergence
-    likelihood_prev = -floatmax(Float32)
-    loglikelihood_next = nextfloat(0.f0)
+    likelihood_prev = -floatmax(Float64)
+    loglikelihood_next = nextfloat(0.0)
 
     for x in 1:maxIter
         # Expecatation 
@@ -92,9 +92,9 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
         end
         likelihood_prev = loglikelihood_next
 
-        gamma = zeros(Float32, T-1, N, N)
-        transMatrixA_hat = zeros(Float32, N,N)
-        transMatrixB_hat = zeros(Float32, N,M)
+        gamma = zeros(Float64, T-1, N, N)
+        transMatrixA_hat = zeros(Float64, N,N)
+        transMatrixB_hat = zeros(Float64, N,M)
 
         # Calculation of gamma
         for t in 1:(T-1)
@@ -151,7 +151,7 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     return HMM(N,a,b,pi,observationSpace), loglikelihood_next
 end
 
-function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float32} = [0.f0])
+function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.0])
     # Set parameter
     T = length(observations)
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
@@ -188,7 +188,7 @@ function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlp
     return Z_hat, likelihood
 end
 
-function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float32} = [0.f0])::Vector{Vector{Float32}}
+function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.0])::Vector{Vector{Float64}}
     # Set parameter
     T = length(observations)
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
@@ -201,7 +201,7 @@ function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, init
     end
 
     # Init Step: Alocate alpha_i^k(T+1), Z_hat
-    forecast = Vector{Vector{Float32}}(undef, forecastHorizon)
+    forecast = Vector{Vector{Float64}}(undef, forecastHorizon)
     alpha_prev = alpha_T
 
     # Rec Step:
@@ -222,12 +222,12 @@ function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, init
     return forecast
 end
 
-function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha_T::Vector{Float32})
+function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha_T::Vector{Float64})
     # Set parameter
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
 
     # Init Step: Alocate alpha_i^k(T+1), Z_hat
-    forecast = Vector{Vector{Float32}}(undef, forecastHorizon)
+    forecast = Vector{Vector{Float64}}(undef, forecastHorizon)
     alpha_prev = initAlpha_T
 
     # Rec Step:
@@ -240,7 +240,7 @@ function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha
     for index1 in eachindex(forecast)
         for index2 in eachindex(forecast[index1])
             if isnan(forecast[index1][index2])
-                forecast[index1][index2] = 0.f0
+                forecast[index1][index2] = 0.0
             end
         end
     end
@@ -248,13 +248,13 @@ function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha
     return forecast, alpha_prev
 end
 
-function mean(observationSpace::ObservationSpace, distribution::Vector{Float32})
+function mean(observationSpace::ObservationSpace, distribution::Vector{Float64})
     M = observationSpace.dimension
     mean = [observationSpace.mapIndexToObservation[i] for i in 1:M]' * distribution
     return mean
 end
 
-function variance(observationSpace::ObservationSpace, distribution::Vector{Float32})
+function variance(observationSpace::ObservationSpace, distribution::Vector{Float64})
     M = observationSpace.dimension
     mean = [observationSpace.mapIndexToObservation[i] for i in 1:M]' * distribution
     exp_Xpow2 = [observationSpace.mapIndexToObservation[i]^2 for i in 1:M]' * distribution

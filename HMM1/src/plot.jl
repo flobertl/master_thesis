@@ -96,7 +96,7 @@ function plotForecastSlidingWindow(hmm::HMM, observations, forecastHorizon::Int,
     return p
 end
 
-function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float32}})
+function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float64}})
     T = length(observationHist)
     H = length(observationFuture)
 

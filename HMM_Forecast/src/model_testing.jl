@@ -41,7 +41,7 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
         
         # Calc Prediction
         println("-------------- Calc forecast distribution for {$N} states------------------")
-        distributionForecastVector = createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float32}}
+        distributionForecastVector = createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}}
         prevTime = printTimeAndResetTimeStamp(prevTime)
 
         # plotDistributionForecastWithViolin(hmm, dataTraining[end-20:end], dataTests[3301:3320], distributionForecastVector[1:20])

@@ -25,11 +25,11 @@ function translateIndexToObservations(observationsAsIndex::Array{Int, 1}, observ
     return observations
 end
 
-function forwardCalc(alpha_tminus1::Array{Float32, 1}, a_point_i::Array{Float32, 1}, b_point_o_t::Float32)
+function forwardCalc(alpha_tminus1::Array{Float64, 1}, a_point_i::Array{Float64, 1}, b_point_o_t::Float64)
     alpha_tminus1 .* a_point_i .* b_point_o_t
 end
 
-function backwardCalc(beta_tplus1::Array{Float32, 1}, a_i_point::Array{Float32, 1}, b_point_o_t::Array{Float32, 1})
+function backwardCalc(beta_tplus1::Array{Float64, 1}, a_i_point::Array{Float64, 1}, b_point_o_t::Array{Float64, 1})
     beta_tplus1 .* a_i_point .* b_point_o_t
 end
 
@@ -74,7 +74,7 @@ function transformHMMToPkgHMM(hmm::HMM)
     HMMPkg(initDistr, A_, B_)
 end
 
-function transformDistributionVectorToFrequencyVector(observationSpace::ObservationSpace, distribution::Vector{Float32})::Vector{Int}
+function transformDistributionVectorToFrequencyVector(observationSpace::ObservationSpace, distribution::Vector{Float64})::Vector{Int}
     numberOfFrequencies = map(round, distribution .* 1000)
     index = collect(1:observationSpace.dimension)
     observationVector = translateIndexToObservations(index, observationSpace)

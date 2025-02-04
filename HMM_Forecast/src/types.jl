@@ -1,7 +1,7 @@
 struct Probability
-    value::Float32
+    value::Float64
 
-    function Probability(value::Float32)
+    function Probability(value::Float64)
         # Überprüfe, ob die Matrix quadratisch ist
         if (value < 0.) || (value > 1.)
             error("Probability $value not in [0,1].")
@@ -13,7 +13,7 @@ end
 
 struct A
     dimension::UInt
-    transitionMatrix::Array{Float32, 2}
+    transitionMatrix::Array{Float64, 2}
     
     function A(dim, transMatrix)
         a,b = size(transMatrix)
@@ -28,7 +28,7 @@ end
 
 struct B
     dimension::Tuple{Int,Int}
-    transitionMatrix::Array{Float32, 2}
+    transitionMatrix::Array{Float64, 2}
 
     function B((dim1, dim2), transMatrix)
         a,b = size(transMatrix)
@@ -67,7 +67,7 @@ struct ObservationSpace
 end
 
 struct StochasticVector
-    probabilities::Vector{Float32}
+    probabilities::Vector{Float64}
 end
 
 

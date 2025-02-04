@@ -48,7 +48,7 @@ for N in states
     
     # Calc Prediction
     println("-------------- Calc forecast distribution for {$N} states------------------")
-    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float32}}
+    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}}
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 
     # plotDistributionForecastWithViolin(hmm, dataTraining[end-20:end], dataTests[3301:3320], distributionForecastVector[1:20])

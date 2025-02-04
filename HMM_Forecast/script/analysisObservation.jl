@@ -53,7 +53,7 @@ function plotDailyDemandStatsByOneInterval((startIndex, endIndex),  header = "")
     dayTimes1 = Dates.Time.(dateTimes[startIndex:startIndex+day-1])
 
     # Calc the average of a daily demand profile over T Days
-    averageDay = zeros(Float32, day)
+    averageDay = zeros(Float64, day)
     for i in 1:day
         averageDay[i] += observations[((i-1)+startIndex) : 96 : endIndex] |> sum
 
@@ -79,7 +79,7 @@ function plotDailyDemandStatsByOneInterval((startIndex, endIndex),  header = "")
         plot!(plot1, dayTimes1, observations[(i-1)*day+startIndex : (i*day+startIndex-1)], color =:lightcyan2, legend = false)
     end
     # Add varianz
-    standardDev = zeros(Float32, 96)
+    standardDev = zeros(Float64, 96)
     for i in 0:95
         standardDev[i+1] = Statistics.std(observations[i .+ (startIndex:96:endIndex)])
     end
@@ -109,7 +109,7 @@ function plotDailyDemandStatsByTwoIntervals(((startIndex1, endIndex1), (startInd
     dayTimes = Dates.Time.(dateTimes[startIndex1:startIndex1+day-1])
 
     # Calc the average of a daily demand profile over T Days
-    averageDay = zeros(Float32, day)
+    averageDay = zeros(Float64, day)
     for i in 1:day
         averageDay[i] += observations[((i-1)+startIndex1) : 96 : endIndex1] |> sum
         averageDay[i] += observations[((i-1)+startIndex2) : 96 : endIndex2] |> sum
@@ -139,7 +139,7 @@ function plotDailyDemandStatsByTwoIntervals(((startIndex1, endIndex1), (startInd
     end
     plot1
     # Add varianz
-    standardDev = zeros(Float32, 96)
+    standardDev = zeros(Float64, 96)
     for i in 1:day
         standardDev[i] = Statistics.std(observations[vcat(((i-1)+startIndex1) : 96 : endIndex1, ((i-1)+startIndex2) : 96 : endIndex2)])
     end
@@ -158,7 +158,7 @@ end
 # Plotting Experiments
 # violin(observations, ylims = (0,6000))
 # totalWeeks = 50
-# agregated = zeros(Float32, T)
+# agregated = zeros(Float64, T)
 # for i in 1:totalWeeks
 #     observations = HMM_Forecast.translateIndexToObservations(observationsAsIndeces[W*i+1:T+W*i], observationSpace)
 #     agregated = agregated .+ (observations./totalWeeks)

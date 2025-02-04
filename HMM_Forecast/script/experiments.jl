@@ -3,7 +3,7 @@ Pkg.activate("HMM_Forecast")
 using Revise, ChangePrecision
 using HMM_Forecast
 
-@changeprecision Float32 begin
+@changeprecision Float64 begin
 # Load data and model
     hh = 1
     states = [200]

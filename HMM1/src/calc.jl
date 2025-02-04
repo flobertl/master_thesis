@@ -153,7 +153,7 @@ function baumWelchAlgo(initHMM::HMM, observations, maxIter::Int = 100)
     return HMM(N,a,b,pi,observationSpace), loglikelihood_next
 end
 
-function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float32} = [0.])
+function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.])
     # Set parameter
     T = length(observations)
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
@@ -190,7 +190,7 @@ function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlp
     return Z_hat, likelihood
 end
 
-function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float32} = [0.])::Vector{Vector{Float32}}
+function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.])::Vector{Vector{Float64}}
     # Set parameter
     T = length(observations)
     N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
@@ -203,7 +203,7 @@ function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, init
     end
 
     # Init Step: Alocate alpha_i^k(T+1), Z_hat
-    forecast = Vector{Vector{Float32}}(undef, forecastHorizon)
+    forecast = Vector{Vector{Float64}}(undef, forecastHorizon)
     alpha_prev = alpha_T
 
     # Rec Step:

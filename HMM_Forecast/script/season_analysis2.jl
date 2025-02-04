@@ -29,7 +29,7 @@ for state in states
 
     ## Generate Distro forecast
     println("-------------- Calc forecast distribution for {$N} states------------------")
-    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float32}};
+    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}};
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 
     println("-------------- Generate PIT plots for {$N} states------------------")
@@ -63,7 +63,7 @@ for state in states
 
     ## Generate Distro forecast
     println("-------------- Calc forecast distribution for {$N} states------------------")
-    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float32}};
+    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}};
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 
     println("-------------- Generate PIT plots for {$N} states------------------")
