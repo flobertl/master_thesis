@@ -5,10 +5,10 @@ using HMM_Forecast
 
 using Plots
 # Set Paramets
-hh = 2
+hh = 1
 
 # load Data 2 Months
-(observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_EveryQHTimestamps(hh);
+include(data.jl);
 # (observationSpace, observationsAsIndeces) = getTestData2Month();
 
 
@@ -22,7 +22,14 @@ hh = 2
 #hmm2years_200states_50iter = HMM_Forecast.loadHMM("hmm_2years_states(200)_iter(50)_hh(2)_version(1)");
 # hmm2years_300states_100iter_WithTimesteps = HMM_Forecast.loadHMM("hmm_2years_states(300)_iter(100)_hh(2)_version(1)_observationsStates(651)_withtimestamps")
 # hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(300)_iter(50)_hh(2)_version(1)_observationsStates(1934)_withtimestamps")
-hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(200)_iter(20)_hh(2)_version(2)_observationsStates(1802)_withtimestampseachQH")
+#hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(200)_iter(20)_hh(2)_version(2)_observationsStates(1802)_withtimestampseachQH")
+hmm50 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(50)//basismodel_states(50)")
+hmm100 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(100)//basismodel_states(100)")
+hmm150 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(150)//basismodel_states(150)")
+hmm250 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(250)//basismodel_states(250)")
+hmm200 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(200)//basismodel_states(200)")
+hmm300 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(300)//basismodel_states(300)")
+
 
 hmm = hmm2years_300states_50iter_everyQH 
 

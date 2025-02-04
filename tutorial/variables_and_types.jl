@@ -20,5 +20,5 @@ typeof(rationalDivision)
 a = 42
 b = 3.2
 
-convert(Float32, a)
+convert(Float64, a)
 convert(Int32, b)
