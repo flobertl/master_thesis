@@ -72,3 +72,9 @@ function printTimeAndResetTimeStamp(prevTime)
     newTime = now()
     return newTime
 end
+
+function updateHMMNumericalStable(hmm::HMM)
+    obsMatrix_numStable = hmm.observationMatrix.transitionMatrix .+ 10e-15 
+    newObservationMatrix = B(hmm.observationMatrix.dimension, obsMatrix_numStable./ sum(obsMatrix_numStable))
+    HMM(hmm.numberOfStateSpace, hmm.transitionMatrix, newObservationMatrix, hmm.startingDistribution, hmm.observationSpace)
+end
