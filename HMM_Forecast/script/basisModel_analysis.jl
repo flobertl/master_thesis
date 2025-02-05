@@ -26,11 +26,11 @@ include("data.jl");
 
 # Set parameters
 trainData = observations[dateIndeces[1,6]:dateIndeces[1,9]-1]
-testData =  observations[dateIndeces[2,6]:dateIndeces[2,9]-1][1:1]
+testData =  observations[dateIndeces[2,6]:dateIndeces[2,9]-1]
 folderPath = ".//HMM_Forecast//tmp//seasonmodel_hh(1)//summer//seasonmodel_states"
 
 
-for N in 1:1 # 100:50:200
+for N in 100:50:200
     hmm = hmmsSummer(N) |> HMM_Forecast.updateHMMNumericalStable
     HMM_Forecast.calcTestingRoutineSeason(hmm, trainData, testData, folderPath*"($N)")
 end

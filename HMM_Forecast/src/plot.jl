@@ -123,5 +123,6 @@ function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast:
         end
     end
     histogram(quantiles, title = header, legend = false, bins = range(0, 1, length=10))
+    hline!([(N/10)], color=:blue, linewidth=2)
 end
 
