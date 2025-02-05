@@ -2,7 +2,7 @@ using HiddenMarkovModels: baum_welch as BWAlgoPkg
 
 export testAll, runUEAll
 
-epsilon = 1E-6
+epsilon = 1E-8
 
 function testingEquality(testName::String, testingValue, expectedResult)
     if all((expectedResult .< testingValue .+ epsilon) .& (expectedResult .> testingValue .- epsilon))  #evtl muss mann Epsilon einbauen

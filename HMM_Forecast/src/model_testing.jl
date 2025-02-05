@@ -1,7 +1,7 @@
 # Function to run BasisModel runBasisModelAnalysis
 using Random
 
-function calcTestingRoutine(hmm::HMM, trainData, testData, folderPath::String)
+function calcTestingRoutineSeason(hmm::HMM, trainData, testData, folderPath::String)
     trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
     testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
 
@@ -9,14 +9,14 @@ function calcTestingRoutine(hmm::HMM, trainData, testData, folderPath::String)
     distributionForecastVector = createSeveralOneStepPredictions(hmm, trainDataAsIndeces, testDataAsIndeces)::Vector{Vector{Float64}}
 
     # Make PIT plots
-    pitAllTestData = HMM_Forecast.plotPIT(hmm, testData, distributionForecastVector, "PIT of all test data")
-    pit0300 = HMM_Forecast.plotPIT(hmm, testData[1+3*4:96:end], distributionForecastVector[1+3*4:96:end], "03:00")
-    pit0900 = HMM_Forecast.plotPIT(hmm, testData[1+9*4:96:end], distributionForecastVector[1+9*4:96:end], "09:00")
-    pit01500 = HMM_Forecast.plotPIT(hmm, testData[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
-    pit2100 = HMM_Forecast.plotPIT(hmm, testData[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
-    pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
+    pitAllTestData = HMM_Forecast.plotPIT(hmm, testData, distributionForecastVector, "Season")
+    # pit0300 = HMM_Forecast.plotPIT(hmm, testData[1+3*4:96:end], distributionForecastVector[1+3*4:96:end], "03:00")
+    # pit0900 = HMM_Forecast.plotPIT(hmm, testData[1+9*4:96:end], distributionForecastVector[1+9*4:96:end], "09:00")
+    # pit01500 = HMM_Forecast.plotPIT(hmm, testData[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
+    # pit2100 = HMM_Forecast.plotPIT(hmm, testData[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
+    # pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
     png(pitAllTestData, folderPath*"pitAllTestData.png")
-    png(pitSpecificTimes, folderPath*"pitSpecificTimes.png")
+    # png(pitSpecificTimes, folderPath*"pitSpecificTimes.png")
 
     # Calc Likelihood
     alpha, loglikelihood_train = forwardAlgo(hmm, trainDataAsIndeces)
@@ -32,6 +32,39 @@ function calcTestingRoutine(hmm::HMM, trainData, testData, folderPath::String)
         println(io, "loglikelihood test:", loglikelihood_test)
     end
 end
+
+function calcTestingRoutine(hmm::HMM, trainData, testData, folderPath::String)
+    trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
+    testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
+
+    # Calc Prediction
+    distributionForecastVector = createSeveralOneStepPredictions(hmm, trainDataAsIndeces, testDataAsIndeces)::Vector{Vector{Float64}}
+
+    # Make PIT plots
+    pitAllTestData = HMM_Forecast.plotPIT(hmm, testData, distributionForecastVector, "PIT of all test data")
+    # pit0300 = HMM_Forecast.plotPIT(hmm, testData[1+3*4:96:end], distributionForecastVector[1+3*4:96:end], "03:00")
+    # pit0900 = HMM_Forecast.plotPIT(hmm, testData[1+9*4:96:end], distributionForecastVector[1+9*4:96:end], "09:00")
+    # pit01500 = HMM_Forecast.plotPIT(hmm, testData[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
+    # pit2100 = HMM_Forecast.plotPIT(hmm, testData[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
+    # pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
+    png(pitAllTestData, folderPath*"pitAllTestData.png")
+    # png(pitSpecificTimes, folderPath*"pitSpecificTimes.png")
+
+    # Calc Likelihood
+    alpha, loglikelihood_train = forwardAlgo(hmm, trainDataAsIndeces)
+    alpha, loglikelihood_test = forwardAlgo(hmm, testDataAsIndeces)
+
+    # Calc Entropy
+
+
+    # Store measures quantities
+    open(folderPath*"log_model($(hmm.transitionMatrix.dimension))", "w") do io
+        # Save numberOfStateSpace
+        println(io, "loglikelihood training:", loglikelihood_train)
+        println(io, "loglikelihood test:", loglikelihood_test)
+    end
+end
+
 
 
 
