@@ -75,6 +75,6 @@ end
 
 function updateHMMNumericalStable(hmm::HMM)
     obsMatrix_numStable = hmm.observationMatrix.transitionMatrix .+ 10e-15 
-    newObservationMatrix = B(hmm.observationMatrix.dimension, obsMatrix_numStable./ sum(obsMatrix_numStable))
+    newObservationMatrix = B(hmm.observationMatrix.dimension, obsMatrix_numStable./ sum(obsMatrix_numStable, dims = 2))
     HMM(hmm.numberOfStateSpace, hmm.transitionMatrix, newObservationMatrix, hmm.startingDistribution, hmm.observationSpace)
 end
