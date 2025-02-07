@@ -29,9 +29,10 @@ function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1)
     prevTime = now()
     carme = Dict()
 
-    folderPath = "seasonmodel_hh($hh)//fullyear_states($N)//"
 
     for N in numberOfStatesVector
+        folderPath = "seasonmodel_hh($hh)//fullyear_states($N)//"
+
         # Train and store model 
         println("\n ########################### MODEL $N states #################################")
         println("-------------- Train Model with $N states------------------")
@@ -43,7 +44,7 @@ function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1)
         
         # Calc Prediction
         println("-------------- Calc forecast distribution for {$N} states------------------")
-        distributionForecastVector = createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}}
+        distributionForecastVector = createSeveralOneStepPredictions(hmm |> updateHMMNumericalStable, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}}
         prevTime = printTimeAndResetTimeStamp(prevTime)
 
         # plotDistributionForecastWithViolin(hmm, dataTraining[end-20:end], dataTests[3301:3320], distributionForecastVector[1:20])
