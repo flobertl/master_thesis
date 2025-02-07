@@ -36,7 +36,7 @@ function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1)
         println("\n ########################### MODEL $N states #################################")
         println("-------------- Train Model with $N states------------------")
         hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-        saveHMM(hmm, "basismodel_hh($hh)//states($N)//basismodel_states($N)")
+        saveHMM(hmm, folderPath*"seasonmodelfull_states($N)")
         # N = 50
         # hmm1 = loadHMM("basismodel_hh(1)//states(1)//basismodel_states(1)")
         prevTime = printTimeAndResetTimeStamp(prevTime)
@@ -50,7 +50,7 @@ function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1)
  
         # Generate PIT Plots
         println("-------------- Generate PT plots for {$N} states------------------")
-        pitYear = HMM_Forecast.plotPIT(hmm, dataTests, distributionForecastVector, "PIT of Year 2020")
+        pitYear = HMM_Forecast.plotPIT(hmm, dataTests, distributionForecastVector, "Season Model Full Year")
         pitSpring = HMM_Forecast.plotPIT(hmm, observations[indecesSpring20], distributionForecastVector[indecesSpring20 .- (startIndexTest-1)], "Spring")
         pitSummer = HMM_Forecast.plotPIT(hmm, observations[indecesSummer20], distributionForecastVector[indecesSummer20 .- (startIndexTest-1)], "Summer")
         pitFall = HMM_Forecast.plotPIT(hmm, observations[indecesFall20], distributionForecastVector[indecesFall20 .- (startIndexTest-1)], "Fall")
@@ -61,9 +61,9 @@ function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1)
         pit01500 = HMM_Forecast.plotPIT(hmm, dataTests[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
         pit2100 = HMM_Forecast.plotPIT(hmm, dataTests[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
         pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
-        png(pitYear, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitYear.png")
-        png(pitSpecificTimes, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitSpecificTimes.png")
-        png(pitSeasons, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitSeasons.png")
+        png(pitYear, ".//HMM_Forecast//tmp//"*folderPath*"pitYear.png")
+        png(pitSpecificTimes, ".//HMM_Forecast//tmp//"*folderPath*"pitSpecificTimes.png")
+        png(pitSeasons, ".//HMM_Forecast//tmp//"*folderPath*"pitSeasons.png")
         prevTime = printTimeAndResetTimeStamp(prevTime)
 
         # Calc average mean error
