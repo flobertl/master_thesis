@@ -67,6 +67,27 @@ function addTimestamps(timeGranularity::Int, observations::Array{Int})::Array{In
     return observationWithTimestamp
 end
 
+function addSeasonstamps(observations::Array{Int}, dates)::Array{Int}
+    if length(observations) != length(dates)
+        println("fail")
+    end
+    isSeason((lb, ub), t) = lb <= Dates.month(t) && Dates.month(t) <= ub
+    isWinter((lb, ub), t) = lb <= Dates.month(t) || Dates.month(t) <= ub
+    curry(f, arg1) = x -> f(arg1, x)
+    indecesSpring = findall(curry(isSeason, (3,5)), dates)
+    indecesSummer = findall(curry(isSeason, (6,8)), dates)
+    indecesFall = findall(curry(isSeason, (9,11)), dates)
+    indecesWinter = findall(curry(isWinter, (12,2)), dates)
+
+    newObservations = copy(observations)
+    newObservations[indecesSpring] += ones(length(indecesSpring))
+    newObservations[indecesSummer] += ones(length(indecesSummer)) .* 2
+    newObservations[indecesFall] += ones(length(indecesFall)) .* 3
+    newObservations[indecesWinter] += ones(length(indecesWinter)) .* 4
+
+    newObservations
+end
+
 # ------------------------------------------------------------------------------
 # Productive Load data
 
@@ -82,6 +103,21 @@ function getData2Years(householdId::Int64)
     observationsAsIndeces = translateObservationsToIndex(abstractObser, observationSpace)
 
     return(observationSpace, abstractObser, observationsAsIndeces)
+end
+
+function getData2Years_Seasonstamps(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations
+    abstractObserWithTimestamps = addSeasonstamps(abstractObser, dateTimesOf2YearsData())
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
 
 function getData2Years_Simplified(householdId::Int64)
@@ -127,7 +163,7 @@ function getData2Years_Timestamps(householdId::Int64, numberOfTimeBlocks::Int64)
     observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
     observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
 
-    return(observationSpace, abstractObser, observationsAsIndeces)
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
 
 function getData2Years_EveryQHTimestamps(householdId::Int64)
