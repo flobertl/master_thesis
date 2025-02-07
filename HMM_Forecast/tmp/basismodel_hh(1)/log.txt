@@ -1,3 +1,33 @@
+Likelihoods: 
+Basismodel 50 states --- Likelihood Train: -103241.8584741467; Likelihood Test -108491.66911765793
+Basismodel 100 states --- Likelihood Train: -101267.21828958043; Likelihood Test -109910.75311843748
+Basismodel 150 states --- Likelihood Train: -99507.18454681111; Likelihood Test -112108.52947854281
+Basismodel 200 states --- Likelihood Train: -97965.49767069769; Likelihood Test -114846.0671748931
+Basismodel 250 states --- Likelihood Train: -95934.45193411657; Likelihood Test -116987.74140054654
+Basismodel 300 states --- Likelihood Train: -94096.86435245001; Likelihood Test -120093.63958324876
+
+Average relative mean error
+Basismodel 50 states --- ARME: 15.718784586510695
+Basismodel 100 states --- ARME: 15.613264567848864
+Basismodel 150 states --- ARME: 15.620017158282932
+Basismodel 200 states --- ARME: 15.86980606018934
+Basismodel 250 states --- ARME: 15.715725541701744
+Basismodel 300 states --- ARME: 15.692902055467746
+
+ ########################### MODEL 50 states #################################
+-------------- Train Model with 50 states------------------
+BW-Algo: 1.iteration taking 16.4520001411438 LogLiklihood: -161745.70176416708
+BW-Algo: 2.iteration taking 45.30199980735779 LogLiklihood: -122988.15603135432
+BW-Algo: 3.iteration taking 72.17900013923645 LogLiklihood: -122913.0222368613
+BW-Algo: 4.iteration taking 21.51199984550476 LogLiklihood: -122804.80225088962
+BW-Algo: 5.iteration taking 43.08900022506714 LogLiklihood: -122616.8882670816
+BW-Algo: 6.iteration taking 51.59999990463257 LogLiklihood: -122223.67591979026
+BW-Algo: 7.iteration taking 15.059000015258789 LogLiklihood: -121263.44387725214
+BW-Algo: 8.iteration taking 28.783999919891357 LogLiklihood: -119090.20931179167
+BW-Algo: 9.iteration taking 48.27500009536743 LogLiklihood: -116153.80285438724
+BW-Algo: 10.iteration taking 15.9760000705719 LogLiklihood: -114150.63959355754
+
+
  ########################### MODEL 250 states #################################
 -------------- Train Model with 250 states------------------
 BW-Algo: 1.iteration taking 112.62800002098083 LogLiklihood: -161668.84438057832
