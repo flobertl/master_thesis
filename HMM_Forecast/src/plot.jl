@@ -119,10 +119,15 @@ function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast:
         frequencyVector =  transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[t])
         quantiles[t] = count(f, frequencyVector)/length(frequencyVector)
         if quantiles[t] > 1
-            println("ACHTUNG: $(quantiles[t]) at time instant $N. Data: obs: $(observationFuture[t]) \n forecast: $(frequencyVector)")
+            println("ACHTUNG: $(quantiles[t]) at time instant $N. Data: obs: $(observationFuture[t])  \n forecast: $(frequencyVector)")
         end
     end
-    histogram(quantiles, title = header, legend = false, bins = range(0, 1, length=10))
-    hline!([(N/10)], color=:blue, linewidth=2)
+    # f2(x) = (x > 0) ||  (1 <= x)
+    # countOutOfReachQuantiles = count(f2, quantiles)
+    # println("Out of Reach Quantiles: ", countOutOfReachQuantiles)
+    # println(findall(isnan, quantiles))
+
+    histogram(quantiles, title = header, legend = false, bins = range(0, 1, length=11))
+    hline!([(N/10)], color=:blue, linestyle=:dash, linewidth=2)
 end
 

@@ -3,13 +3,8 @@ Pkg.activate("HMM_Forecast")
 using Revise, ChangePrecision
 using HMM_Forecast
 
-@changeprecision Float64 begin
-# Load data and model
-    hh = 1
-    states = [200]
+(observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Seasonstamps(1)
+dates = HMM_Forecast.dateTimesOf2YearsData()
+HMM_Forecast.addSeasonstamps(observations, dates)[1]
 
-    HMM_Forecast.runBasisModelAnalysis(states, hh)
-end
-
-# p = plot(states, sin.(states), label="sin(states)")  # Erstes Element mit Legende
-# png(".//HMM_Forecast//tmp//basismodel_hh($hh)//states(1)//pitYear.png")
+observations[1]
