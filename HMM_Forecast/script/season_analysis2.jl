@@ -8,11 +8,15 @@ using HMM_Forecast
 hh = 1
 iter = 10
 states = [1]
-include("data.jl") 
+timeBlocks = 8 
+(observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Timestamps(hh, timeBlocks);
+dates = HMM_Forecast.dateTimesOf2YearsData()
+dateIndeces = HMM_Forecast.calcFirstQHofYearAndMonth()
 
 ## Spring
 for state in states
     N = state
+    filePath = "seasonmodel_timestamps_hh($hh)//spring//seasonmodel_states($N)"
 
     dataTraining = observations[dateIndeces[2, 3] : (dateIndeces[2, 6] - 1)]
     dataTests = observations[dateIndeces[3, 3] : (dateIndeces[3, 6] - 1)]
@@ -24,7 +28,7 @@ for state in states
     println("\n ########################### MODEL $N states #################################")
     println("-------------- Train Model with $N states------------------")
     hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-    HMM_Forecast.saveHMM(hmm, "seasonmodel_hh($hh)//spring//seasonmodel_states($N)")
+    HMM_Forecast.saveHMM(hmm, filePath)
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 
     ## Generate Distro forecast
@@ -39,14 +43,15 @@ for state in states
     pit01500 = HMM_Forecast.plotPIT(hmm, dataTests[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
     pit2100 = HMM_Forecast.plotPIT(hmm, dataTests[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
     pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
-    png(pitSpecificTimes, ".//HMM_Forecast//tmp//seasonmodel_hh($hh)//spring//seasonmodel_states($N)_pitSpecificTimes.png")
-    png(pitFall, ".//HMM_Forecast//tmp//seasonmodel_hh($hh)//spring//seasonmodel_states($N)_pitSeason.png")
+    png(pitSpecificTimes, ".//HMM_Forecast//tmp//"*filePath*"_pitSpecificTimes.png")
+    png(pitFall, ".//HMM_Forecast//tmp//"*filePath*"_pitSeason.png")
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 end
 
 ## summer
 for state in states
     N = state
+    filePath = "seasonmodel_hh($hh)//summer//seasonmodel_states($N)"
 
     dataTraining = observations[dateIndeces[2, 6] : (dateIndeces[2, 9] - 1)]
     dataTests = observations[dateIndeces[3, 6] : (dateIndeces[3, 9] - 1)]
@@ -58,7 +63,7 @@ for state in states
     println("\n ########################### MODEL $N states #################################")
     println("-------------- Train Model with $N states------------------")
     hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-    HMM_Forecast.saveHMM(hmm, "seasonmodel_hh($hh)//summer//seasonmodel_states($N)")
+    HMM_Forecast.saveHMM(hmm, filePath)
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 
     ## Generate Distro forecast
@@ -73,7 +78,7 @@ for state in states
     pit01500 = HMM_Forecast.plotPIT(hmm, dataTests[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
     pit2100 = HMM_Forecast.plotPIT(hmm, dataTests[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
     pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
-    png(pitSpecificTimes, ".//HMM_Forecast//tmp//seasonmodel_hh($hh)//summer//seasonmodel_states($N)_pitSpecificTimes.png")
-    png(pitFall, ".//HMM_Forecast//tmp//seasonmodel_hh($hh)//summer//seasonmodel_states($N)_pitSeason.png")
+    png(pitSpecificTimes, ".//HMM_Forecast//tmp//"*filePath*"_pitSpecificTimes.png")
+    png(pitFall, ".//HMM_Forecast//tmp//"*filePath*"_pitSeason.png")
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 end
