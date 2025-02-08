@@ -49,7 +49,7 @@ end
 
 for state in collect(states)
     N = state
-    filePath = "seasonmodel_hh($hh)//winter//seasonmodel_states($N)"
+    filePath = "seasonmodel_timestamps_hh($hh)//winter//seasonmodel_states($N)"
 
     dataTraining = observations[dateIndeces[1, 12] : (dateIndeces[2, 3] - 1)]
     dataTests = observations[dateIndeces[2, 12] : (dateIndeces[3, 3] - 1)]

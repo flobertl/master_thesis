@@ -7,7 +7,7 @@ using HMM_Forecast
 ## Set Parameters
 hh = 1
 iter = 100
-states = [50]
+states = [100, 200]
 timeBlocks = 8 
 (observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Timestamps(hh, timeBlocks);
 dates = HMM_Forecast.dateTimesOf2YearsData()
@@ -51,7 +51,7 @@ end
 ## summer
 for state in states
     N = state
-    filePath = "seasonmodel_hh($hh)//summer//seasonmodel_states($N)"
+    filePath = "seasonmodel_timestamps_hh($hh)//summer//seasonmodel_states($N)"
 
     dataTraining = observations[dateIndeces[2, 6] : (dateIndeces[2, 9] - 1)]
     dataTests = observations[dateIndeces[3, 6] : (dateIndeces[3, 9] - 1)]
