@@ -248,16 +248,5 @@ function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha
     return forecast, alpha_prev
 end
 
-function mean(observationSpace::ObservationSpace, distribution::Vector{Float64})
-    M = observationSpace.dimension
-    mean = [observationSpace.mapIndexToObservation[i] for i in 1:M]' * distribution
-    return mean
-end
 
-function variance(observationSpace::ObservationSpace, distribution::Vector{Float64})
-    M = observationSpace.dimension
-    mean = [observationSpace.mapIndexToObservation[i] for i in 1:M]' * distribution
-    exp_Xpow2 = [observationSpace.mapIndexToObservation[i]^2 for i in 1:M]' * distribution
-    return exp_Xpow2 - mean^2
-end
 

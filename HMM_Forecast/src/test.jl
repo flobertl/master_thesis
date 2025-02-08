@@ -72,7 +72,7 @@ function testBackwardVsForwardAlgo1()
 
     # Test equality
     testingEquality("Back vs Forward Algo via Likelihood", loglikelihood1, loglikelihood2)
-    println("expected: $loglikelihood1 ; result: $loglikelihood2")
+    # println("expected: $loglikelihood1 ; result: $loglikelihood2")
 
 end
 
@@ -148,7 +148,7 @@ function testBWAlgo()
     hmm, likelihood = baumWelchAlgo(hmm, observations, 1)
     expectedResult = log(5/24)
     testingEquality(name, likelihood, expectedResult)
-    println("expected: $expectedResult ; result: $likelihood")
+    # println("expected: $expectedResult ; result: $likelihood")
 end
 
 function testConvertHMM()
@@ -161,7 +161,7 @@ function testConvertHMM()
     observations = [2, 2]
 
     x = transformHMMToPkgHMM(hmm)
-    println("Test Success: Transform HMM")
+    # println("Test Success: Transform HMM")
 end
 
 function testBWAlgoWithPkg()
@@ -236,8 +236,19 @@ function testTimestamps()
     obser = [10 20 30 10 20 30 10 20 30]
     result = addTimestamps(32, obser)
     expectedResult = [10, 20, 30, 11, 21, 31, 12, 22, 32]
-    println(result)
     testingEquality(name, result, expectedResult)
+end
+
+function testMeasure()
+    name = "Test measures "
+    obserSpace = ObservationSpace(Set([1, 2]))
+    distro = [1/4, 3/4]
+    observation = 2
+
+    testingEquality(name*"mean", mean(obserSpace, distro), 1.75)
+    testingEquality(name*"variance", variance(obserSpace, distro), 3/16)
+    testingEquality(name*"pinball 1", pinball(obserSpace, observation, distro, 0.5), 0.)
+    testingEquality(name*"pinball 2", pinball(obserSpace, observation, distro, 0.1), 0.1)
 end
 
 
@@ -248,11 +259,12 @@ function testAll()
     testBackwardVsForwardAlgo1()
     testBackwardVsForwardAlgo1()
     testConvertHMM()
-    # testBWAlgoWithPkg()
+    testBWAlgoWithPkg()
     testBWAlgo()
     testBestPathPrognosis()
     testForecastDistribution()
     testTimestamps()
+    testMeasure()
 end
 
 function runUEAll()

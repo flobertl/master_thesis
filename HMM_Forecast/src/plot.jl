@@ -115,9 +115,7 @@ function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast:
     N = length(distributionForecast)
     quantiles = zeros(Float64, N)
     for t in 1:N
-        f(x) = (x<= observationFuture[t])
-        frequencyVector =  transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[t])
-        quantiles[t] = count(f, frequencyVector)/length(frequencyVector)
+        quantiles[t] = empiricQuantile(hmm.observationSpace, distributionForecast[t], observationFuture[t])
         if quantiles[t] > 1
             println("ACHTUNG: $(quantiles[t]) at time instant $N. Data: obs: $(observationFuture[t])  \n forecast: $(frequencyVector)")
         end
