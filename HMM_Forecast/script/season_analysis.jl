@@ -7,7 +7,7 @@ using HMM_Forecast
 ## Set Parameters
 hh = 1
 iter = 100
-states = [50]
+states = [100, 200]
 timeBlocks = 8 
 (observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Timestamps(hh, timeBlocks);
 dates = HMM_Forecast.dateTimesOf2YearsData()
