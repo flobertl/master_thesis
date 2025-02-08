@@ -6,8 +6,8 @@ using HMM_Forecast
 
 ## Set Parameters
 hh = 1
-iter = 10
-states = [1]
+iter = 100
+states = [50]
 timeBlocks = 8 
 (observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Timestamps(hh, timeBlocks);
 dates = HMM_Forecast.dateTimesOf2YearsData()
@@ -33,7 +33,7 @@ for state in states
 
     ## Generate Distro forecast
     println("-------------- Calc forecast distribution for {$N} states------------------")
-    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}};
+    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm |> HMM_Forecast.updateHMMNumericalStable, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}};
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 
     println("-------------- Generate PIT plots for {$N} states------------------")
@@ -68,7 +68,7 @@ for state in states
 
     ## Generate Distro forecast
     println("-------------- Calc forecast distribution for {$N} states------------------")
-    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}};
+    distributionForecastVector = HMM_Forecast.createSeveralOneStepPredictions(hmm |> HMM_Forecast.updateHMMNumericalStable, dataTrainingAsIndeces, dataTestAsIndeces)::Vector{Vector{Float64}};
     prevTime = HMM_Forecast.printTimeAndResetTimeStamp(prevTime)
 
     println("-------------- Generate PIT plots for {$N} states------------------")

@@ -5,7 +5,7 @@ function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1)
 
     Random.seed!(42)
     
-    iter = 50
+    iter = 100
 
     # Data
     (observationSpace, observations, observationsAsIndeces) = getData2Years_Seasonstamps(hh);
