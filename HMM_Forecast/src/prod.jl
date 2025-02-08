@@ -23,11 +23,3 @@ function createSeveralOneStepPredictions(hmm::HMM, histObservationsAsIndeces, fu
     return forecastVector
 end
 
-function calcAverageRelativeMeanError(observationSpace::ObservationSpace, observations, forecast)::Float64
-    H = length(observations)
-    relativeErrors = zeros(Float64, H)
-    for i in 1:H
-        relativeErrors[i] = (mean(observationSpace, forecast[i]) - observations[i])/observations[i] |> abs
-    end
-    return sum(relativeErrors)/H
-end

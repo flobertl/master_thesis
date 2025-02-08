@@ -1,5 +1,6 @@
 # File for measure implementations.
 
+## Distribution measures
 function mean(observationSpace::ObservationSpace, distribution::Vector{Float64})
     M = observationSpace.dimension
     mean = [observationSpace.mapIndexToObservation[i] for i in 1:M]' * distribution
@@ -13,6 +14,7 @@ function variance(observationSpace::ObservationSpace, distribution::Vector{Float
     return exp_Xpow2 - mean^2
 end
 
+## Quantile functions
 function empiricQuantile(observationSpace::ObservationSpace, distribution::Vector{Float64}, observation)::Float64
     f(x) = (x<= observation)
     frequencyVector =  transformDistributionVectorToFrequencyVector(observationSpace, distribution)
@@ -27,6 +29,7 @@ function quantileForecast(observationSpace::ObservationSpace, distribution::Vect
     return forecast
 end
 
+## Scoring rules
 function pinball(observationSpace::ObservationSpace, observation, distribution::Vector{Float64}, quantile::Float64)
     quantForecast = quantileForecast(observationSpace, distribution, quantile)
     if quantForecast >= observation
@@ -45,4 +48,35 @@ function crps(observationSpace::ObservationSpace, observation, distribution::Vec
         crps += pinball(observationSpace, observation, distribution, quantile)
     end
     return crps
+end
+
+## Eval forecast Vectors
+function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
+    T = length(observations)
+    if H != lenght(distributionVector)
+        throw(DimensionMismatch("$distributionVector and $observations"))
+    end
+    meanCRPS = 0
+    for t in 1:T
+        meanCRPS +=  crps(observationSpace, observation[t], distribution[t])
+    end
+    return meanCRPS/T
+end
+
+function mape_forMeanPointForecast(observationSpace::ObservationSpace, observations, forecast::Vector{Vector{Float64}})::Float64
+    H = length(observations)
+    relativeErrors = zeros(Float64, H)
+    for i in 1:H
+        relativeErrors[i] = (mean(observationSpace, forecast[i]) - observations[i])/observations[i] |> abs
+    end
+    return sum(relativeErrors)/H
+end
+
+function r_squared_forMeanPointForecast(observationSpace::ObservationSpace, observations, forecastVector::Vector{Vector{Float64}})::Float64
+    H = length(observations)
+    pointForecast = map(x -> mean(observationSpace, x), forecastVector)
+    meanObs = sum(observations)/H
+    SS_res = map(i -> (observations[i] - pointForecast[i])^2, 1:H)
+    SS_tot = map(i -> (observations[i] - meanObs)^2, 1:H)
+    return SS_res/SS_tot
 end
