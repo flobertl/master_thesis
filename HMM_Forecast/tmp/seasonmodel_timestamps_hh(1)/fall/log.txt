@@ -1,0 +1,1 @@
+Season Timestamps Model Fall states(200) --- loglike-Train: -25918.28508903442/// loglike-Test: -50582.85518022199/// MAPE: 0.5147965579585918/// R^2: 999.0/// Mean CRPS: 4194.603790064089

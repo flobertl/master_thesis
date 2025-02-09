@@ -69,13 +69,7 @@ function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64
     return meanCRPS/T
 end
 
-function mape_forMeanPointForecast(observationSpace::ObservationSpace, observations, forecast::Vector{Vector{Float64}})::Float64
-    H = length(forecast)
-    relativeErrors = zeros(Float64, H)
-    for i in 1:H
-        relativeErrors[i] = (mean(observationSpace, forecast[i]) - observations[i])/observations[i] |> abs
-    end
-    return sum(relativeErrors)/H
+function mape_forMeanPointForecast(observationSpace::ObservationSpace, observati
 end
 
 function r_squared_forMeanPointForecast(observationSpace::ObservationSpace, observations, forecastVector::Vector{Vector{Float64}})::Float64

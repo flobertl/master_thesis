@@ -1,0 +1,1 @@
+Basismodel states(10) --- loglike-Train: -96920.87131459863/// loglike-Test: -114318.81190047479/// MAPE: 0.2576561606995405/// R^2: 999.0/// Mean CRPS: 4098.394652208672
