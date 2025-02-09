@@ -1,7 +1,7 @@
 # Function to run BasisModel runBasisModelAnalysis
 using Random
 
-function calcTestingRoutineSeason(hmm::HMM, trainData, testData, folderPath::String, name = "")
+function generatePITforSeasonModels(hmm::HMM, trainData, testData, folderPath::String, name = "")
     trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
     testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
 
@@ -33,7 +33,7 @@ function calcTestingRoutineSeason(hmm::HMM, trainData, testData, folderPath::Str
     end
 end
 
-function calcTestingRoutine(hmm::HMM, trainData, testData, folderPath::String)
+function generatePITforFullyearModels(hmm::HMM, trainData, testData, folderPath::String)
     trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
     testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
 
@@ -65,6 +65,45 @@ function calcTestingRoutine(hmm::HMM, trainData, testData, folderPath::String)
     end
 end
 
+function calcEvaluation(hmm::HMM, trainData, testData)
+    testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
+    trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
+    hmmStable = hmm |> updateHMMNumericalStable
+    # Set timing variable
+    prevTime = now()
+
+    # Calc Prediction
+    println("-------------- Calc forecast distribution for model ($(hmm.observationMatrix.dimension)) ------------------")
+    distributionForecastVector = createSeveralOneStepPredictions(hmmStable, trainDataAsIndeces, testDataAsIndeces)::Vector{Vector{Float64}}
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    # Calc Likelihood
+    println("Calc likelihood:")
+    loglikelihood_train = loglikelihood(hmmStable, trainData)
+    loglikelihood_test = loglikelihood(hmmStable, testData)
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    # Calc MAPE 
+    println("Calc MAPE:")
+    mape = mape_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    # Calc R_squared
+    println("Calc R_Squared:")
+    r_sqare = 999. # r_squared_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    # Calc CRPS
+    println("Calc CRPS:")
+    crps = meanCRPS(hmm.observationSpace, testData, distributionForecastVector)
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    return ((loglikelihood_test,loglikelihood_train), mape, r_sqare, crps)
+end
+
+function printEvaluation(name::String, ((loglikelihood_test,loglikelihood_train), mape, r_sqare, crps))
+    println("$name --- loglike-Train: $loglikelihood_train/// loglike-Test: $loglikelihood_test/// MAPE: $mape/// R^2: $r_sqare/// Mean CRPS: $crps")
+end
 
 
 
@@ -100,7 +139,7 @@ end
 
     # for N in numberOfStatesVector
     #     # Train and store model 
-    #     println("\n ########################### MODEL $N states #################################")
+    #     println(########################### MODEL $N states #################################")
     #     println("-------------- Train Model with $N states------------------")
     #     hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
     #     saveHMM(hmm, "basismodel_hh($hh)//states($N)//basismodel_states($N)")

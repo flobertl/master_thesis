@@ -5,23 +5,25 @@ using Revise, ChangePrecision, Dates, Plots
 using HMM_Forecast
 
 hh = 1
-include("data.jl");
+include("data_timestamp.jl");
 
-
-hmmSpring(N) = HMM_Forecast.loadHMM("seasonmodel_hh(1)//fall//seasonmodel_states($N)")
-hmmSummer(N) = HMM_Forecast.loadHMM("seasonmodel_hh(1)//spring//seasonmodel_states($N)")
+hmmFall(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh(1)//fall//seasonmodel_states($N)")
+hmmSpring(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh(1)//fall//seasonmodel_states($N)")
+hmmSummer(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh(1)//spring//seasonmodel_states($N)")
 hmmFall(N) = HMM_Forecast.loadHMM("seasonmodel_hh(1)//summer//seasonmodel_states($N)")
 hmmWinter(N) = HMM_Forecast.loadHMM("seasonmodel_hh(1)//winter//seasonmodel_states($N)")
 
+
+
 ## Evaluate models
-for (hmm, N) in [(hmmFall(100), 100)]
+for (hmm, N) in [(hmmFall(200), 100)]
     evalResult = HMM_Forecast.calcEvaluation(hmm, trainDataFall, testDataFall)
     HMM_Forecast.printEvaluation("Season Model Fall states($N)", evalResult)
 end
 
 # Calc Distribution Forecast
 x = 1000
-H = 30
+H = 100
 T = 20
 hmm = hmmFall(100)
 
@@ -32,6 +34,7 @@ testDataFallAsIndeces[x-H+1:x]
 forecast[1:end]
 
 p = HMM_Forecast.plotDistributionForecastWithViolin(hmm, testDataFall[x-H-T+1:x-H], testDataFall[x-H+1:x], forecast[1:end])
+
 
 
 ## Set Parameters

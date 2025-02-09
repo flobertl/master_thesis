@@ -4,5 +4,5 @@ Pkg.activate("HMM_Forecast")
 using Revise, Dates, Statistics, Random, Plots
 using HMM_Forecast
 
-HMM_Forecast.runSeasonModelFullYear([100])
+HMM_Forecast.runBasisModelAnalysis([10])
 

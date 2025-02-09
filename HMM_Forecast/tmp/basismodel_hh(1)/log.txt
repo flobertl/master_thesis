@@ -1,3 +1,12 @@
+Basismodel states(1)   --- loglike-Train: -125347.66729317332/// loglike-Test: -123040.67013485372  /// MAPE: 0.8087852063838827    /// R^2: 999.0/// Mean CRPS: 5230.149652776065
+Basismodel states(50)  --- loglike-Train: NaN                /// loglike-Test: -103241.85838156646  /// MAPE: 0.4819292548142594    /// R^2: 999.0/// Mean CRPS: 3890.8477487477094
+Basismodel states(100) --- loglike-Train: -109910.75771832064/// loglike-Test: -101267.2188111941   /// MAPE: 0.4785662691745749    /// R^2: 999.0/// Mean CRPS: 3932.247976434368
+Basismodel states(150) --- loglike-Train: -112126.24319594815/// loglike-Test: -99507.18487357057   /// MAPE: 0.48317929890863887   /// R^2: 999.0/// Mean CRPS: 3967.9943106784926
+Basismodel states(200) --- loglike-Train: -114937.51683242829/// loglike-Test: -97965.49796814646   /// MAPE: 0.5042139160583669    /// R^2: 999.0/// Mean CRPS: 4092.0787596767054
+Basismodel states(250) --- loglike-Train: NaN                /// loglike-Test: -95934.45170052027   /// MAPE: 0.5028992662479387    /// R^2: 999.0/// Mean CRPS: 4119.434090391625
+Basismodel states(300) --- loglike-Train: NaN                /// loglike-Test: -94096.86412035889   /// MAPE: 0.5041332371477092    /// R^2: 999.0/// Mean CRPS: 4137.217153347019
+
+
 Likelihoods: 
 Basismodel 50 states --- Likelihood Train: -103241.8584741467; Likelihood Test -108491.66911765793
 Basismodel 100 states --- Likelihood Train: -101267.21828958043; Likelihood Test -109910.75311843748

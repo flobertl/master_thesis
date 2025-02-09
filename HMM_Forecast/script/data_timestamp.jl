@@ -1,4 +1,4 @@
-(observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years(hh);
+(observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Timestamps(hh, 8);
 dates = HMM_Forecast.dateTimesOf2YearsData()
 dateIndeces = HMM_Forecast.calcFirstQHofYearAndMonth()
 

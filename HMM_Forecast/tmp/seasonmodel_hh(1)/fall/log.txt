@@ -1,0 +1,1 @@
+eason Model Fall states(100) --- loglike-Train: -23710.857289133834/// loglike-Test: -32365.713624759723/// MAPE: 0.46749372236180986/// R^2: 999.0/// Mean CRPS: 4021.288060897451

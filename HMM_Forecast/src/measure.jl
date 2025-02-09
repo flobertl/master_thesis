@@ -51,14 +51,20 @@ function crps(observationSpace::ObservationSpace, observation, distribution::Vec
 end
 
 ## Eval forecast Vectors
+function loglikelihood(hmm::HMM, observations::Vector{Int64})::Float64
+    observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
+    alpha, loglikelihood = forwardAlgo(hmm, observationsAsIndeces)
+    return loglikelihood
+end 
+
 function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
     T = length(observations)
-    if H != lenght(distributionVector)
+    if T != length(distributionVector)
         throw(DimensionMismatch("$distributionVector and $observations"))
     end
     meanCRPS = 0
     for t in 1:T
-        meanCRPS +=  crps(observationSpace, observation[t], distribution[t])
+        meanCRPS +=  crps(observationSpace, observations[t], distributionVector[t])
     end
     return meanCRPS/T
 end
