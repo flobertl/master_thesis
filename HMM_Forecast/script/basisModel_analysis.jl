@@ -4,25 +4,25 @@ Pkg.activate("HMM_Forecast")
 using Revise, Dates, Plots
 using HMM_Forecast
 
+hh = 2
+include("data.jl")
+trainData = dataTrainingFullYear
+testData = dataTestsFullYear
+
 ## loadHMM and data
 hmm1 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(1)//basismodel_states(1)")
-hmm10 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(10)//basismodel_states(10)")
-hmm50 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(50)//basismodel_states(50)")
-hmm100 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(100)//basismodel_states(100)")
-hmm150 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(150)//basismodel_states(150)")
+hmm10 = HMM_Forecast.loadHMM("basismodel_hh($hh)//states(10)//basismodel_states(10)")
+hmm50 = HMM_Forecast.loadHMM("basismodel_hh($hh)//states(50)//basismodel_states(50)")
+hmm100 = HMM_Forecast.loadHMM("basismodel_hh($hh)//states(100)//basismodel_states(100)")
+hmm150 = HMM_Forecast.loadHMM("basismodel_hh($hh)//states(150)//basismodel_states(150)")
 hmm250 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(250)//basismodel_states(250)")
 hmm200 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(200)//basismodel_states(200)")
 hmm300 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(300)//basismodel_states(300)")
 
 hmms = [(hmm50, 50), (hmm100, 100), (hmm150, 150), (hmm200, 200), (hmm250, 250), (hmm300, 300)]
 
-hh = 1
-include("data.jl")
-trainData = dataTrainingFullYear
-testData = dataTestsFullYear
-
 ## Evaluate models
-for (hmm, N) in [(hmm10, 10)]
+for (hmm, N) in [(hmm50, 50)]
     evalResult = HMM_Forecast.calcEvaluation(hmm, trainData, testData)
     HMM_Forecast.printEvaluation("Basismodel states($N)", evalResult)
 end

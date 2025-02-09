@@ -70,7 +70,7 @@ function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64
 end
 
 function mape_forMeanPointForecast(observationSpace::ObservationSpace, observations, forecast::Vector{Vector{Float64}})::Float64
-    H = length(observations)
+    H = length(forecast)
     relativeErrors = zeros(Float64, H)
     for i in 1:H
         relativeErrors[i] = (mean(observationSpace, forecast[i]) - observations[i])/observations[i] |> abs

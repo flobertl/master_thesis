@@ -105,6 +105,28 @@ function printEvaluation(name::String, ((loglikelihood_test,loglikelihood_train)
     println("$name --- loglike-Train: $loglikelihood_train/// loglike-Test: $loglikelihood_test/// MAPE: $mape/// R^2: $r_sqare/// Mean CRPS: $crps")
 end
 
+function calcEvaluationGivenForecast(observationSpace::ObservationSpace, testData, distributionForecastVector)
+    # Set timing variable
+    prevTime = now()
+
+    # Calc MAPE 
+    println("Calc MAPE:")
+    mape = mape_forMeanPointForecast(observationSpace, testData, distributionForecastVector)
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    # Calc R_squared
+    println("Calc R_Squared:")
+    r_sqare = 999. # r_squared_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    # Calc CRPS
+    println("Calc CRPS:")
+    crps = meanCRPS(observationSpace, testData, distributionForecastVector)
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    return (mape, r_sqare, crps)
+end
+
 
 
 

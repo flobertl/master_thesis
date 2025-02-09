@@ -7,18 +7,18 @@ using HMM_Forecast
 hh = 1
 include("data_timestamp.jl");
 
-hmmFall(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh(1)//fall//seasonmodel_states($N)")
-hmmSpring(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh(1)//fall//seasonmodel_states($N)")
-hmmSummer(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh(1)//spring//seasonmodel_states($N)")
-hmmFall(N) = HMM_Forecast.loadHMM("seasonmodel_hh(1)//summer//seasonmodel_states($N)")
-hmmWinter(N) = HMM_Forecast.loadHMM("seasonmodel_hh(1)//winter//seasonmodel_states($N)")
+hmmFall(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh($hh)//fall//seasonmodel_states($N)")
+hmmSpring(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh($hh)//spring//seasonmodel_states($N)")
+hmmSummer(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh($hh)//summer//seasonmodel_states($N)")
+hmmWinter(N) = HMM_Forecast.loadHMM("seasonmodel_timestamps_hh($hh)//winter//seasonmodel_states($N)")
 
 
-
-## Evaluate models
-for (hmm, N) in [(hmmFall(200), 100)]
-    evalResult = HMM_Forecast.calcEvaluation(hmm, trainDataFall, testDataFall)
-    HMM_Forecast.printEvaluation("Season Model Fall states($N)", evalResult)
+## Evaluate models Summer
+season = "Summer"
+results= Dict()
+for (hmm, N) in [(hmmSummer(100), 100)]
+    evalResult = HMM_Forecast.calcEvaluation(hmm, trainDataSummer, testDataSummer)
+    HMM_Forecast.printEvaluation("Season Model Summer states($N)", evalResult)
 end
 
 # Calc Distribution Forecast
