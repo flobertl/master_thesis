@@ -8,6 +8,7 @@ include("dates.jl")
 
 include("measure.jl")
 include("plot.jl")
+include("benchmark.jl")
 
 include("prod.jl")
 include("test.jl")

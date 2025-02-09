@@ -1,0 +1,3 @@
+Baseline Evaluation
+Fullyear // MAPE: 0.7729337791527681, 999.0,  CPRS: 4944.076941028932)
+Season_timestamp Fall: MAPE:0.6656845, 999.0; CPRS: 4545.714114010962
