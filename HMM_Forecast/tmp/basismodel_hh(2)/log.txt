@@ -1,1 +1,11 @@
-Basismodel states(10) --- loglike-Train: -96920.87131459863/// loglike-Test: -114318.81190047479/// MAPE: 0.2576561606995405/// R^2: 999.0/// Mean CRPS: 4098.394652208672
+Basismodel States(1) --- loglike-Train: -125813.36586152294/// loglike-Test: -138251.7229412138/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5896.389253189931
+Basismodel States(3) --- loglike-Train: -108561.43222294898/// loglike-Test: -122761.81796459493/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4603.90252163077
+Basismodel States(5) --- loglike-Train: -108128.57028005806/// loglike-Test: -121693.80669983046/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5044.819666439248
+Basismodel States(7) --- loglike-Train: -101723.60622129697/// loglike-Test: -117547.77181633106/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4246.28813183065
+Basismodel States(10) --- loglike-Train: -96920.87131459863/// loglike-Test: -114318.81190047479/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4098.394652208672
+Basismodel States(15) --- loglike-Train: -94762.21623213959/// loglike-Test: -112808.0191569247/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3913.507451047299
+Basismodel States(20) --- loglike-Train: -93005.82773607547/// loglike-Test: -111342.91841031628/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3902.468334471957
+Basismodel States(30) --- loglike-Train: -91966.02548144826/// loglike-Test: -111622.86767217923/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3948.8787938297196
+Basismodel States(40) --- loglike-Train: -90707.4178457993/// loglike-Test: -112035.8496415732/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3910.780307946265
+Basismodel States(50) --- loglike-Train: -90096.19842443755/// loglike-Test: -111722.63824008915/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3896.1497381603435
+Basismodel States(60) --- loglike-Train: -89757.65612351634/// loglike-Test: -112357.68158608628/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3913.503964594728

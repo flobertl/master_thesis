@@ -75,7 +75,7 @@ function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1)
     return carme
 end
 
-function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1) 
+function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
 
     Random.seed!(42)
     
@@ -101,14 +101,14 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
     dataTests               = observations[startIndexTest:endIndexTest]
 
     prevTime = now()
-    carme = Dict()
+    loglike = Dict()
 
     for N in numberOfStatesVector
         # Train and store model 
         println("\n ########################### MODEL $N states #################################")
         println("-------------- Train Model with $N states------------------")
         hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-        saveHMM(hmm, "basismodel_hh($hh)//states($N)//basismodel_states($N)")
+        saveHMM(hmm, "basismodel_hh($hh)//basismodel_states($N)")
         # N = 50
         # hmm1 = loadHMM("basismodel_hh(1)//states(1)//basismodel_states(1)")
         prevTime = printTimeAndResetTimeStamp(prevTime)
@@ -120,28 +120,61 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
 
         # plotDistributionForecastWithViolin(hmm, dataTraining[end-20:end], dataTests[3301:3320], distributionForecastVector[1:20])
  
-        # Generate PIT Plots
-        println("-------------- Generate PT plots for {$N} states------------------")
-        pitYear = HMM_Forecast.plotPIT(hmm, dataTests, distributionForecastVector, "PIT of Year 2020")
-        pitSpring = HMM_Forecast.plotPIT(hmm, observations[indecesSpring20], distributionForecastVector[indecesSpring20 .- (startIndexTest-1)], "Spring")
-        pitSummer = HMM_Forecast.plotPIT(hmm, observations[indecesSummer20], distributionForecastVector[indecesSummer20 .- (startIndexTest-1)], "Summer")
-        pitFall = HMM_Forecast.plotPIT(hmm, observations[indecesFall20], distributionForecastVector[indecesFall20 .- (startIndexTest-1)], "Fall")
-        pitWinter = HMM_Forecast.plotPIT(hmm, observations[indecesWinter20], distributionForecastVector[indecesWinter20 .- (startIndexTest-1)], "Winter")
-        pitSeasons = plot(pitSpring, pitSummer, pitFall, pitWinter, layout=(2,2))
-        pit0300 = HMM_Forecast.plotPIT(hmm, dataTests[1+3*4:96:end], distributionForecastVector[1+3*4:96:end], "03:00")
-        pit0900 = HMM_Forecast.plotPIT(hmm, dataTests[1+9*4:96:end], distributionForecastVector[1+9*4:96:end], "09:00")
-        pit01500 = HMM_Forecast.plotPIT(hmm, dataTests[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
-        pit2100 = HMM_Forecast.plotPIT(hmm, dataTests[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
-        pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
-        png(pitYear, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitYear.png")
-        png(pitSpecificTimes, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitSpecificTimes.png")
-        png(pitSeasons, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitSeasons.png")
-        prevTime = printTimeAndResetTimeStamp(prevTime)
+        # # Generate PIT Plots
+        # println("-------------- Generate PT plots for {$N} states------------------")
+        # pitYear = HMM_Forecast.plotPIT(hmm, dataTests, distributionForecastVector, "PIT of Year 2020")
+        # pitSpring = HMM_Forecast.plotPIT(hmm, observations[indecesSpring20], distributionForecastVector[indecesSpring20 .- (startIndexTest-1)], "Spring")
+        # pitSummer = HMM_Forecast.plotPIT(hmm, observations[indecesSummer20], distributionForecastVector[indecesSummer20 .- (startIndexTest-1)], "Summer")
+        # pitFall = HMM_Forecast.plotPIT(hmm, observations[indecesFall20], distributionForecastVector[indecesFall20 .- (startIndexTest-1)], "Fall")
+        # pitWinter = HMM_Forecast.plotPIT(hmm, observations[indecesWinter20], distributionForecastVector[indecesWinter20 .- (startIndexTest-1)], "Winter")
+        # pitSeasons = plot(pitSpring, pitSummer, pitFall, pitWinter, layout=(2,2))
+        # pit0300 = HMM_Forecast.plotPIT(hmm, dataTests[1+3*4:96:end], distributionForecastVector[1+3*4:96:end], "03:00")
+        # pit0900 = HMM_Forecast.plotPIT(hmm, dataTests[1+9*4:96:end], distributionForecastVector[1+9*4:96:end], "09:00")
+        # pit01500 = HMM_Forecast.plotPIT(hmm, dataTests[1+15*4:96:end], distributionForecastVector[1+15*4:96:end], "15:00")
+        # pit2100 = HMM_Forecast.plotPIT(hmm, dataTests[1+21*4:96:end], distributionForecastVector[1+21*4:96:end], "21:00")
+        # pitSpecificTimes = plot(pit0300, pit0900, pit01500, pit2100, layout=(2,2))
+        # png(pitYear, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitYear.png")
+        # png(pitSpecificTimes, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitSpecificTimes.png")
+        # png(pitSeasons, ".//HMM_Forecast//tmp//basismodel_hh($hh)//states($N)//pitSeasons.png")
+        # prevTime = printTimeAndResetTimeStamp(prevTime)
 
         # Calc average mean error
-        push!(carme, N => mape_forMeanPointForecast(observationSpace, dataTests, distributionForecastVector))
+        (loglikeTrain, loglikeTest) = (loglikelihood(hmm, dataTraining), loglikelihood(hmm |> updateHMMNumericalStable, dataTests))
+        println("LOGLIKE --- Train: $loglikeTrain / Test: $loglikeTest")
+        push!(loglike, N => (loglikeTrain, loglikeTest))
     end
 
     println(carme)
-    return carme
+    return loglike
 end
+
+function trainSeasonModels(numberOfStatesVector = 30:5:60, hh = 1)
+
+    Random.seed!(42)
+    iter = 100
+
+    # Data
+    (observationSpace, observations, observationsAsIndeces) = getData2Years(hh);
+    dates = dateTimesOf2YearsData()
+    dateIndeces = calcFirstQHofYearAndMonth()
+
+    trainDataIndeces = [trainDataSpringIndeces, trainDataSummerIndeces, trainDataFallIndeces, trainDataWinterIndeces]
+
+    for seasonIndex in 1:4
+        dataTrainingAsIndeces   = observationsAsIndeces[trainDataIndeces[seasonIndex]]
+        dataTraining            = observations[trainDataIndeces[seasonIndex]]
+
+        prevTime = now()
+        loglike = Dict()
+
+        for N in numberOfStatesVector
+            # Train and store model 
+            println("-------------- Train Season Model $(seasonStrings[seasonIndex]) with $N states------------------")
+            hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
+            saveHMM(hmm, "seasonmodel_hh($hh)//seasonmodel_"*seasonStrings[seasonIndex]*"_states($N)")
+            prevTime = printTimeAndResetTimeStamp(prevTime)
+        end
+    end
+end
+
+

@@ -85,7 +85,7 @@ function calcEvaluation(hmm::HMM, trainData, testData)
 
     # Calc MAPE 
     println("Calc MAPE:")
-    mape = mape_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
+    mape = 0 # mape_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
     prevTime = printTimeAndResetTimeStamp(prevTime)
 
     # Calc R_squared

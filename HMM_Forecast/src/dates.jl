@@ -47,3 +47,16 @@ end
 function endOfDecember20()
      (dateTimesOf2YearsData() |> length) -4
 end
+
+# Season Data
+dateIndeces = calcFirstQHofYearAndMonth()
+trainDataFallIndeces = dateIndeces[2, 9] : (dateIndeces[2, 12] - 1)
+testDataFallIndeces = dateIndeces[3, 9] : (dateIndeces[3, 12] - 1)
+trainDataWinterIndeces = dateIndeces[1, 12] : (dateIndeces[2, 3] - 1)
+testDataWinterIndeces = dateIndeces[2, 12] : (dateIndeces[3, 3] - 1)
+trainDataSpringIndeces = dateIndeces[2, 3] : (dateIndeces[2, 6] - 1)
+testDataSpringIndeces = dateIndeces[3, 3] : (dateIndeces[3, 6] - 1)
+trainDataSummerIndeces = dateIndeces[2, 6] : (dateIndeces[2, 9] - 1)
+testDataSummerIndeces = dateIndeces[3, 6] : (dateIndeces[3, 9] - 1)
+
+seasonStrings = ["spring", "summer", "fall", "winter"]
