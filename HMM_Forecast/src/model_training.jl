@@ -177,4 +177,34 @@ function trainSeasonModels(numberOfStatesVector = 30:5:60, hh = 1)
     end
 end
 
+function trainSeasonModelsWithTimeStamps(numberOfTimeBlocks = 8, numberOfStatesVector = 30:5:60, hh = 1)
+
+    Random.seed!(42)
+    iter = 100
+
+    # Data
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_Timestamps(hh, numberOfTimeBlocks);
+    dates = dateTimesOf2YearsData()
+    dateIndeces = calcFirstQHofYearAndMonth()
+
+    trainDataIndeces = [trainDataSpringIndeces, trainDataSummerIndeces, trainDataFallIndeces, trainDataWinterIndeces]
+
+    for seasonIndex in 1:4
+        dataTrainingAsIndeces   = observationsAsIndeces[trainDataIndeces[seasonIndex]]
+        dataTraining            = observations[trainDataIndeces[seasonIndex]]
+
+        prevTime = now()
+        loglike = Dict()
+
+        for N in numberOfStatesVector
+            # Train and store model 
+            println("-------------- Train Season Timestamp Model $(seasonStrings[seasonIndex]) with $N states------------------")
+            hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
+            saveHMM(hmm, "seasonmodel_timestamps_hh($hh)//seasonmodel_Ts_"*seasonStrings[seasonIndex]*"_states($N)_timeblocks($numberOfTimeBlocks)")
+            prevTime = printTimeAndResetTimeStamp(prevTime)
+        end
+    end
+end
+
+
 
