@@ -6,13 +6,14 @@ using HMM_Forecast
 using Plots
 
 # Set Paramets
-hh = 2
+hh = 3
 day = 96
 week = 7
 
 
 # load Data 2 Months
 (observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Timestamps(hh, 8);
+histogram(observations, legend = false, ylim = (0,500), color = "black")
 dateTimes = HMM_Forecast.dateTimesOf2YearsData()
 startJuni18 = 4*(24+15)+2 
 startSeptember18 = startJuni18 + 24*4*92
@@ -156,16 +157,16 @@ for (season, (dates1, dates2)) in seasons
 end
 
 # Plotting Experiments
-# violin(observations, ylims = (0,6000))
-# totalWeeks = 50
-# agregated = zeros(Float64, T)
-# for i in 1:totalWeeks
-#     observations = HMM_Forecast.translateIndexToObservations(observationsAsIndeces[W*i+1:T+W*i], observationSpace)
-#     agregated = agregated .+ (observations./totalWeeks)
-# end
+violin(observations, ylims = (0,6000))
+totalWeeks = 50
+agregated = zeros(Float64, T)
+for i in 1:totalWeeks
+    observations = HMM_Forecast.translateIndexToObservations(observationsAsIndeces[W*i+1:T+W*i], observationSpace)
+    agregated = agregated .+ (observations./totalWeeks)
+end
 
-# plot1 = plot(dateTimes[1:T], agregated)
-# plot!(dateTimes[1:T], observations[1:T], color = :red)
+plot1 = plot(dateTimes[1:T], agregated)
+plot!(dateTimes[1:T], observations[1:T], color = :red)
 
 x=1:10
 p = plot(x, sin.(x), label="sin(x)")  # Erstes Element mit Legende
