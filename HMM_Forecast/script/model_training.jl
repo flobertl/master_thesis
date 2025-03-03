@@ -6,10 +6,11 @@ using HMM_Forecast
 
 # Parameters
 hh = 2
-numberOfStatesVector = 10:10:20
-numberOfTimeBlocks = 8
-# HMM_Forecast.runBasisModelAnalysis(numberOfStatesVector, 2)
+numberOfStatesVector = 70:80
+numberOfTimeBlocks = 4
 
-HMM_Forecast.trainSeasonModels(numberOfStatesVector, hh)
+HMM_Forecast.runBasisModelAnalysis(numberOfStatesVector, 2)
 
-#HMM_Forecast.trainSeasonModelsWithTimeStamps(numberOfTimeBlocks, numberOfStatesVector, hh)
+#HMM_Forecast.trainSeasonModels(numberOfStatesVector, hh)
+
+~HMM_Forecast.trainSeasonModelsWithTimeStamps(numberOfTimeBlocks, numberOfStatesVector, hh)

@@ -1,21 +1,70 @@
+seasonmodel_Ts_spring_states(10)_timeblocks(4) --- loglike-Train: -30309.07308469559/// loglike-Test: -36183.889526534054/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4843.606947463986
+seasonmodel_Ts_spring_states(20)_timeblocks(4) --- loglike-Train: -28305.534376489002/// loglike-Test: -34234.8312448501/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4317.71331068842
+seasonmodel_Ts_spring_states(30)_timeblocks(4) --- loglike-Train: -27637.295556029/// loglike-Test: -36050.28059951394/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4328.09211163948
+seasonmodel_Ts_spring_states(40)_timeblocks(4) --- loglike-Train: -27137.86920622328/// loglike-Test: -35789.963478227975/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4207.471814990891
+seasonmodel_Ts_spring_states(50)_timeblocks(4) --- loglike-Train: -26551.85614058559/// loglike-Test: -37644.79154542209/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4303.376402853328
+seasonmodel_Ts_spring_states(60)_timeblocks(4) --- loglike-Train: -26735.126882364028/// loglike-Test: -39148.16394605723/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4616.327862318867
+seasonmodel_Ts_spring_states(70)_timeblocks(4) --- loglike-Train: -26166.222287891545/// loglike-Test: -38671.20486412522/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4235.20814198366
+
+seasonmodel_Ts_summer_states(10)_timeblocks(4) --- loglike-Train: -25885.112527195284/// loglike-Test: -37183.76441113424/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5210.761935008864
+seasonmodel_Ts_summer_states(20)_timeblocks(4) --- loglike-Train: -23119.546276441062/// loglike-Test: -35658.93217760507/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4882.025981657594
+seasonmodel_Ts_summer_states(30)_timeblocks(4) --- loglike-Train: -22098.80985106177/// loglike-Test: -37443.43596302713/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4752.1270369112435
+seasonmodel_Ts_summer_states(40)_timeblocks(4) --- loglike-Train: -21048.561690266502/// loglike-Test: -38455.16878511947/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4713.733204257206
+seasonmodel_Ts_summer_states(50)_timeblocks(4) --- loglike-Train: -20247.283230751993/// loglike-Test: -40476.301738113674/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4788.131372282572
+seasonmodel_Ts_summer_states(60)_timeblocks(4) --- loglike-Train: -20041.194095747225/// loglike-Test: -40753.2949758078/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4805.083542798884
+seasonmodel_Ts_summer_states(70)_timeblocks(4) --- loglike-Train: -19479.840003843216/// loglike-Test: -40305.77861789294/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4584.119909420275
+
+seasonmodel_Ts_fall_states(10)_timeblocks(4) --- loglike-Train: -28293.684165095387/// loglike-Test: -35978.828453401555/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5719.436596840658
+seasonmodel_Ts_fall_states(20)_timeblocks(4) --- loglike-Train: -25899.96515169291/// loglike-Test: -35181.99168000867/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4976.283991529364
+seasonmodel_Ts_fall_states(30)_timeblocks(4) --- loglike-Train: -24815.663553074173/// loglike-Test: -36475.63414657967/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4762.859614239896
+seasonmodel_Ts_fall_states(40)_timeblocks(4) --- loglike-Train: -24315.150354870002/// loglike-Test: -38766.73171282286/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4930.661666666634
+seasonmodel_Ts_fall_states(10)_timeblocks(4) --- loglike-Train: -28293.684165095387/// loglike-Test: -35978.828453401555/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5719.436596840658
+seasonmodel_Ts_fall_states(20)_timeblocks(4) --- loglike-Train: -25899.96515169291/// loglike-Test: -35181.99168000867/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4976.283991529364
+seasonmodel_Ts_fall_states(30)_timeblocks(4) --- loglike-Train: -24815.663553074173/// loglike-Test: -36475.63414657967/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4762.859614239896
+
+seasonmodel_Ts_fall_states(10)_timeblocks(4) --- loglike-Train: -28293.684165095387/// loglike-Test: -35978.828453401555/// MAPE: 0/seasonmodel_Ts_fall_states(10)_timeblocks(4) --- loglike-Train: -28293.684165095387/// loglike-Test: -35978.828453401555/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5719.436596840658
+seasonmodel_Ts_fall_states(20)_timeblocks(4) --- loglike-Train: -25899.96515169291/// loglike-Test: -35181.99168000867/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4976.283991529364
+seasonmodel_Ts_fall_states(30)_timeblocks(4) --- loglike-Train: -24815.663553074173/// loglike-Test: -36475.63414657967/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4762.859614239896
+seasonmodel_Ts_fall_states(40)_timeblocks(4) --- loglike-Train: -24315.150354870002/// loglike-Test: -38766.73171282286/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4930.661666666634
+seasonmodel_Ts_fall_states(50)_timeblocks(4) --- loglike-Train: -23604.90733431377/// loglike-Test: -40948.58409298687/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5176.054318910238
+seasonmodel_Ts_fall_states(60)_timeblocks(4) --- loglike-Train: -23594.083855253233/// loglike-Test: -41008.83645998723/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 5087.6812534340725
+seasonmodel_Ts_fall_states(70)_timeblocks(4) --- loglike-Train: -22829.74346508852/// loglike-Test: -43337.23334217645/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4895.515345695953
+
+seasonmodel_Ts_winter_states(10)_timeblocks(4) --- loglike-Train: -29192.375752131382/// loglike-Test: -32732.13524105194/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4688.413709936251
+seasonmodel_Ts_winter_states(20)_timeblocks(4) --- loglike-Train: -25922.455238105722/// loglike-Test: -30011.725050095363/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3742.505705128214
+seasonmodel_Ts_winter_states(30)_timeblocks(4) --- loglike-Train: -25809.84561363001/// loglike-Test: -32241.524691746978/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3794.7125515108764
+seasonmodel_Ts_winter_states(40)_timeblocks(4) --- loglike-Train: -24987.888930184126/// loglike-Test: -30716.384226471153/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3731.2389571885615
+seasonmodel_Ts_winter_states(50)_timeblocks(4) --- loglike-Train: -24433.684473542075/// loglike-Test: -32789.61972572867/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3850.5337671703605
+seasonmodel_Ts_winter_states(60)_timeblocks(4) --- loglike-Train: -24521.30730067005/// loglike-Test: -34999.0689740988/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3994.702147435912
+seasonmodel_Ts_winter_states(70)_timeblocks(4) --- loglike-Train: -24041.683374308996/// loglike-Test: -33929.66768827624/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3906.8393830127898
+
+
+seasonmodel_spring_states(10) --- loglike-Train: -26438.325926643643/// loglike-Test: -28409.82664722277/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3957.0160552536245
+seasonmodel_spring_states(20) --- loglike-Train: -25831.71497287064/// loglike-Test: -28225.762508644657/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4013.803521286259
 seasonmodel_spring_states(30) --- loglike-Train: -25243.335233357968/// loglike-Test: -28637.11277690859/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3962.2560122281184
 seasonmodel_spring_states(40) --- loglike-Train: -24835.381686714965/// loglike-Test: -29082.900594554234/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3995.361707427535
 seasonmodel_spring_states(50) --- loglike-Train: -24580.027133295516/// loglike-Test: -29494.409130311797/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4003.1614243658632
 seasonmodel_spring_states(60) --- loglike-Train: -24282.086805896244/// loglike-Test: -29860.900316407206/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3997.6189651268337
 seasonmodel_spring_states(70) --- loglike-Train: -23756.10971914724/// loglike-Test: -30864.401034630806/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4056.7049818840815
 
+seasonmodel_spring_states(10) --- loglike-Train: -26438.325926643643/// loglike-Test: -28409.82664722277/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3957.0160552536245
+seasonmodel_spring_states(20) --- loglike-Train: -25831.71497287064/// loglike-Test: -28225.762508644657/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4013.803521286259
 seasonmodel_summer_states(30) --- loglike-Train: -18436.4051518766/// loglike-Test: -31668.48018631409/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4257.694723731872
 seasonmodel_summer_states(40) --- loglike-Train: -17996.27330937992/// loglike-Test: -32438.619702300282/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4269.785416666657
 seasonmodel_summer_states(50) --- loglike-Train: -17675.248078628516/// loglike-Test: -33533.09440599888/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4361.856136775384
 seasonmodel_summer_states(60) --- loglike-Train: -17409.237010565812/// loglike-Test: -34721.25920805687/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4369.1101675724585
 seasonmodel_summer_states(70) --- loglike-Train: -17159.165916988164/// loglike-Test: -34763.79322181764/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4555.492323369573
 
+seasonmodel_fall_states(10) --- loglike-Train: -23405.365064248403/// loglike-Test: -30205.607564225444/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4506.463919413926
+seasonmodel_fall_states(20) --- loglike-Train: -22451.60226474528/// loglike-Test: -31202.270190374773/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4517.265865384604
 seasonmodel_fall_states(30) --- loglike-Train: -21995.09386497773/// loglike-Test: -31547.422525705628/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4589.861172161148
 seasonmodel_fall_states(40) --- loglike-Train: -21275.967038287148/// loglike-Test: -33302.10993633514/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4584.960084706947
 seasonmodel_fall_states(50) --- loglike-Train: -20929.461199130947/// loglike-Test: -32557.377073447853/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4603.420318223464
 seasonmodel_fall_states(60) --- loglike-Train: -20652.393053896896/// loglike-Test: -33653.97947950565/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4656.65410943223
 seasonmodel_fall_states(70) --- loglike-Train: -20400.200980537185/// loglike-Test: -36452.71691761801/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 4799.9187957875165
 
+seasonmodel_winter_states(10) --- loglike-Train: -24515.374049851758/// loglike-Test: -25665.02506717184/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3631.0949862637235
+seasonmodel_winter_states(20) --- loglike-Train: -23740.915007480336/// loglike-Test: -25621.423778785072/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3718.4213255494537
 seasonmodel_winter_states(30) --- loglike-Train: -23114.133988355585/// loglike-Test: -25408.230917019828/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3564.1342261905374
 seasonmodel_winter_states(40) --- loglike-Train: -22600.672760551322/// loglike-Test: -26022.589302517437/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3577.784249084222
 seasonmodel_winter_states(50) --- loglike-Train: -22342.46685843027/// loglike-Test: -26218.9571084132/// MAPE: 0/// R^2: 999.0/// Mean CRPS: 3616.2982715201456
