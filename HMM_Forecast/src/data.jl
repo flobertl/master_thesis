@@ -44,7 +44,7 @@ function abstractLoadObservations_Simplified(observation::Array{Int64})
             load_abstract = roundToGivenDigit(load, 100)
         # Ab 2500 in 300er Schritten
         else 
-            load_abstract = roundToGivenDigit(load, 1000)
+            load_abstract = roundToGivenDigit(load, 500)
         end
         return load_abstract
     end
@@ -135,7 +135,7 @@ function getData2Years_Simplified(householdId::Int64)
     return(observationSpace, abstractObser, observationsAsIndeces)
 end
 
-function getData2Years_SimplifiedAndTimestamps(householdId::Int64)
+function getData2Years_SimplifiedAndTimestamps(householdId::Int64, numberOfTimeBlocks::Int64)
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
     df = DataFrame(XLSX.readtable(path, "Sheet1"))
@@ -144,7 +144,7 @@ function getData2Years_SimplifiedAndTimestamps(householdId::Int64)
 
     # Convert Data
     abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
-    abstractObserWithTimestamps = addTimestamps(6, abstractObser)
+    abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
     observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
     observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
 
