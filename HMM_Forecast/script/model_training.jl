@@ -5,12 +5,8 @@ using Revise, Dates, Statistics, Random, Plots
 using HMM_Forecast
 
 # Parameters
-hh = 2
-numberOfStatesVector = 70:80
-numberOfTimeBlocks = 4
+hhVector = 1:5
+numberOfStatesVector = [1]
+numberOfTimeBlocks = [4, 8, 12, 24, 96]
 
-HMM_Forecast.runBasisModelAnalysis(numberOfStatesVector, 2)
-
-#HMM_Forecast.trainSeasonModels(numberOfStatesVector, hh)
-
-~HMM_Forecast.trainSeasonModelsWithTimeStamps(numberOfTimeBlocks, numberOfStatesVector, hh)
+HMM_Forecast.trainAllModels(hhVector, numberOfStatesVector, numberOfTimeBlocks)

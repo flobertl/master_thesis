@@ -8,11 +8,12 @@ function discretize(observations)
     return map(Int, discreteObs)
 end
 
+function roundToGivenDigit(x, stepWidth::Int)
+    x_round = (x/stepWidth) |> round
+    return map(Int, x_round*stepWidth)
+end
+
 function abstractLoadObservations(observation::Array{Int64})
-    function roundToGivenDigit(x, stepWidth::Int)
-        x_round = (x/stepWidth) |> round
-        return map(Int, x_round*stepWidth)
-    end
     function abstractLoad(load::Int64) 
         # Unter 700 watt in 10er Schritten
         if load <= 700 
@@ -34,10 +35,6 @@ function abstractLoadObservations(observation::Array{Int64})
 end
 
 function abstractLoadObservations_Simplified(observation::Array{Int64})
-    function roundToGivenDigit(x, stepWidth::Int)
-        x_round = (x/stepWidth) |> round
-        return map(Int, x_round*stepWidth)
-    end
     function abstractLoad(load::Int64) 
         # Unter 700 watt in 10er Schritten
         if load <= 2500

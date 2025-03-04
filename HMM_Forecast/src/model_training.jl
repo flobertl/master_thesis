@@ -148,62 +148,100 @@ function runBasisModelAnalysis(numberOfStatesVector = 50:50:300, hh = 1)
     return loglike
 end
 
-function trainSeasonModels(numberOfStatesVector = 30:5:60, hh = 1)
-
-    Random.seed!(42)
+function trainBasisModels(hh = 1, numberOfStatesVector = 30:5:60)
     iter = 100
 
     # Data
-    (observationSpace, observations, observationsAsIndeces) = getData2Years(hh);
-    dates = dateTimesOf2YearsData()
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
     dateIndeces = calcFirstQHofYearAndMonth()
+
+    dataTrainingAsIndeces   = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]
+
+    prevTime = now()
+    for N in numberOfStatesVector
+        # Train and store model 
+        println("-------------- Train Basis Model with $N states------------------")
+        hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
+        saveHMM(hmm, "simplified_experiments/basismodel_hh($hh)//basismodel_states($N)")
+        prevTime = printTimeAndResetTimeStamp(prevTime)
+    end
+end
+
+function trainBasisModelsWithTimestamps(hh = 1, numberOfStatesVector = 30:5:60, numberOfTimeBlocks = 4 )
+    iter = 100
+
+    # Data
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_SimplifiedAndTimestamps(hh, numberOfTimeBlocks);
+    dateIndeces = calcFirstQHofYearAndMonth()
+
+    dataTrainingAsIndeces   = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]
+
+    prevTime = now()
+    for N in numberOfStatesVector
+        # Train and store model 
+        println("-------------- Train Basis Model with timestamps $(numberOfTimeBlocks) with $N states------------------")
+        hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
+        saveHMM(hmm, "simplified_experiments/basismodel_timestamps_hh($hh)//basismodel_ts($numberOfTimeBlocks)_states($N)")
+        prevTime = printTimeAndResetTimeStamp(prevTime)
+    end
+end
+
+function trainSeasonModels(hh = 1, numberOfStatesVector = 30:5:60)
+    iter = 100
+
+    # Data
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
 
     trainDataIndeces = [trainDataSpringIndeces, trainDataSummerIndeces, trainDataFallIndeces, trainDataWinterIndeces]
 
+    prevTime = now()
     for seasonIndex in 1:4
         dataTrainingAsIndeces   = observationsAsIndeces[trainDataIndeces[seasonIndex]]
-        dataTraining            = observations[trainDataIndeces[seasonIndex]]
-
-        prevTime = now()
-        loglike = Dict()
-
         for N in numberOfStatesVector
             # Train and store model 
             println("-------------- Train Season Model $(seasonStrings[seasonIndex]) with $N states------------------")
             hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-            saveHMM(hmm, "seasonmodel_hh($hh)//seasonmodel_"*seasonStrings[seasonIndex]*"_states($N)")
+            saveHMM(hmm, "simplified_experiments/seasonmodel_hh($hh)//seasonmodel_"*seasonStrings[seasonIndex]*"_states($N)")
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end
 end
 
-function trainSeasonModelsWithTimeStamps(numberOfTimeBlocks = 8, numberOfStatesVector = 30:5:60, hh = 1)
-
-    Random.seed!(42)
+function trainSeasonModelsWithTimeStamps(hh = 1, numberOfStatesVector = 30:5:60, numberOfTimeBlocks = 4)
     iter = 100
 
     # Data
-    (observationSpace, observations, observationsAsIndeces) = getData2Years_Timestamps(hh, numberOfTimeBlocks);
-    dates = dateTimesOf2YearsData()
-    dateIndeces = calcFirstQHofYearAndMonth()
-
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_SimplifiedAndTimestamps(hh, numberOfTimeBlocks);
     trainDataIndeces = [trainDataSpringIndeces, trainDataSummerIndeces, trainDataFallIndeces, trainDataWinterIndeces]
 
+    prevTime = now()
     for seasonIndex in 1:4
         dataTrainingAsIndeces   = observationsAsIndeces[trainDataIndeces[seasonIndex]]
-        dataTraining            = observations[trainDataIndeces[seasonIndex]]
-
-        prevTime = now()
-        loglike = Dict()
-
         for N in numberOfStatesVector
             # Train and store model 
-            println("-------------- Train Season Timestamp Model $(seasonStrings[seasonIndex]) with $N states------------------")
+            println("-------------- Train Season Timestamp ($numberOfTimeBlocks) Model $(seasonStrings[seasonIndex]) with $N states------------------")
             hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-            saveHMM(hmm, "seasonmodel_timestamps_hh($hh)//seasonmodel_Ts_"*seasonStrings[seasonIndex]*"_states($N)_timeblocks($numberOfTimeBlocks)")
+            saveHMM(hmm, "simplified_experiments/seasonmodel_timestamps_hh($hh)//seasonmodel_ts_"*seasonStrings[seasonIndex]*"_states($N)_timeblocks($numberOfTimeBlocks)")
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end
+end
+
+
+function trainAllModels(hhVector, numberOfStatesVector, numberOfTimeBlocksVector)
+    for hh in hhVector
+        trainBasisModels(hh, numberOfStatesVector)
+        trainSeasonModels(hh, numberOfStatesVector)
+        for numberOfTimeBlocks in numberOfTimeBlocksVector
+            trainBasisModelsWithTimestamps(hh, numberOfStatesVector, numberOfTimeBlocks)
+            trainSeasonModelsWithTimeStamps(hh, numberOfStatesVector, numberOfTimeBlocks)
+        end
+    end
+    prinln("#################################################################################")
+    prinln("#################################################################################")
+    prinln("#################################################################################")
+    prinln("#################################################################################")
+    prinln("###################### EXPERIMENTS FINISHED #####################################")
 end
 
 
