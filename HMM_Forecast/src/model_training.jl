@@ -234,14 +234,14 @@ function trainAllModels(hhVector, numberOfStatesVector, numberOfTimeBlocksVector
         trainSeasonModels(hh, numberOfStatesVector)
         for numberOfTimeBlocks in numberOfTimeBlocksVector
             trainBasisModelsWithTimestamps(hh, numberOfStatesVector, numberOfTimeBlocks)
-            trainSeasonModelsWithTimeStamps(hh, numberOfStatesVector, numberOfTimeBlocks)
+            #trainSeasonModelsWithTimeStamps(hh, numberOfStatesVector, numberOfTimeBlocks)
         end
     end
-    prinln("#################################################################################")
-    prinln("#################################################################################")
-    prinln("#################################################################################")
-    prinln("#################################################################################")
-    prinln("###################### EXPERIMENTS FINISHED #####################################")
+    println("#################################################################################")
+    println("#################################################################################")
+    println("#################################################################################")
+    println("#################################################################################")
+    println("###################### EXPERIMENTS FINISHED #####################################")
 end
 
 
