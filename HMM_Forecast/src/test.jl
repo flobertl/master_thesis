@@ -239,6 +239,16 @@ function testTimestamps()
     testingEquality(name, result, expectedResult)
 end
 
+function testTranslateForecastDistributionTimestampsToOriginal()
+    name = "Test translation from timestamp to original forecast distribution"
+    obserSpaceOriginal = ObservationSpace(Set([10, 20]))
+    obserSpaceTimestamps = ObservationSpace(Set([11, 12, 21, 22]))
+    forecastOriginal = [0.6, 0.4]
+    forecastTimestamps = [[0.2, 0.4, 0.1, 0.3]]
+
+    testingEquality(name, translateTimestampsToOriginalDistributionForecast(obserSpaceTimestamps,obserSpaceOriginal,forecastTimestamps)[1], forecastOriginal)
+end
+
 function testMeasure()
     name = "Test measures "
     obserSpace = ObservationSpace(Set([1, 2]))

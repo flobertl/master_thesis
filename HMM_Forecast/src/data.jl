@@ -253,6 +253,34 @@ function loadHMM(fileName::String)
 end
 
 #-------------------------------------------------------------------------
+# Translate distribution forecast from timestamps to original data
+
+function mapTimestampToOriginalIndeces(obserSpaceTimestamps::ObservationSpace, obserSpaceOriginal::ObservationSpace)::Dict{Int,Int}
+    numberOfTimeBlocks = obserSpaceTimestamps.dimension/obserSpaceOriginal.dimension
+    mappingTimestampToOriginalIndeces = Dict()
+    for indexTimestamp in 1:obserSpaceTimestamps.dimension
+        timestampValue = obserSpaceTimestamps.mapIndexToObservation[indexTimestamp]
+        originalValue = filter(observation -> observation <= timestampValue, obserSpaceOriginal.observations) |> maximum
+        indexOriginal = obserSpaceOriginal.mapObservationToIndex[originalValue]
+        mappingTimestampToOriginalIndeces[indexTimestamp] = indexOriginal
+    end
+    return mappingTimestampToOriginalIndeces
+end
+
+function translateTimestampsToOriginalDistributionForecast(obserSpaceTimestamps::ObservationSpace, obserSpaceOriginal::ObservationSpace, distributionForecastVector::Vector{Vector{Float64}})
+    originalDistributionForecastVector = Vector()
+    mappingTimestampToOriginalIndeces = mapTimestampToOriginalIndeces(obserSpaceTimestamps, obserSpaceOriginal)
+    for timestampsDistributionForecast in distributionForecastVector
+        originalDistributionForecast = zeros(Float64, obserSpaceOriginal.dimension)
+        for indexTimestamp in keys(timestampsDistributionForecast)
+            originalDistributionForecast[mappingTimestampToOriginalIndeces[indexTimestamp]] += timestampsDistributionForecast[indexTimestamp]
+        end
+        push!(originalDistributionForecastVector, originalDistributionForecast)
+    end
+    return originalDistributionForecastVector
+end
+
+#-------------------------------------------------------------------------
 # Test data
 function loadObservations1(path::String)
     # Öffnen einer Excel-Datei
