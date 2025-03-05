@@ -69,14 +69,18 @@ function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64
     return meanCRPS/T
 end
 
-# function mape_forMeanPointForecast(observationSpace::ObservationSpace, observati
-# end
-
-function r_squared_forMeanPointForecast(observationSpace::ObservationSpace, observations, forecastVector::Vector{Vector{Float64}})::Float64
+function mape_forMeanPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
     H = length(observations)
-    pointForecast = map(x -> mean(observationSpace, x), forecastVector)
+    means = map(distro -> (mean(observationSpace, distro)), distributionVector)
+    result = abs.( (observations .- means) ./ observations)  |> sum
+    return result/H
+end
+
+function r_squared_forMeanPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, forecastVector::Vector{Vector{Float64}})::Float64
+    H = length(observations)
+    pointForecast = map(distro -> mean(observationSpace, distro), forecastVector)
     meanObs = sum(observations)/H
-    SS_res = map(i -> (observations[i] - pointForecast[i])^2, 1:H)
-    SS_tot = map(i -> (observations[i] - meanObs)^2, 1:H)
-    return SS_res/SS_tot
+    SS_res = map(i -> (observations[i] - pointForecast[i])^2, 1:H) |> sum
+    SS_tot = map(i -> (observations[i] - meanObs)^2, 1:H) |> sum
+    return 1 - SS_res/SS_tot
 end
