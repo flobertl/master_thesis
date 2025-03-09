@@ -174,7 +174,7 @@ function trainBasisModelsWithTimestamps(hh = 1, numberOfStatesVector = 30:5:60, 
     (observationSpace, observations, observationsAsIndeces) = getData2Years_SimplifiedAndTimestamps(hh, numberOfTimeBlocks);
     dateIndeces = calcFirstQHofYearAndMonth()
 
-    dataTrainingAsIndeces   = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]
+    dataTrainingAsIndeces  = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]
 
     prevTime = now()
     for N in numberOfStatesVector

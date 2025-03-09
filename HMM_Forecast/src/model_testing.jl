@@ -78,10 +78,10 @@ function calcEvaluation(hmm::HMM, trainData, testData)
     loglikelihood_test = loglikelihood(hmmStable, testData)
 
     # Calc MAPE 
-    mape = mape_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
+    mape = mae_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
 
     # Calc R_squared
-    r_sqare = 999. # r_squared_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
+    r_sqare = 0 #r_squared_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
 
     # Calc CRPS
     crps = meanCRPS(hmm.observationSpace, testData, distributionForecastVector)
@@ -89,37 +89,48 @@ function calcEvaluation(hmm::HMM, trainData, testData)
     return ((loglikelihood_test,loglikelihood_train), mape, r_sqare, crps)
 end
 
+function calcEvaluationTimestampModel(hmmTS::HMM, trainDataTS, testDataTS,  obserSpaceOriginal, testDataOriginal)
+    testDataAsIndeces = translateObservationsToIndex(testDataTS, hmmTS.observationSpace)
+    trainDataAsIndeces = translateObservationsToIndex(trainDataTS, hmmTS.observationSpace)
+    hmmStable = hmmTS |> updateHMMNumericalStable
+
+    # Calc Likelihood
+    loglikelihood_train = loglikelihood(hmmStable, trainDataTS)
+    loglikelihood_test = loglikelihood(hmmStable, testDataTS)
+
+    # Calc Prediction
+    distributionForecastVectorTimestamp = createSeveralOneStepPredictions(hmmStable, trainDataAsIndeces, testDataAsIndeces)
+    distributionForecastVectorOriginal = translateTimestampsToOriginalDistributionForecast(hmmStable.observationSpace, obserSpaceOriginal, distributionForecastVectorTimestamp)
+
+    # Calc prediction measures
+    (mape, r_sqare, crps) = calcEvaluationGivenForecast(obserSpaceOriginal, testDataOriginal, distributionForecastVectorOriginal)
+    
+    return ((loglikelihood_test,loglikelihood_train), mape, r_sqare, crps)
+end
+
 function printEvaluation(name::String, ((loglikelihood_test,loglikelihood_train), mape, r_sqare, crps))
-    println("$name --- loglike-Train: $loglikelihood_train/// loglike-Test: $loglikelihood_test/// MAPE: $mape/// R^2: $r_sqare/// Mean CRPS: $crps")
+    println("$name --- loglike-Train: $loglikelihood_train /// loglike-Test: $loglikelihood_test /// MAE: $mape /// Mean CRPS: $crps")
 end
 
 function calcEvaluationGivenForecast(observationSpace::ObservationSpace, testData, distributionForecastVector)
-    # Set timing variable
-    prevTime = now()
-
     # Calc MAPE 
-    mape = mape_forMeanPointForecast(observationSpace, testData, distributionForecastVector)
-
+    mape = mae_forMeanPointForecast(observationSpace, testData, distributionForecastVector)
     # Calc R_squared
-    r_sqare = r_squared_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
-    prevTime = printTimeAndResetTimeStamp(prevTime)
-
+    r_sqare = 0 #r_squared_forMeanPointForecast(observationSpace, testData, distributionForecastVector)
     # Calc CRPS
     crps = meanCRPS(observationSpace, testData, distributionForecastVector)
-    prevTime = printTimeAndResetTimeStamp(prevTime)
 
     return (mape, r_sqare, crps)
 end
 
-function evaluateSeasonmodels(numberOfStatesVector = 5:5:30, hh = 1)
+function evaluateSeasonmodels(hh = 1, numberOfStatesVector = 5:5:30)
     # Data
     (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
-    dates = dateTimesOf2YearsData()
-    dateIndeces = calcFirstQHofYearAndMonth()
     trainDataIndeces = [trainDataSpringIndeces, trainDataSummerIndeces, trainDataFallIndeces, trainDataWinterIndeces]
     testDataIndeces = [testDataSpringIndeces, testDataSummerIndeces, testDataFallIndeces, testDataWinterIndeces]
 
     results = [Vector{}() for i in 1:4]
+    println("------------------ Evaluate seasonmodel_hh($hh) --------------------")
     for seasonIndex in 1:4
         dataTraining = observations[trainDataIndeces[seasonIndex]]
         dataTest     = observations[testDataIndeces[seasonIndex]]
@@ -129,43 +140,115 @@ function evaluateSeasonmodels(numberOfStatesVector = 5:5:30, hh = 1)
         resultSeason = []
         for N in numberOfStatesVector
             # Train and store model 
-            hmm = loadHMM("seasonmodel_hh($hh)//seasonmodel_"*seasonStrings[seasonIndex]*"_states($N)") |> updateHMMNumericalStable
+            hmm = loadHMM("simplified_experiments/seasonmodel_hh($hh)//seasonmodel_"*seasonStrings[seasonIndex]*"_states($N)") |> updateHMMNumericalStable
             result = calcEvaluation(hmm, dataTraining, dataTest)
             push!(resultSeason, result)
             printEvaluation("seasonmodel_($hh)_"*seasonStrings[seasonIndex]*"_states($N)" , result)
         end
-        resultSeason[seasonIndex] = resultSeason
+        results[seasonIndex] = resultSeason
+        println(" ")
     end
+    prevTime = printTimeAndResetTimeStamp(prevTime)
     return results
 end
 
-function evaluateSeasonmodelsWithTimeStamps(numberOfTimeBlocks = 8, numberOfStatesVector = 30:5:60, hh = 1)
+
+function evaluateBasismodel(hh = 1, numberOfStatesVector = 30:5:60)
     # Data
-    (observationSpace, observations, observationsAsIndeces) = getData2Years_Timestamps(hh, numberOfTimeBlocks);
-    dates = dateTimesOf2YearsData()
+    (observationSpaceOriginal, observations, observationsAsIndecesOriginal) = getData2Years_Simplified(hh);
     dateIndeces = calcFirstQHofYearAndMonth()
-    trainDataIndeces = [trainDataSpringIndeces, trainDataSummerIndeces, trainDataFallIndeces, trainDataWinterIndeces]
-    testDataIndeces = [testDataSpringIndeces, testDataSummerIndeces, testDataFallIndeces, testDataWinterIndeces]
 
-    results = [Vector{}() for i in 1:4]
-    for seasonIndex in 1:4
-        dataTraining = observations[trainDataIndeces[seasonIndex]]
-        dataTest     = observations[testDataIndeces[seasonIndex]]
+    dataTraining = observations[dateIndeces[2,1]:dateIndeces[3,1]-1]
+    dataTest     = observations[dateIndeces[3,1]:endOfDecember20()]
 
-        prevTime = now()
-        loglike = Dict()
-        resultSeason = []
+    prevTime = now()
+    results = []
+    println("------------------ Evaluate basismodel_hh($hh) --------------------")
+    for N in numberOfStatesVector
+        # Train and store model 
+        hmm = loadHMM("simplified_experiments/basismodel_hh($hh)//basismodel_states($N)") 
+        result = calcEvaluation(hmm, dataTraining, dataTest)
+        push!(results, result)
+        printEvaluation("basismodel_hh($hh)_states($N)" , result)
+    end
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+    return results
+end
+
+function evaluateBasismodelWithTimestamps(hh = 1, numberOfStatesVector = 30:5:60, numberOfTimeBlocksVector = [8])
+    # Data
+    (obserSpaceOriginal, observationsOriginal, observationsAsIndecesOriginal) = getData2Years_Simplified(hh);
+
+    dateIndeces = calcFirstQHofYearAndMonth()
+
+    dataTestOriginal    = observationsOriginal[dateIndeces[3,1]:endOfDecember20()]
+
+    prevTime = now()
+    results = []
+    println("------------------ Evaluate basismodel_hh($hh) with timestamps  --------------------")
+    for numberOfTimeBlocks in numberOfTimeBlocksVector
+        (observationSpace, observationsTS, observationsAsIndecesTS) = getData2Years_SimplifiedAndTimestamps(hh, numberOfTimeBlocks);
+        dataTrainingTS = observationsTS[dateIndeces[2,1]:dateIndeces[3,1]-1]
+        dataTestTS    = observationsTS[dateIndeces[3,1]:endOfDecember20()]
+    
         for N in numberOfStatesVector
             # Train and store model 
-            hmm = loadHMM("seasonmodel_timestamps_hh($hh)//seasonmodel_Ts_"*seasonStrings[seasonIndex]*"_states($N)_timeblocks($numberOfTimeBlocks)") |> updateHMMNumericalStable
-            result = calcEvaluation(hmm, dataTraining, dataTest)
-            push!(resultSeason, result)
-            printEvaluation("seasonmodel_Ts_"*seasonStrings[seasonIndex]*"_states($N)_timeblocks($numberOfTimeBlocks)" , result)
+            hmm = loadHMM("simplified_experiments/basismodel_timestamps_hh($hh)//basismodel_ts($numberOfTimeBlocks)_states($N)") 
+            result = calcEvaluationTimestampModel(hmm, dataTrainingTS, dataTestTS, obserSpaceOriginal, dataTestOriginal)
+            push!(results, result)
+            printEvaluation("basismodel_ts($numberOfTimeBlocks)_states($N)" , result)
         end
-        results[seasonIndex] = resultSeason
+        println(" ")
     end
+    prevTime = printTimeAndResetTimeStamp(prevTime)
     return results
 end
+
+function evaluateAllModels(hhs = [1],  numberOfStatesVector = 30:5:60, numberOfTimeBlocksVector = [8])
+    results = Vector() 
+    prevTime = now()
+    for hh in hhs
+        resultHH = Vector()
+        push!(resultHH, evaluateBasismodel(hh, numberOfStatesVector))
+        push!(resultHH, evaluateBasismodelWithTimestamps(hh, numberOfStatesVector, numberOfTimeBlocksVector))
+        push!(resultHH, evaluateSeasonmodels(hh, numberOfStatesVector))
+        push!(results, resultHH)
+    end
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+    return results
+end
+
+
+
+
+
+# function evaluateSeasonmodelsWithTimeStamps(numberOfTimeBlocks = 8, numberOfStatesVector = 30:5:60, hh = 1)
+#     # Data
+#     (observationSpace, observations, observationsAsIndeces) = getData2Years_Timestamps(hh, numberOfTimeBlocks);
+#     dates = dateTimesOf2YearsData()
+#     dateIndeces = calcFirstQHofYearAndMonth()
+#     trainDataIndeces = [trainDataSpringIndeces, trainDataSummerIndeces, trainDataFallIndeces, trainDataWinterIndeces]
+#     testDataIndeces = [testDataSpringIndeces, testDataSummerIndeces, testDataFallIndeces, testDataWinterIndeces]
+
+#     results = [Vector{}() for i in 1:4]
+#     for seasonIndex in 1:4
+#         dataTraining = observations[trainDataIndeces[seasonIndex]]
+#         dataTest     = observations[testDataIndeces[seasonIndex]]
+
+#         prevTime = now()
+#         loglike = Dict()
+#         resultSeason = []
+#         for N in numberOfStatesVector
+#             # Train and store model 
+#             hmm = loadHMM("seasonmodel_timestamps_hh($hh)//seasonmodel_Ts_"*seasonStrings[seasonIndex]*"_states($N)_timeblocks($numberOfTimeBlocks)") |> updateHMMNumericalStable
+#             result = calcEvaluation(hmm, dataTraining, dataTest)
+#             push!(resultSeason, result)
+#             printEvaluation("seasonmodel_Ts_"*seasonStrings[seasonIndex]*"_states($N)_timeblocks($numberOfTimeBlocks)" , result)
+#         end
+#         results[seasonIndex] = resultSeason
+#     end
+#     return results
+# end
 
 
 

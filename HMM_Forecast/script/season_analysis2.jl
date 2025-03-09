@@ -9,7 +9,7 @@ hh = 1
 iter = 100
 states = [10]
 timeBlocks = 8 
-(observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Timestamps(hh, timeBlocks);
+(observationSpace, observations, observationsAsIndeces) = HMM_Forecast.getData2Years_Simplified(hh, timeBlocks);
 dates = HMM_Forecast.dateTimesOf2YearsData()
 dateIndeces = HMM_Forecast.calcFirstQHofYearAndMonth()
 

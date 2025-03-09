@@ -259,7 +259,7 @@ function testMeasure()
     testingEquality(name*"variance", variance(obserSpace, distro), 3/16)
     testingEquality(name*"pinball 1", pinball(obserSpace, observation, distro, 0.5), 0.)
     testingEquality(name*"pinball 2", pinball(obserSpace, observation, distro, 0.1), 0.1)
-    testingEquality(name*"mape", mape_forMeanPointForecast(obserSpace, [observation], [distro]), 0.125)
+    testingEquality(name*"mape", mae_forMeanPointForecast(obserSpace, [observation], [distro]), 0.125)
 
     distro = [[1 , 0], [1/4, 3/4]]
     observation = [1, 2] 

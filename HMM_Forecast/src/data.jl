@@ -267,7 +267,7 @@ function mapTimestampToOriginalIndeces(obserSpaceTimestamps::ObservationSpace, o
     return mappingTimestampToOriginalIndeces
 end
 
-function translateTimestampsToOriginalDistributionForecast(obserSpaceTimestamps::ObservationSpace, obserSpaceOriginal::ObservationSpace, distributionForecastVector::Vector{Vector{Float64}})
+function translateTimestampsToOriginalDistributionForecast(obserSpaceTimestamps::ObservationSpace, obserSpaceOriginal::ObservationSpace, distributionForecastVector::Vector{Vector{Float64}})::Vector{Vector{Float64}}
     originalDistributionForecastVector = Vector()
     mappingTimestampToOriginalIndeces = mapTimestampToOriginalIndeces(obserSpaceTimestamps, obserSpaceOriginal)
     for timestampsDistributionForecast in distributionForecastVector

@@ -69,10 +69,10 @@ function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64
     return meanCRPS/T
 end
 
-function mape_forMeanPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
+function mae_forMeanPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
     H = length(observations)
-    means = map(distro -> (mean(observationSpace, distro)), distributionVector)
-    result = abs.( (observations .- means) ./ observations)  |> sum
+    means = map(distro -> (mean(observationSpace, distro)), distributionVector)::Vector{Float64}
+    result = abs.( (observations - means)) |> sum
     return result/H
 end
 
