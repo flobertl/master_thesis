@@ -230,8 +230,8 @@ end
 
 function trainAllModels(hhVector, numberOfStatesVector, numberOfTimeBlocksVector)
     for hh in hhVector
-        trainBasisModels(hh, numberOfStatesVector)
-        trainSeasonModels(hh, numberOfStatesVector)
+        #trainBasisModels(hh, numberOfStatesVector)
+        #trainSeasonModels(hh, numberOfStatesVector)
         for numberOfTimeBlocks in numberOfTimeBlocksVector
             trainBasisModelsWithTimestamps(hh, numberOfStatesVector, numberOfTimeBlocks)
             #trainSeasonModelsWithTimeStamps(hh, numberOfStatesVector, numberOfTimeBlocks)

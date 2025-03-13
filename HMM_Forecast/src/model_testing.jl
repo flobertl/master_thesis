@@ -209,9 +209,9 @@ function evaluateAllModels(hhs = [1],  numberOfStatesVector = 30:5:60, numberOfT
     prevTime = now()
     for hh in hhs
         resultHH = Vector()
-        push!(resultHH, evaluateBasismodel(hh, numberOfStatesVector))
+        #push!(resultHH, evaluateBasismodel(hh, numberOfStatesVector))
         push!(resultHH, evaluateBasismodelWithTimestamps(hh, numberOfStatesVector, numberOfTimeBlocksVector))
-        push!(resultHH, evaluateSeasonmodels(hh, numberOfStatesVector))
+        #push!(resultHH, evaluateSeasonmodels(hh, numberOfStatesVector))
         push!(results, resultHH)
     end
     prevTime = printTimeAndResetTimeStamp(prevTime)
