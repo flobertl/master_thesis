@@ -1,0 +1,61 @@
+1. Introduction
+- Thema context
+- Properties of power loads in households (stochstic, lack of data, seasonality)
+- lack of usage in forecasting
+- literature review
+- novelty and contribution
+
+Background
+2.1 power load characteristics
+  - Diskussion of power load characteristics with graphics (variability, seasonality)
+    - Mean, variance, median demand of course during a day for year/seasons.
+    - ACF/fouriertransform to identify more patterns/periodicity?
+2.2 HMM basics 
+2.3.HMM as distribution forecast
+2.4 Evaluation metrics 
+
+3. Development of forecasting HMM model
+3.1 Model setup
+ - discrete HMM
+ - State Space hidden
+ - Observation: Load (discretized), Timedata
+3.2. Trainig
+    Division in Training and Test/Eval Data:
+    - Households 
+        - 5 Households for Model explaration, Hyperparameter Tuning
+        - 10 Housholds for Benchmarking
+    - Splitting 2 1/2 years timeseries in Training/Testing  
+        - Fullyear models: 1year Training, 1 year testing (1/2 year not used, so no season biases)
+        - Season specific models: 2:1 training-test split (for summer and fall), 1:1 split (for winter, spring)
+            - additional question: How much does the model improve with more training data?
+3.3 Hyperparameter
+    - Numbers of States
+        - limited by computational restrictions
+    - Training Data
+        - length also affects computational effort
+    - Observations
+        - Load
+        - Additional dimension: Timedata, Seasonality
+    - HMM specific Parameter: max #Iteration Init Values of Traingsalgo
+
+4. Modell Design
+4.1 Data
+  - Data explanations
+  - Using data from different households
+    Experiment with 5 households
+    - One representative household for disussion
+    - Repetition of all experiments with 4 households for reasurance
+        - results in Appendix
+4.2 Experiments
+- Basismodel
+- Saisonal model
+
+5. Numerical evaluation
+5.1 Experiments
+- Basismodel
+- Saisonal model
+5.2 Benchmark test
+
+6. Summary
+- Discussion of results
+- open questions, outlook
