@@ -1,13 +1,13 @@
 # MA Besprechung 2025-3-13
 
-## Agenda
+## Agenda (nicht eingehalten)
 1. Allgemeines
 2. Momentaner Status
 3. Überarbeitung der MA Fragestellung
 4. Zeitlicher Rahmen 
 5. Konkrete Schritte 
 
-## Diskussions Punkte
+## Diskussions Punkte (nicht besprochen)
 - Vorstellungen vom Paper
     - ein "wissenschaftlicher" Zugang
     - Es gibt nur einen Wichtigen Zugang
