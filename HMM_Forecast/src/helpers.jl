@@ -1,6 +1,10 @@
-using Distributions, Random
+using Distributions, Random, LinearAlgebra
 using HiddenMarkovModels: HMM as HMMPkg 
 
+function isNumericalEqual(leftSide, rightSide)::Bool
+    epsilon = 1E-10
+    (rightSide - epsilon < leftSide) && (leftSide < rightSide + epsilon)
+end
 
 function translateObservationsToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
     f(x) = observationSpace.mapObservationToIndex[x]
@@ -77,4 +81,30 @@ function updateHMMNumericalStable(hmm::HMM)
     obsMatrix_numStable = hmm.observationMatrix.transitionMatrix .+ 10e-15 
     newObservationMatrix = B(hmm.observationMatrix.dimension, obsMatrix_numStable./ sum(obsMatrix_numStable, dims = 2))
     HMM(hmm.numberOfStateSpace, hmm.transitionMatrix, newObservationMatrix, hmm.startingDistribution, hmm.observationSpace)
+end
+
+function updateHMMWithStationaryInitDistro(oldHMM::HMM)::HMM
+    eigenvalues, eigenvectors = eigen(oldHMM.transitionMatrix.transitionMatrix')
+    indicesForEigenvector = findall(x -> isNumericalEqual(x, 1), eigenvalues) 
+    println(oldHMM.transitionMatrix.transitionMatrix, eigenvalues, eigenvectors)
+
+    if isempty(indicesForEigenvector)
+        throw(DomainError((eigenvalues, eigenvectors), "There is no eigenvalue = 1. (=> No stationary distribution)"))
+    elseif length(indicesForEigenvector) == 1
+        #println(eigenvectors[indicesForEigenvector[1], :])
+        singleEigenVector = eigenvectors[:, indicesForEigenvector[1]] / sum(eigenvectors[:, indicesForEigenvector[1]])
+        #println(singleEigenVector)
+    else 
+        throw(DomainError((eigenvalues, eigenvectors), "There are multiple eigenvalues = 1. (=> Multiple stationary distribution)"))
+    end
+
+    if singleEigenVector isa Array{Float64}
+        stationaryDistro = StochasticVector(singleEigenVector)
+    else
+        throw(DonainError(singleEigenVector, "The eigenvector is of type $(typeof(singleEigenVector))"))
+    end
+
+    newHMM = HMM(oldHMM.numberOfStateSpace, oldHMM.transitionMatrix, oldHMM.observationMatrix, stationaryDistro, oldHMM.observationSpace)
+    
+    return newHMM
 end

@@ -6,7 +6,7 @@ epsilon = 1E-8
 
 function testingEquality(testName::String, testingValue, expectedResult)
     if all((expectedResult .< testingValue .+ epsilon) .& (expectedResult .> testingValue .- epsilon))  #evtl muss mann Epsilon einbauen
-        println("Sucess Test:", testName)
+        println("Sucess Test: ", testName)
     else
         println("FAILED Test: ", testName)
     end
@@ -212,6 +212,33 @@ function testForecastDistribution()
 
     testingEquality(name*"[part 2]", result[2], expectedResult[2])
     # println("expected: $(expectedResult[2]) ; result: $(result[2])")
+end
+
+function testUpdateHMMWithStationaryDistro()
+    name = "Test updating HMM with stationary Distro"
+    A_ = A(2, [1 2; 2 1]./3 )
+    B_ = B((2,2), [1 0; 1 0])
+    pi = StochasticVector([0, 1])
+    obserSpace = ObservationSpace(Set([1, 2]))
+
+    oldHMM = HMM(2, A_, B_, pi, obserSpace)
+
+    result = updateHMMWithStationaryInitDistro(oldHMM).startingDistribution.probabilities
+    expectedResult = [1/2 1/2]
+    testingEquality(name*" 1", result, expectedResult)
+    println("expected: $(expectedResult) ; result: $(result)")
+
+    A_ = A(3, [0.6 0.2 0.2; 0.3 0.3 0.4; 0.1 0.4 0.5] )
+    B_ = B((3,2), [1 0; 1 0; 0 2 ])
+    pi = StochasticVector([0, 1, 0])
+    obserSpace = ObservationSpace(Set([1, 2, 3]))
+
+    oldHMM = HMM(3, A_, B_, pi, obserSpace)
+
+    result = updateHMMWithStationaryInitDistro(oldHMM).startingDistribution.probabilities
+    expectedResult = [0.322033898305085, 0.3050847457627117, 0.3728813559322034]
+    testingEquality(name*" 2", result, expectedResult)
+    println("expected: $(expectedResult) ; result: $(result)")
 end
 
 function testSaveAndLoadHMM()
