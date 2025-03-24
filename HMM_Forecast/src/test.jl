@@ -227,7 +227,6 @@ function testUpdateHMMWithStationaryDistro()
     result = updateHMMWithStationaryInitDistro(oldHMM).startingDistribution.probabilities
     expectedResult = [1/2 1/2]
     testingEquality(name*" 1", result, expectedResult)
-    println("expected: $(expectedResult) ; result: $(result)")
 
     A_ = A(3, [0.6 0.2 0.2; 0.3 0.3 0.4; 0.1 0.4 0.5] )
     B_ = B((3,2), [1 0; 1 0; 0 2 ])
@@ -239,7 +238,6 @@ function testUpdateHMMWithStationaryDistro()
     result = updateHMMWithStationaryInitDistro(oldHMM).startingDistribution.probabilities
     expectedResult = [0.322033898305085, 0.3050847457627117, 0.3728813559322034]
     testingEquality(name*" 2", result, expectedResult)
-    println("expected: $(expectedResult) ; result: $(result)")
 end
 
 function testSaveAndLoadHMM()
@@ -278,7 +276,7 @@ function testTranslateForecastDistributionTimestampsToOriginal()
 end
 
 function testMeasure()
-    name = "Test measures "
+    name = "Measures "
     obserSpace = ObservationSpace(Set([1, 2]))
     distro = [1/4, 3/4]
     observation = 2
@@ -287,14 +285,13 @@ function testMeasure()
     testingEquality(name*"variance", variance(obserSpace, distro), 3/16)
     testingEquality(name*"pinball 1", pinball(obserSpace, observation, distro, 0.5), 0.)
     testingEquality(name*"pinball 2", pinball(obserSpace, observation, distro, 0.1), 0.1)
-    testingEquality(name*"mape", mae_forMeanPointForecast(obserSpace, [observation], [distro]), 0.125)
-
+    testingEquality(name*"mae", mae_forMeanPointForecast(obserSpace, [observation], [distro]), 0.25)
+    testingEquality(name*"variance of error 1", residualVariance(obserSpace, [observation; observation], [distro, distro]), 0)
+    testingEquality(name*"variance of error 2", residualVariance(obserSpace, [observation; [1]], [distro, distro]), 0.5)
     distro = [[1 , 0], [1/4, 3/4]]
     observation = [1, 2] 
     testingEquality(name*"R^2", r_squared_forMeanPointForecast(obserSpace, observation, distro), 1-0.25^2/0.5)
 end
-
-
 
 function testAll()
     testObservationToIndexMapping()
@@ -308,6 +305,8 @@ function testAll()
     testForecastDistribution()
     testTimestamps()
     testMeasure()
+    testUpdateHMMWithStationaryDistro()
+    testTranslateForecastDistributionTimestampsToOriginal()
 end
 
 function runUEAll()

@@ -76,6 +76,15 @@ function mae_forMeanPointForecast(observationSpace::ObservationSpace, observatio
     return result/H
 end
 
+function residualVariance(observationSpace::ObservationSpace, observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
+    H = length(observations)
+    means = map(distro -> (mean(observationSpace, distro)), distributionVector)::Vector{Float64}
+    residuals = (means - observations)
+    meanResidual = sum(residuals)/H
+    empVarianceOfError = sum((residuals .- meanResidual).^2) / (H-1)
+    return empVarianceOfError
+end
+
 function r_squared_forMeanPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, forecastVector::Vector{Vector{Float64}})::Float64
     H = length(observations)
     pointForecast = map(distro -> mean(observationSpace, distro), forecastVector)

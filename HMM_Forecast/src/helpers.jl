@@ -86,7 +86,6 @@ end
 function updateHMMWithStationaryInitDistro(oldHMM::HMM)::HMM
     eigenvalues, eigenvectors = eigen(oldHMM.transitionMatrix.transitionMatrix')
     indicesForEigenvector = findall(x -> isNumericalEqual(x, 1), eigenvalues) 
-    println(oldHMM.transitionMatrix.transitionMatrix, eigenvalues, eigenvectors)
 
     if isempty(indicesForEigenvector)
         throw(DomainError((eigenvalues, eigenvectors), "There is no eigenvalue = 1. (=> No stationary distribution)"))
