@@ -60,3 +60,6 @@ trainDataSummerIndeces = dateIndeces[2, 6] : (dateIndeces[2, 9] - 1)
 testDataSummerIndeces = dateIndeces[3, 6] : (dateIndeces[3, 9] - 1)
 
 seasonStrings = ["spring", "summer", "fall", "winter"]
+
+# Indeces first 2 Weeks of Seasons 
+testData2WeeksForAllSeasons = vcat(testDataSpringIndeces[1:96*7*2], testDataSummerIndeces[1:96*7*2], testDataFallIndeces[1:96*7*2], testDataWinterIndeces) 
