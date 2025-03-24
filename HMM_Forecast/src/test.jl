@@ -1,4 +1,5 @@
 using HiddenMarkovModels: baum_welch as BWAlgoPkg
+using Suppressor
 
 export testAll, runUEAll
 
@@ -145,7 +146,7 @@ function testBWAlgo()
     hmm = HMM(2, A_, B_, pi, obserSpace)
     observations = [2, 2]
 
-    hmm, likelihood = baumWelchAlgo(hmm, observations, 1)
+    hmm, likelihood = @suppress baumWelchAlgo(hmm, observations, 1)
     expectedResult = log(5/24)
     testingEquality(name, likelihood, expectedResult)
     # println("expected: $expectedResult ; result: $likelihood")
@@ -175,7 +176,7 @@ function testBWAlgoWithPkg()
     hmm1 = HMM(2, A_, B_, pi, obserSpace)
     hmm2 = transformHMMToPkgHMM(hmm1)
 
-    hmm3, result1 = baumWelchAlgo(hmm1, observations, 3)
+    hmm3, result1 = @suppress baumWelchAlgo(hmm1, observations, 3)
     hmm4, result2 = BWAlgoPkg(hmm2, observations, max_iterations = 3)
     return result1, result2
 end
