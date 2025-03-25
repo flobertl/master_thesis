@@ -218,9 +218,42 @@ function evaluateAllModels(hhs = [1],  numberOfStatesVector = 30:5:60, numberOfT
     return results
 end
 
+function evaluateBasismodel2(hh::Int, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
+    testDataIndeces = testData2WeeksForAllSeasons
+    sampleTestDataIndeces = testDataIndeces #rand(testDataIndeces, length)
 
+    prevTime = now()
+    resultsMAE = Array{Float64, 2}(undef, (length(numberOfStatesVector), length(historicWindowLengthVector)))
+    resultsResidualVariance = Array{Float64, 2}(undef, (length(numberOfStatesVector), length(historicWindowLengthVector)))
 
+    for (i_states, N) in enumerate(numberOfStatesVector)
+        # Train and store model 
+        hmm = loadHMM("simplified_experiments/basismodel_hh($hh)//basismodel_states($N)") 
 
+        for (i_hwl, historicWindowLength) in enumerate(historicWindowLengthVector)
+            println("------------------ Evaluate basismodel_hh($hh): states($N) historicWindowLength($historicWindowLength) --------------------")
+            forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, historicWindowLength, sampleTestDataIndeces)
+            resultsMAE[i_states, i_hwl] = mae_forMeanPointForecast(observationSpace, observations[sampleTestDataIndeces], forecastVector)
+            resultsResidualVariance[i_states, i_hwl] = residualVariance(observationSpace, observations[sampleTestDataIndeces], forecastVector)
+            prevTime = printTimeAndResetTimeStamp(prevTime)
+        end
+    end
+    return resultsMAE, resultsResidualVariance
+end
+
+function basismodelHyperparameterAnalysis(hh, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
+    resultsMAE, resultsResidualVariance = evaluateBasismodel2(hh, numberOfStatesVector, historicWindowLengthVector)
+    saveCSVTable("hyperparameter_analysis_MAE", resultsMAE, numberOfStatesVector, historicWindowLengthVector)
+    saveCSVTable("hyperparameter_analysis_ResidualVariance", resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
+
+    plotMAE(resultsMAE, numberOfStatesVector, historicWindowLengthVector)    
+    println(resultsResidualVariance)
+    plotResidualVariance(resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
+end
+
+############################################################################################################################
+## Legacy Code
 
 # function evaluateSeasonmodelsWithTimeStamps(numberOfTimeBlocks = 8, numberOfStatesVector = 30:5:60, hh = 1)
 #     # Data
@@ -249,10 +282,6 @@ end
 #     end
 #     return results
 # end
-
-
-
-
 
 function calcPITForBasisModel(numberOfStatesVector = 50:50:300, hh = 1) 
 

@@ -148,11 +148,10 @@ function plotMAE(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHisto
     title!("Hyperparameter Analysis: MAE")
 end
 
-function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHistoryWindow::Vector{Int})
+function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
     # Plot erstellen
     plt = plot()
-
-    for (i, historyWindowLength) in enumerate(lengthsOfHistoryWindow)
+    for (i, historyWindowLength) in enumerate(historicWindowLengthVector)
         mae_values = tableResults[:, i]
         plot!(plt,
             numberOfStatesVector, mae_values;
@@ -164,6 +163,6 @@ function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, l
     end
 
     xlabel!("Number of States")
-    ylabel!("MAE")
+    ylabel!("Residual Variance")
     title!("Hyperparameter Analysis: Variance of Residuals")
 end
