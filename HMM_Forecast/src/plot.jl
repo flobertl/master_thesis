@@ -129,3 +129,41 @@ function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast:
     hline!([(N/10)], color=:blue, linestyle=:dash, linewidth=2)
 end
 
+function plotMAE(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHistoryWindow::Vector{Int})
+        # Plot erstellen
+    plt = plot()
+    for (i, historyWindowLength) in enumerate(lengthsOfHistoryWindow)
+        mae_values = tableResults[:, i]
+        plot!(plt,
+            numberOfStatesVector, mae_values;
+            label = "historic window length = $historyWindowLength",
+            lw = 4,
+            marker = :circle,
+            markersize = 4,
+        )
+    end
+
+    xlabel!("Number of States")
+    ylabel!("MAE")
+    title!("Hyperparameter Analysis: MAE")
+end
+
+function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHistoryWindow::Vector{Int})
+    # Plot erstellen
+    plt = plot()
+
+    for (i, historyWindowLength) in enumerate(lengthsOfHistoryWindow)
+        mae_values = tableResults[:, i]
+        plot!(plt,
+            numberOfStatesVector, mae_values;
+            label = "historic window length = $historyWindowLength",
+            lw = 4,
+            marker = :circle,
+            markersize = 4,
+        )
+    end
+
+    xlabel!("Number of States")
+    ylabel!("MAE")
+    title!("Hyperparameter Analysis: Variance of Residuals")
+end
