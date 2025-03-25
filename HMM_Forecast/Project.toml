@@ -4,6 +4,7 @@ authors = ["Flo Schimek <florian.schimek@gmx.at>"]
 version = "0.1.0"
 
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 ChangePrecision = "3cb15238-376d-56a3-8042-d33272777c9a"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -20,6 +21,7 @@ Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
 
 [compat]
+CSV = "0.10.15"
 LinearAlgebra = "1.11.0"
 Pkg = "1.11.0"
 Suppressor = "0.2.8"

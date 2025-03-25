@@ -1,4 +1,4 @@
-using XLSX, DataFrames, Dates
+using XLSX, DataFrames, Dates, CSV
 
 # --------------------------------------------------------------------------
 # Helpers
@@ -278,6 +278,42 @@ function translateTimestampsToOriginalDistributionForecast(obserSpaceTimestamps:
         push!(originalDistributionForecastVector, originalDistributionForecast)
     end
     return originalDistributionForecastVector
+end
+
+#-------------------------------------------------------------------------
+# Save and load data tables
+tmpPath = ".//HMM_Forecast//tmp//simplified_experiments//"
+
+function saveCSVTable(title::String, mae_table, numberOfStatesVector, historicWindowLengthVector)
+    rows = []
+
+    for (i, state) in enumerate(numberOfStatesVector)
+        for (j, window) in enumerate(historicWindowLengthVector)
+            push!(rows, (NumberOfStates = state, HistoricWindowLength =window, mae=mae_table[i, j]))
+        end
+    end
+    df = DataFrame(rows)
+    CSV.write(tmpPath*title*".csv", df)
+end
+
+function loadCSVTable(title::String)
+    df = CSV.read(tmpPath*title*".csv", DataFrame)
+
+    # Eindeutige Zustände (x-Achse) und Fenstergrößen (für Linien)
+    states  = sort(unique(df.NumberOfStates))
+    window = sort(unique(df.HistoricWindowLength))
+
+    # MAE-Matrix initialisieren
+    mae_matrix = Array{Float64}(undef, length(states), length(window))
+
+    # Füllen der Matrix
+    for row in eachrow(df)
+        i = findfirst(==(row.NumberOfStates), states)
+        j = findfirst(==(row.HistoricWindowLength), window)
+        mae_matrix[i, j] = row.mae
+    end
+
+    return mae_matrix, states, window
 end
 
 #-------------------------------------------------------------------------

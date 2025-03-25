@@ -293,6 +293,17 @@ function testMeasure()
     testingEquality(name*"R^2", r_squared_forMeanPointForecast(obserSpace, observation, distro), 1-0.25^2/0.5)
 end
 
+function testSaveAndLoadCSVTable()
+    name = "Save and Load MAE Table "
+    table = [1 2; 3 4]
+    states = [10, 20]
+    windows = [100, 1000]
+
+    saveCSVTable("test", table, states, windows)
+    resultTable, resutlStates, resultWindows = loadCSVTable("test")
+    testingEquality(name, resultTable, table)
+end
+
 function testAll()
     testObservationToIndexMapping()
     testBackwardAndForwardAlgo()
@@ -307,6 +318,7 @@ function testAll()
     testMeasure()
     testUpdateHMMWithStationaryDistro()
     testTranslateForecastDistributionTimestampsToOriginal()
+    testSaveAndLoadCSVTable()
 end
 
 function runUEAll()
