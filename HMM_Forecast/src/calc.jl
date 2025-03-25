@@ -188,17 +188,12 @@ function bestPathPrognosis(hmm::HMM, observations, forecastHorizon::Int, initAlp
     return Z_hat, likelihood
 end
 
-function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int, initAlpha_T::Vector{Float64} = [0.0])::Vector{Vector{Float64}}
+function forecastDistribution(hmm::HMM, observations, forecastHorizon::Int)::Vector{Vector{Float64}}
     # Set parameter
     T = length(observations)
-    N, M = hmm.observationMatrix.dimension  # N = #hiddenStates, B = #observationStates
     
     # Step 0: Calc alpha(T)
-    if initAlpha_T == [0.]
-        alpha_T = forwardAlgo(hmm, observations)[1][T,:]
-    else
-        alpha_T = initAlpha_T
-    end
+    alpha_T = forwardAlgo(hmm, observations)[1][T,:]
 
     # Init Step: Alocate alpha_i^k(T+1), Z_hat
     forecast = Vector{Vector{Float64}}(undef, forecastHorizon)

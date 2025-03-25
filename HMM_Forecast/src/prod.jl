@@ -23,3 +23,10 @@ function createSeveralOneStepPredictions(hmm::HMM, histObservationsAsIndeces, fu
     return forecastVector
 end
 
+function createSlidingWindowPrediction(hmm::HMM, observationDataAsIndeces::Vector{Int}, historicWindowLength::Int, testDataIndeces::Vector{Int})::Vector{Int}
+    forecastVector = Vector{Vector{Float64}}(undef, length(testDataIndeces))
+    for (i, testIndex) in enumerate(testDataIndeces)
+        forecastVector[i] = forecastDistribution(hmm, observationDataAsIndeces[testIndex-historicWindowLength:testIndex-1], 1)[1]
+    end
+    return forecastVector
+end
