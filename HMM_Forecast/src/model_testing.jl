@@ -244,11 +244,10 @@ end
 
 function basismodelHyperparameterAnalysis(hh, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
     resultsMAE, resultsResidualVariance = evaluateBasismodel2(hh, numberOfStatesVector, historicWindowLengthVector)
-    saveCSVTable("hyperparameter_analysis_MAE", resultsMAE, numberOfStatesVector, historicWindowLengthVector)
-    saveCSVTable("hyperparameter_analysis_ResidualVariance", resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
+    saveCSVTable("hyperparameter_analysis_hh($hh)_MAE", resultsMAE, numberOfStatesVector, historicWindowLengthVector)
+    saveCSVTable("hyperparameter_analysis_hh($hh)_ResidualVariance", resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
 
     plotMAE(resultsMAE, numberOfStatesVector, historicWindowLengthVector)    
-    println(resultsResidualVariance)
     plotResidualVariance(resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
 end
 

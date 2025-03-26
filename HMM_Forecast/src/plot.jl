@@ -146,6 +146,8 @@ function plotMAE(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHisto
     xlabel!("Number of States")
     ylabel!("MAE")
     title!("Hyperparameter Analysis: MAE")
+    plot!(legend=:topright)
+    display(plt)
 end
 
 function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
@@ -165,4 +167,6 @@ function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, h
     xlabel!("Number of States")
     ylabel!("Residual Variance")
     title!("Hyperparameter Analysis: Variance of Residuals")
+
+    display(plt)
 end

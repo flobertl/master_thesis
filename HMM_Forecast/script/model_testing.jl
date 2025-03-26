@@ -6,8 +6,8 @@ using HMM_Forecast
 
 # Set Parameters
 hhs = 1
-numberOfStatesVector =  [1, 5, 10] #vcat(5:5:30,40:10:60)
-historicWindowLengthVector = [1, 10, 100, 1000]
+numberOfStatesVector =  [10, 20, 40, 60, 80] #vcat(5:5:30,40:10:60)
+historicWindowLengthVector = [5, 10, 50, 100]
 
 
 #results = HMM_Forecast.evaluateSeasonmodels(numberOfStatesVector, hh)
