@@ -229,8 +229,8 @@ function evaluateBasismodel2(hh::Int, numberOfStatesVector::Vector{Int}, histori
 
     for (i_states, N) in enumerate(numberOfStatesVector)
         # Train and store model 
-        hmm = loadHMM("simplified_experiments/basismodel_hh($hh)//basismodel_states($N)") 
-
+        hmm_unchanged = loadHMM("simplified_experiments/basismodel_hh($hh)//basismodel_states($N)") 
+        hmm = hmm_unchanged |> updateHMMNumericalStable |> updateHMMWithStationaryInitDistro 
         for (i_hwl, historicWindowLength) in enumerate(historicWindowLengthVector)
             println("------------------ Evaluate basismodel_hh($hh): states($N) historicWindowLength($historicWindowLength) --------------------")
             forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, historicWindowLength, sampleTestDataIndeces)

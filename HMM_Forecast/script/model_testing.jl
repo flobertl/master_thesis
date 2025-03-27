@@ -5,9 +5,9 @@ using Revise, Dates, Statistics, Random, Plots
 using HMM_Forecast
 
 # Set Parameters
-hhs = 1
+hhs = 3
 numberOfStatesVector =  [10, 20, 30, 40, 50, 60, 80, 100] #vcat(5:5:30,40:10:60)
-historicWindowLengthVector = [5, 10, 20, 50]
+historicWindowLengthVector = [1, 5, 10, 20]
 
 
 #results = HMM_Forecast.evaluateSeasonmodels(numberOfStatesVector, hh)

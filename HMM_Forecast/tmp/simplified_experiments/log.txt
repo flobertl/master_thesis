@@ -8,6 +8,8 @@ basismodel_hh(1)_states(30) --- loglike-Train: -36965.303381219805 /// loglike-T
 basismodel_hh(1)_states(40) --- loglike-Train: -36396.54648916758 /// loglike-Test: -40844.81619181107 /// MAE: 117.16873081870038 /// Mean CRPS: 3856.3594603825136
 basismodel_hh(1)_states(50) --- loglike-Train: -36756.72673189263 /// loglike-Test: -41146.59986969703 /// MAE: 118.11616528878334 /// Mean CRPS: 3876.2990095628415
 basismodel_hh(1)_states(60) --- loglike-Train: -36044.44878474544 /// loglike-Test: -40672.80649253164 /// MAE: 117.35973543943837 /// Mean CRPS: 3869.5449112021856
+basismodel_hh(1)_states(80) --- loglike-Train: -35642.785016013266 /// loglike-Test: -40450.34232457922 /// MAE: 116.95581783754665 /// Mean CRPS: 3830.3050147996355
+basismodel_hh(1)_states(100) --- loglike-Train: -35879.79380151283 /// loglike-Test: -40860.76761001648 /// MAE: 118.56030262449333 /// Mean CRPS: 3897.798411885246
 
 ------------------ Evaluate basismodel_hh(1) with timestamps  --------------------
 daytimemodel_hh(1)_ts(4)_states(5) --- loglike-Train: -52029.696811524125 /// loglike-Test: -56011.150468617154 /// MAE: 146.88093854675395 /// Mean CRPS: 4831.758054417122
