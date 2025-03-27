@@ -1,4 +1,4 @@
-using Distributions, Random, LinearAlgebra
+using Distributions, Random, LinearAlgebra, QuantEcon
 using HiddenMarkovModels: HMM as HMMPkg 
 
 function isNumericalEqual(leftSide, rightSide)::Bool
@@ -84,26 +84,39 @@ function updateHMMNumericalStable(hmm::HMM)
 end
 
 function updateHMMWithStationaryInitDistro(oldHMM::HMM)::HMM
-    eigenvalues, eigenvectors = eigen(oldHMM.transitionMatrix.transitionMatrix')
-    indicesForEigenvector = findall(x -> isNumericalEqual(x, 1), eigenvalues) 
 
-    if isempty(indicesForEigenvector)
-        throw(DomainError((eigenvalues, eigenvectors), "There is no eigenvalue = 1. (=> No stationary distribution)"))
-    elseif length(indicesForEigenvector) == 1
-        #println(eigenvectors[indicesForEigenvector[1], :])
-        singleEigenVector = eigenvectors[:, indicesForEigenvector[1]] / sum(eigenvectors[:, indicesForEigenvector[1]])
-        #println(singleEigenVector)
-    else 
-        throw(DomainError((eigenvalues, eigenvectors), "There are multiple eigenvalues = 1. (=> Multiple stationary distribution)"))
-    end
-
-    if singleEigenVector isa Array{Float64}
-        stationaryDistro = StochasticVector(singleEigenVector)
-    else
-        throw(DonainError(singleEigenVector, "The eigenvector is of type $(typeof(singleEigenVector))"))
-    end
+    P = oldHMM.transitionMatrix.transitionMatrix;
+    mc = MarkovChain(P);
+    stationaryDistro = stationary_distributions(mc)[1] |> StochasticVector
 
     newHMM = HMM(oldHMM.numberOfStateSpace, oldHMM.transitionMatrix, oldHMM.observationMatrix, stationaryDistro, oldHMM.observationSpace)
+    # eigenvalues, eigenvectors = eigen(oldHMM.transitionMatrix.transitionMatrix')
+    # indicesForEigenvector = findall(x -> isNumericalEqual(x, 1), map(real, filter(isreal, eigenvalues))) 
+    # println("6.Reihe:")
+    # println(eigenvectors[6, :])
+    # println("6.Spalte:")
+    # println(eigenvectors[:, 6])
+    # if isempty(indicesForEigenvector)
+    #     throw(DomainError((eigenvalues, eigenvectors), "There is no eigenvalue = 1. (=> No stationary distribution)"))
+    # elseif length(indicesForEigenvector) == 1
+    #     println(eigenvectors[:, indicesForEigenvector[1]])
+    #     singleEigenVector_real = eigenvectors[:, indicesForEigenvector[1]] |> real
+    #     singleEigenVector = singleEigenVector_real/ sum(singleEigenVector_real)
+    #     println(singleEigenVector)
+    # else 
+    #     throw(DomainError((eigenvalues, eigenvectors), "There are multiple eigenvalues = 1. (=> Multiple stationary distribution)"))
+    # end
+
+    # if singleEigenVector isa Array{Float64}
+    #     stationaryDistro = StochasticVector(singleEigenVector)
+    # else
+    #     #println(singleEigenVector)
+    #     throw(DomainError(singleEigenVector, "The eigenvector is of type $(typeof(singleEigenVector))"))
+    # end
+
+    # newHMM = HMM(oldHMM.numberOfStateSpace, oldHMM.transitionMatrix, oldHMM.observationMatrix, stationaryDistro, oldHMM.observationSpace)
     
+    # throw(DomainError(999999999999999, "The eigenvector is of type $(typeof(singleEigenVector))"))
+
     return newHMM
 end
