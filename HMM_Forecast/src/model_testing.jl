@@ -79,7 +79,7 @@ function calcEvaluation(hmm::HMM, trainData, testData)
 
     # Calc MAPE
     meanForecast = transformDistributionToMeanPointForecast(hmm.observationSpace, distributionForecastVector)
-    mape = mae_forPointForecast(hmm.observationSpace, testData, meanForecast)
+    mape = mae_forPointForecast(testData, meanForecast)
 
     # Calc R_squared
     r_sqare = 0 #r_squared_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
@@ -116,7 +116,7 @@ end
 function calcEvaluationGivenForecast(observationSpace::ObservationSpace, testData, distributionForecastVector)
     # Calc MAPE 
     meanForecast = transformDistributionToMeanPointForecast(hmm.observationSpace, distributionForecastVector)
-    mape = mae_forPointForecast(hmm.observationSpace, testData, meanForecast)
+    mape = mae_forPointForecast(testData, meanForecast)
     # Calc R_squared
     r_sqare = 0 #r_squared_forMeanPointForecast(observationSpace, testData, distributionForecastVector)
     # Calc CRPS
@@ -237,8 +237,8 @@ function evaluateBasismodel2(hh::Int, numberOfStatesVector::Vector{Int}, histori
             println("------------------ Evaluate basismodel_hh($hh): states($N) historicWindowLength($historicWindowLength) --------------------")
             forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, historicWindowLength, sampleTestDataIndeces)
             meanForecast = transformDistributionToMeanPointForecast(observationSpace, forecastVector)
-            resultsMAE[i_states, i_hwl] = mae_forPointForecast(observationSpace, observations[sampleTestDataIndeces], meanForecast)
-            resultsResidualVariance[i_states, i_hwl] = residualVariance_forPointForecast(observationSpace, observations[sampleTestDataIndeces], meanForecast)
+            resultsMAE[i_states, i_hwl] = mae_forPointForecast( observations[sampleTestDataIndeces], meanForecast)
+            resultsResidualVariance[i_states, i_hwl] = residualVariance_forPointForecast(observations[sampleTestDataIndeces], meanForecast)
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end
@@ -252,6 +252,17 @@ function basismodelHyperparameterAnalysis(hh, numberOfStatesVector::Vector{Int},
 
     plotMAE(resultsMAE, numberOfStatesVector, historicWindowLengthVector)    
     plotResidualVariance(resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
+end
+
+function evaluateNaiveModel(hh)
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
+    testDataIndeces = testData2WeeksForAllSeasons
+
+    predictions = observations[testDataIndeces .- 1] |> float
+
+    resultsMAE = mae_forPointForecast(observations[testDataIndeces], predictions)
+    resultsResidualVariance = residualVariance_forPointForecast(observations[testDataIndeces], predictions)
+    return resultsMAE, resultsResidualVariance
 end
 
 ############################################################################################################################

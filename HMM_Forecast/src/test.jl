@@ -286,10 +286,10 @@ function testMeasure()
     testingEquality(name*"pinball 1", pinball(obserSpace, observation, distro, 0.5), 0.)
     testingEquality(name*"pinball 2", pinball(obserSpace, observation, distro, 0.1), 0.1)
     meanForecast1 = transformDistributionToMeanPointForecast(obserSpace, [distro])
-    testingEquality(name*"mae", mae_forPointForecast(obserSpace, [observation], meanForecast1), 0.25)
+    testingEquality(name*"mae", mae_forPointForecast([observation], meanForecast1), 0.25)
     meanForecast2 = transformDistributionToMeanPointForecast(obserSpace, [distro, distro])
-    testingEquality(name*"variance of error 1", residualVariance_forPointForecast(obserSpace, [observation; observation], meanForecast2), 0)
-    testingEquality(name*"variance of error 2", residualVariance_forPointForecast(obserSpace, [observation; [1]], meanForecast2), 0.5)
+    testingEquality(name*"variance of error 1", residualVariance_forPointForecast([observation; observation], meanForecast2), 0)
+    testingEquality(name*"variance of error 2", residualVariance_forPointForecast([observation; [1]], meanForecast2), 0.5)
     distro = [[1 , 0], [1/4, 3/4]]
     observation = [1, 2] 
     testingEquality(name*"R^2", r_squared_forMeanPointForecast(obserSpace, observation, distro), 1-0.25^2/0.5)

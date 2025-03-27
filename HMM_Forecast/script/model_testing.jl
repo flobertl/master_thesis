@@ -14,4 +14,5 @@ historicWindowLengthVector = [1, 5, 10, 20]
 #results = HMM_Forecast.evaluateSeasonmodelsWithTimeStamps(numberOfTimeBlocks, numberOfStatesVector, hh)
 HMM_Forecast.basismodelHyperparameterAnalysis(hhs, numberOfStatesVector, historicWindowLengthVector)
 
+HMM_Forecast.evaluateNaiveModel(1)
 #results = HMM_Forecast.evaluateBasismodel(1, [80, 100])
