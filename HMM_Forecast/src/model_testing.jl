@@ -77,8 +77,9 @@ function calcEvaluation(hmm::HMM, trainData, testData)
     loglikelihood_train = loglikelihood(hmmStable, trainData)
     loglikelihood_test = loglikelihood(hmmStable, testData)
 
-    # Calc MAPE 
-    mape = mae_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
+    # Calc MAPE
+    meanForecast = transformDistributionToMeanPointForecast(hmm.observationSpace, distributionForecastVector)
+    mape = mae_forPointForecast(hmm.observationSpace, testData, meanForecast)
 
     # Calc R_squared
     r_sqare = 0 #r_squared_forMeanPointForecast(hmm.observationSpace, testData, distributionForecastVector)
@@ -114,7 +115,8 @@ end
 
 function calcEvaluationGivenForecast(observationSpace::ObservationSpace, testData, distributionForecastVector)
     # Calc MAPE 
-    mape = mae_forMeanPointForecast(observationSpace, testData, distributionForecastVector)
+    meanForecast = transformDistributionToMeanPointForecast(hmm.observationSpace, distributionForecastVector)
+    mape = mae_forPointForecast(hmm.observationSpace, testData, meanForecast)
     # Calc R_squared
     r_sqare = 0 #r_squared_forMeanPointForecast(observationSpace, testData, distributionForecastVector)
     # Calc CRPS
@@ -234,8 +236,9 @@ function evaluateBasismodel2(hh::Int, numberOfStatesVector::Vector{Int}, histori
         for (i_hwl, historicWindowLength) in enumerate(historicWindowLengthVector)
             println("------------------ Evaluate basismodel_hh($hh): states($N) historicWindowLength($historicWindowLength) --------------------")
             forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, historicWindowLength, sampleTestDataIndeces)
-            resultsMAE[i_states, i_hwl] = mae_forMeanPointForecast(observationSpace, observations[sampleTestDataIndeces], forecastVector)
-            resultsResidualVariance[i_states, i_hwl] = residualVariance(observationSpace, observations[sampleTestDataIndeces], forecastVector)
+            meanForecast = transformDistributionToMeanPointForecast(observationSpace, forecastVector)
+            resultsMAE[i_states, i_hwl] = mae_forPointForecast(observationSpace, observations[sampleTestDataIndeces], meanForecast)
+            resultsResidualVariance[i_states, i_hwl] = residualVariance_forPointForecast(observationSpace, observations[sampleTestDataIndeces], meanForecast)
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end

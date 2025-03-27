@@ -50,6 +50,12 @@ function crps(observationSpace::ObservationSpace, observation, distribution::Vec
     return crps
 end
 
+## Transform forecast Vectors
+function transformDistributionToMeanPointForecast(observationSpace::ObservationSpace, distributionVector::Vector{Vector{Float64}})
+    meanForecast = map(distro -> (mean(observationSpace, distro)), distributionVector)::Vector{Float64}
+    return meanForecast
+end
+
 ## Eval forecast Vectors
 function loglikelihood(hmm::HMM, observations::Vector{Int64})::Float64
     observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
@@ -69,10 +75,9 @@ function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64
     return meanCRPS/T
 end
 
-function mae_forMeanPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
+function mae_forPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, predictions::Vector{Float64})::Float64
     H = length(observations)
-    means = map(distro -> (mean(observationSpace, distro)), distributionVector)::Vector{Float64}
-    result = abs.( (observations - means)) |> sum
+    result = abs.( (observations - predictions)) |> sum
     return result/H
 end
 
@@ -80,6 +85,14 @@ function residualVariance(observationSpace::ObservationSpace, observations::Vect
     H = length(observations)
     means = map(distro -> (mean(observationSpace, distro)), distributionVector)::Vector{Float64}
     residuals = (means - observations)
+    meanResidual = sum(residuals)/H
+    empVarianceOfError = sum((residuals .- meanResidual).^2) / (H-1)
+    return empVarianceOfError
+end
+
+function residualVariance_forPointForecast(observationSpace::ObservationSpace, observations::Vector{Int64}, predictions::Vector{Float64})::Float64
+    H = length(observations)
+    residuals = (predictions - observations)
     meanResidual = sum(residuals)/H
     empVarianceOfError = sum((residuals .- meanResidual).^2) / (H-1)
     return empVarianceOfError
