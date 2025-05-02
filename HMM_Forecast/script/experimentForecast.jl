@@ -23,20 +23,20 @@ include("data.jl");
 # hmm2years_300states_100iter_WithTimesteps = HMM_Forecast.loadHMM("hmm_2years_states(300)_iter(100)_hh(2)_version(1)_observationsStates(651)_withtimestamps")
 # hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(300)_iter(50)_hh(2)_version(1)_observationsStates(1934)_withtimestamps")
 #hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(200)_iter(20)_hh(2)_version(2)_observationsStates(1802)_withtimestampseachQH")
+hmm40 = HMM_Forecast.loadHMM("simplified_experiments/basismodel_hh(1)//basismodel_states(50)")
 # hmm100 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(100)//basismodel_states(100)")
 # hmm150 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(150)//basismodel_states(150)")
 # hmm250 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(250)//basismodel_states(250)")
 # hmm200 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(200)//basismodel_states(200)")
 # hmm300 = HMM_Forecast.loadHMM("basismodel_hh(1)//states(300)//basismodel_states(300)")
-hmm80 = HMM_Forecast.loadHMM("simplified_experiments/basismodel_hh(1)//basismodel_states(80)")
 
 
-hmm = hmm80 |> HMM_Forecast.updateHMMWithStationaryInitDistro
+hmm = hmm40
 
 #Run BW-Algo with random initHMM
-# T = 5000
-# N = 200
-# iter = 20
+T = 5000
+N = 200
+iter = 20
 # hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, observationsAsIndeces[1:T]), N, iter);
 #HMM_Forecast.saveHMM(hmm, "test//hmm_2years_states($N)_iter($(iter))_hh($hh)_version(2)_observationsStates($(hmm.observationSpace.dimension))_withtimestampseachQH")
 
@@ -46,12 +46,12 @@ hmm = hmm80 |> HMM_Forecast.updateHMMWithStationaryInitDistro
 
 # Parameters
 x = 9000
-H = 50
+H = 10
 T = 20
 
 # Calc best path forecast
-distributionForecastAsIndeces = HMM_Forecast.forecastDistribution(hmm, observationsAsIndeces[1:x-T], H)
-forecast = HMM_Forecast.transformDistributionToMeanPointForecast(hmm.observationSpace, distributionForecastAsIndeces)
+forecastAsIndeces, likelihood_forecast = HMM_Forecast.bestPathPrognosis(hmm, observationsAsIndeces[1:x-T], H)
+forecast = HMM_Forecast.translateIndexToObservations(forecastAsIndeces, observationSpace)
 
 # # plot forecast
 HMM_Forecast.plotForecast(observations[1:end-96], forecast)
