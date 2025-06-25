@@ -1,0 +1,38 @@
+# MA Besprechung 2025-3-27
+
+## Themen
+- MA Konzept Vorschlag
+- Festlegung Rahmen
+- Nächste Schritte und nächster Termin
+ 
+
+## Fragen
+
+## Log
+- Kommentare zu 
+    - Warum Verteilungsvorhersage?
+    - Formulierung der RQ
+        1. How can HMM be applied to a probabilistic framework?
+        2. How does the forecasting accuracy depend on the hyperparameters like loopbackwindowsice and resolution of the discretization?
+        3. OPTIONAL: In which extend do additonal features, eg..., contribute to the accuracy of the HMM based probabilistic forecasting
+        4. ... other state of the at power load probabilistic forecasting methodes (Oder besser nur 1 methode; Singular)
+    - Restrukturierung der Arbeit
+        - Siehe Slides Diplomanden
+        - 1.Intro
+        - 2.Kapitel Theorie (prob.Forecasting, HMM Basis)
+        - 3.HMM based Forecasting Framework, theoretische Aufbau HMM Forecsting
+        - 4.Experimente Design (Daten, Hyperparameter, Sensitivanalyse)
+        - 5.Experiment Results
+        - 6.Potentielle Erweiterungen (Daytime/Season)
+        - 7.Benchmark/Validierung
+        - 8.Konklusion (Hauptergebnisse, Limitations, potentielle Anwendungen, futurework)
+    - Methodik
+        - standard ML Methodik (wie Krisp DM, siehe Slides)
+        - Validierung via Benchmark
+- Nächste Schritte
+    - Theorie und Methodik ausarbeiten
+    - Verfügbarkeit: Juli weg, September langsamer Start
+    - Nächste Besprechung 
+        - 25/26.6
+        - Präsentation Methodik
+
