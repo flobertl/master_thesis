@@ -136,17 +136,17 @@ function plotMAE(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHisto
         mae_values = tableResults[:, i]
         plot!(plt,
             numberOfStatesVector, mae_values;
-            label = "historic window length = $historyWindowLength",
+            label = "HWL= $historyWindowLength",
             lw = 4,
             marker = :circle,
             markersize = 4,
+            legend=:outertopright
         )
     end
 
     xlabel!("Number of States")
     ylabel!("MAE")
     title!("Hyperparameter Analysis: MAE")
-    plot!(legend=:topright)
     display(plt)
 end
 
@@ -157,10 +157,11 @@ function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, h
         mae_values = tableResults[:, i]
         plot!(plt,
             numberOfStatesVector, mae_values;
-            label = "historic window length = $historyWindowLength",
+            label = "HWL = $historyWindowLength",
             lw = 4,
             marker = :circle,
             markersize = 4,
+            legend=:outertopright
         )
     end
 
@@ -170,3 +171,26 @@ function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, h
 
     display(plt)
 end
+
+function plotAccuracy(tableResults, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
+    # Plot erstellen
+    plt = plot()
+    for (i, historyWindowLength) in enumerate(historicWindowLengthVector)
+        mae_values = tableResults[:, i]
+        plot!(plt,
+            numberOfStatesVector, mae_values;
+            label = "HWL = $historyWindowLength",
+            lw = 4,
+            marker = :circle,
+            markersize = 4,
+            legend=:outertopright
+        )
+    end
+
+    xlabel!("Number of States")
+    ylabel!("Accuracy")
+    title!("Hyperparameter Analysis: Accuracy")
+
+    display(plt)
+end
+

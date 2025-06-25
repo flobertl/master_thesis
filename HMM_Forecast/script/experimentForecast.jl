@@ -9,7 +9,7 @@ hh = 1
 
 # load Data 2 Months
 include("data.jl");
-# (observationSpace, observationsAsIndeces) = getTestData2Month();
+(observationSpace, observationsAsIndeces) = getTestData2Month();
 
 
 # Load pretrained hmm
@@ -20,7 +20,7 @@ include("data.jl");
 # hmm2years_100states_100iter = HMM_Forecast.loadHMM("hmm_2years_States(100)_(100)_1");
 # hmm2years_100states_100iter = HMM_Forecast.loadHMM("hmm_2years_states(100)_iter(100)_hh(1)_version(1)");
 #hmm2years_200states_50iter = HMM_Forecast.loadHMM("hmm_2years_states(200)_iter(50)_hh(2)_version(1)");
-# hmm2years_300states_100iter_WithTimesteps = HMM_Forecast.loadHMM("hmm_2years_states(300)_iter(100)_hh(2)_version(1)_observationsStates(651)_withtimestamps")
+hmm2years_300states_100iter_WithTimesteps = HMM_Forecast.loadHMM("hmm_2years_states(300)_iter(100)_hh(2)_version(1)_observationsStates(651)_withtimestamps")
 # hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(300)_iter(50)_hh(2)_version(1)_observationsStates(1934)_withtimestamps")
 #hmm2years_300states_50iter_everyQH = HMM_Forecast.loadHMM("hmm_2years_states(200)_iter(20)_hh(2)_version(2)_observationsStates(1802)_withtimestampseachQH")
 hmm40 = HMM_Forecast.loadHMM("simplified_experiments/basismodel_hh(1)//basismodel_states(50)")

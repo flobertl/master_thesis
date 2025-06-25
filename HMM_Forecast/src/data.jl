@@ -88,6 +88,17 @@ end
 # ------------------------------------------------------------------------------
 # Productive Load data
 
+function getData2YearsOriginal(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    originalObser = observations |> discretize
+    return(originalObser)
+end
+
 function getData2Years(householdId::Int64)
     # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"

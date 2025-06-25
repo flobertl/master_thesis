@@ -14,6 +14,11 @@ function variance(observationSpace::ObservationSpace, distribution::Vector{Float
     return exp_Xpow2 - mean^2
 end
 
+function argmaxDistro(observationSpace::ObservationSpace, distribution::Vector{Float64})
+    argmaxPrediction = observationSpace.mapIndexToObservation[ argmax(distribution) ]
+    return argmaxPrediction
+end
+
 ## Quantile functions
 function empiricQuantile(observationSpace::ObservationSpace, distribution::Vector{Float64}, observation)::Float64
     f(x) = (x<= observation)
@@ -56,6 +61,12 @@ function transformDistributionToMeanPointForecast(observationSpace::ObservationS
     return meanForecast
 end
 
+function transformDistributionToBestPathPointForecast(observationSpace::ObservationSpace, distributionVector::Vector{Vector{Float64}})
+    bestPathForecast = map(distro -> (argmaxDistro(observationSpace, distro)), distributionVector)::Vector{Int64}
+    return bestPathForecast
+end
+
+
 ## Eval forecast Vectors
 function loglikelihood(hmm::HMM, observations::Vector{Int64})::Float64
     observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
@@ -79,6 +90,24 @@ function mae_forPointForecast(observations::Vector{Int64}, predictions::Vector{F
     H = length(observations)
     result = abs.( (observations - predictions)) |> sum
     return result/H
+end
+
+function accuracy_forPointForecast(observations::Vector{Int64}, predictions::Vector{Int64})::Float64
+    H = length(observations)
+    result = (observations .== predictions) |> sum
+    return result/H
+end
+
+function calcKonfusionsMatrix(obserSpace::ObservationSpace, observationsAsIndeces::Vector{Int64}, predictionsAsIndeces::Vector{Int64})
+    N = obserSpace.dimension
+    konfusionsMatrix = zeros(Float64, (N, N))
+    for (t, obserIndex) in enumerate(observationsAsIndeces)
+        konfusionsMatrix[obserIndex, predictionsAsIndeces[t]] += 1
+    end
+    for i in 1:N 
+        konfusionsMatrix[i, :] = konfusionsMatrix[i, :] ./ sum(konfusionsMatrix[i, :])
+    end
+    return konfusionsMatrix
 end
 
 function residualVariance_forPointForecast(observations::Vector{Int64}, predictions::Vector{Float64})::Float64

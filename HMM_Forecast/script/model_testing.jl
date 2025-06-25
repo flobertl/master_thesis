@@ -6,13 +6,17 @@ using HMM_Forecast
 
 # Set Parameters
 hhs = 3
-numberOfStatesVector =  [10, 20, 30, 40, 50, 60, 80, 100] #vcat(5:5:30,40:10:60)
+numberOfStatesVector = [10, 20, 30, 40, 50, 60, 80, 100] #vcat(5:5:30,40:10:60)
 historicWindowLengthVector = [1, 5, 10, 20]
 
 
 #results = HMM_Forecast.evaluateSeasonmodels(numberOfStatesVector, hh)
 #results = HMM_Forecast.evaluateSeasonmodelsWithTimeStamps(numberOfTimeBlocks, numberOfStatesVector, hh)
-HMM_Forecast.basismodelHyperparameterAnalysis(hhs, numberOfStatesVector, historicWindowLengthVector)
+konMatrices = HMM_Forecast.basismodelHyperparameterAnalysisAccuracy(hhs, numberOfStatesVector, historicWindowLengthVector)
 
-HMM_Forecast.evaluateNaiveModel(1)
+HMM_Forecast.saveXLXSTable("hyperparameter_analysis_hh($hhs)_Konfusionsmatrix_states(60)", x)
+
+x = [1 2; 3 4]
+
+HMM_Forecast.evaluateNaiveModel(hhs)
 #results = HMM_Forecast.evaluateBasismodel(1, [80, 100])

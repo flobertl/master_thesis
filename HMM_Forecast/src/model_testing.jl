@@ -220,6 +220,8 @@ function evaluateAllModels(hhs = [1],  numberOfStatesVector = 30:5:60, numberOfT
     return results
 end
 
+# Basismodel analysis 2 for varying numbers of states and historic window length
+# Forecast Method: Mean with MAE and Residual Variance
 function evaluateBasismodel2(hh::Int, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
     (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
     testDataIndeces = testData2WeeksForAllSeasons
@@ -243,26 +245,62 @@ function evaluateBasismodel2(hh::Int, numberOfStatesVector::Vector{Int}, histori
         end
     end
     return resultsMAE, resultsResidualVariance
+end 
+
+# Basismodel analysis 3 for varying numbers of states and historic window length
+# Forecast Method: Best Path (one step = arg max) with accuracy as metrik
+function evaluateBasismodel3(hh::Int, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
+    (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
+    originalObservations = getData2YearsOriginal(hh)
+    testDataIndeces = testData2WeeksForAllSeasons
+    sampleTestDataIndeces = testDataIndeces #rand(testDataIndeces, length)
+
+    prevTime = now()
+    resultsMAE = Array{Float64, 2}(undef, (length(numberOfStatesVector), length(historicWindowLengthVector)))
+    resultsAccuracy = Array{Float64, 2}(undef, (length(numberOfStatesVector), length(historicWindowLengthVector)))
+    konfusionsMatrix = Array{Array{Float64,2}, 2}(undef, (length(numberOfStatesVector), length(historicWindowLengthVector)))
+
+    for (i_states, N) in enumerate(numberOfStatesVector)
+        # Train and store model 
+        hmm_unchanged = loadHMM("simplified_experiments/basismodel_hh($hh)//basismodel_states($N)") 
+        hmm = hmm_unchanged |> updateHMMNumericalStable |> updateHMMWithStationaryInitDistro 
+        for (i_hwl, historicWindowLength) in enumerate(historicWindowLengthVector)
+            println("------------------ Evaluate basismodel_hh($hh): states($N) historicWindowLength($historicWindowLength) --------------------")
+            forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, historicWindowLength, sampleTestDataIndeces)
+            bestPathForecast = transformDistributionToBestPathPointForecast(observationSpace, forecastVector)
+            resultsMAE[i_states, i_hwl] = mae_forPointForecast( originalObservations[sampleTestDataIndeces], map(Float64, bestPathForecast))
+            resultsAccuracy[i_states, i_hwl] = accuracy_forPointForecast(observations[sampleTestDataIndeces], bestPathForecast)
+            konfusionsMatrix[i_states, i_hwl] = calcKonfusionsMatrix(observationSpace, observationsAsIndeces[sampleTestDataIndeces], translateObservationsToIndex(bestPathForecast, observationSpace))
+            prevTime = printTimeAndResetTimeStamp(prevTime)
+        end
+    end
+    return resultsMAE, resultsAccuracy, konfusionsMatrix
 end
 
-function basismodelHyperparameterAnalysis(hh, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
-    resultsMAE, resultsResidualVariance = evaluateBasismodel2(hh, numberOfStatesVector, historicWindowLengthVector)
-    saveCSVTable("hyperparameter_analysis_hh($hh)_MAE", resultsMAE, numberOfStatesVector, historicWindowLengthVector)
-    saveCSVTable("hyperparameter_analysis_hh($hh)_ResidualVariance", resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
 
+
+function basismodelHyperparameterAnalysisAccuracy(hh, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
+    resultsMAE, resultsResidualVariance, resultsKonfusionsMatrix = evaluateBasismodel3(hh, numberOfStatesVector, historicWindowLengthVector)
+    saveCSVTable("hyperparameter_categorical_analysis_hh($hh)_MAE", resultsMAE, numberOfStatesVector, historicWindowLengthVector)
+    saveCSVTable("hyperparameter_categorical_analysis_hh($hh)_Accuracy", resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
+    #saveXLXSTable("hyperparameter_categorical_analysis_hh($hh)_Konfusionsmatrix", resultsKonfusionsMatrix)
     plotMAE(resultsMAE, numberOfStatesVector, historicWindowLengthVector)    
-    plotResidualVariance(resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
+    plotAccuracy(resultsResidualVariance, numberOfStatesVector, historicWindowLengthVector)
+
+    return resultsKonfusionsMatrix
 end
 
 function evaluateNaiveModel(hh)
     (observationSpace, observations, observationsAsIndeces) = getData2Years_Simplified(hh);
+    originalObservations = getData2YearsOriginal(hh)
     testDataIndeces = testData2WeeksForAllSeasons
 
-    predictions = observations[testDataIndeces .- 1] |> float
+    predictions = originalObservations[testDataIndeces .- 1] |> float
 
     resultsMAE = mae_forPointForecast(observations[testDataIndeces], predictions)
-    resultsResidualVariance = residualVariance_forPointForecast(observations[testDataIndeces], predictions)
-    return resultsMAE, resultsResidualVariance
+    resultsResidualVariance = residualVariance_forPointForecast(originalObservations[testDataIndeces], predictions)
+    resultsAccuracy = accuracy_forPointForecast(observations[testDataIndeces], observations[testDataIndeces .- 1])
+    return resultsMAE, resultsResidualVariance, resultsAccuracy
 end
 
 ############################################################################################################################
