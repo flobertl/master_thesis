@@ -1,0 +1,4 @@
+1. How can HMM be applied to a probabilistic forecasting framework?
+2. How does the forecasting accuracy depend on the hyperparameters like historic window size and resolution of the discretization?
+3. OPTIONAL: In which extend do additonal features, eg. seasonality and daytime changes, contribute to the accuracy of the HMM based short-term power load forecasting?
+4. How does the HMM model perform compared to another state of the at probabilistic short-term power load forecasting method? (Oder besser nur 1 methode; Singular)
