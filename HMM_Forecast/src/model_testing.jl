@@ -2,8 +2,8 @@
 using Random
 
 function generatePITforSeasonModels(hmm::HMM, trainData, testData, folderPath::String, name = "")
-    trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
-    testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
+    trainDataAsIndeces = translateObservationsAsIntToIndex(trainData, hmm.observationSpace)
+    testDataAsIndeces = translateObservationsAsIntToIndex(testData, hmm.observationSpace)
 
     # Calc Prediction
     distributionForecastVector = createSeveralOneStepPredictions(hmm, trainDataAsIndeces, testDataAsIndeces)::Vector{Vector{Float64}}
@@ -34,8 +34,8 @@ function generatePITforSeasonModels(hmm::HMM, trainData, testData, folderPath::S
 end
 
 function generatePITforFullyearModels(hmm::HMM, trainData, testData, folderPath::String)
-    trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
-    testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
+    trainDataAsIndeces = translateObservationsAsIntToIndex(trainData, hmm.observationSpace)
+    testDataAsIndeces = translateObservationsAsIntToIndex(testData, hmm.observationSpace)
 
     # Calc Prediction
     distributionForecastVector = createSeveralOneStepPredictions(hmm, trainDataAsIndeces, testDataAsIndeces)::Vector{Vector{Float64}}
@@ -66,8 +66,8 @@ function generatePITforFullyearModels(hmm::HMM, trainData, testData, folderPath:
 end
 
 function calcEvaluation(hmm::HMM, trainData, testData)
-    testDataAsIndeces = translateObservationsToIndex(testData, hmm.observationSpace)
-    trainDataAsIndeces = translateObservationsToIndex(trainData, hmm.observationSpace)
+    testDataAsIndeces = translateObservationsAsIntToIndex(testData, hmm.observationSpace)
+    trainDataAsIndeces = translateObservationsAsIntToIndex(trainData, hmm.observationSpace)
     hmmStable = hmm |> updateHMMNumericalStable
 
     # Calc Prediction
@@ -91,8 +91,8 @@ function calcEvaluation(hmm::HMM, trainData, testData)
 end
 
 function calcEvaluationTimestampModel(hmmTS::HMM, trainDataTS, testDataTS,  obserSpaceOriginal, testDataOriginal)
-    testDataAsIndeces = translateObservationsToIndex(testDataTS, hmmTS.observationSpace)
-    trainDataAsIndeces = translateObservationsToIndex(trainDataTS, hmmTS.observationSpace)
+    testDataAsIndeces = translateObservationsAsIntToIndex(testDataTS, hmmTS.observationSpace)
+    trainDataAsIndeces = translateObservationsAsIntToIndex(trainDataTS, hmmTS.observationSpace)
     hmmStable = hmmTS |> updateHMMNumericalStable
 
     # Calc Likelihood
@@ -270,7 +270,7 @@ function evaluateBasismodel3(hh::Int, numberOfStatesVector::Vector{Int}, histori
             bestPathForecast = transformDistributionToBestPathPointForecast(observationSpace, forecastVector)
             resultsMAE[i_states, i_hwl] = mae_forPointForecast( originalObservations[sampleTestDataIndeces], map(Float64, bestPathForecast))
             resultsAccuracy[i_states, i_hwl] = accuracy_forPointForecast(observations[sampleTestDataIndeces], bestPathForecast)
-            konfusionsMatrix[i_states, i_hwl] = calcKonfusionsMatrix(observationSpace, observationsAsIndeces[sampleTestDataIndeces], translateObservationsToIndex(bestPathForecast, observationSpace))
+            konfusionsMatrix[i_states, i_hwl] = calcKonfusionsMatrix(observationSpace, observationsAsIndeces[sampleTestDataIndeces], translateObservationsAsIntToIndex(bestPathForecast, observationSpace))
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end

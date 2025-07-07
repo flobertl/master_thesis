@@ -108,7 +108,7 @@ function getData2Years(householdId::Int64)
     # Convert Data
     abstractObser = observations |> discretize |> abstractLoadObservations
     observationSpace = Set(abstractObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(abstractObser, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObser, observationSpace)
 
     return(observationSpace, abstractObser, observationsAsIndeces)
 end
@@ -123,7 +123,7 @@ function getData2Years_Seasonstamps(householdId::Int64)
     abstractObser = observations |> discretize |> abstractLoadObservations
     abstractObserWithTimestamps = addSeasonstamps(abstractObser, dateTimesOf2YearsData())
     observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
 
     return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
@@ -138,7 +138,7 @@ function getData2Years_Simplified(householdId::Int64)
     # Convert Data
     abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
     observationSpace = Set(abstractObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(abstractObser, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObser, observationSpace)
 
     return(observationSpace, abstractObser, observationsAsIndeces)
 end
@@ -154,7 +154,7 @@ function getData2Years_SimplifiedAndTimestamps(householdId::Int64, numberOfTimeB
     abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
     abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
     observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
 
     return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
@@ -169,7 +169,7 @@ function getData2Years_Timestamps(householdId::Int64, numberOfTimeBlocks::Int64)
     abstractObser = observations |> discretize |> abstractLoadObservations
     abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
     observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
 
     return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
@@ -185,7 +185,7 @@ function getData2Years_EveryQHTimestamps(householdId::Int64)
     abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
     abstractObserWithTimestamps = addTimestamps(96, abstractObser)
     observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(abstractObserWithTimestamps, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
 
     return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end
@@ -355,7 +355,7 @@ function getTestDataDay()
     # Convert Data
     discreteObser = discretize(observations)
     observationSpace = Set(discreteObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(discreteObser, observationSpace)
 
     return(observationSpace, observationsAsIndeces)
 end
@@ -368,7 +368,7 @@ function getTestData2Month()
     # Convert Data
     discreteObser = discretize(observations)
     observationSpace = Set(discreteObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsToIndex(discreteObser, observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(discreteObser, observationSpace)
 
     return(observationSpace, observationsAsIndeces)
 end

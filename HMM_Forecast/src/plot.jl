@@ -59,7 +59,7 @@ function plotForecastSlidingWindow(hmm::HMM, observations, forecastHorizon::Int,
     # Set Parameters
     T = length(observations)
     indeces = firstIndexToPlot:T
-    observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(observations, hmm.observationSpace)
 
     # Create Base Plot
     p = plot(

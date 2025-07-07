@@ -6,7 +6,7 @@ function isNumericalEqual(leftSide, rightSide)::Bool
     (rightSide - epsilon < leftSide) && (leftSide < rightSide + epsilon)
 end
 
-function translateObservationsToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
+function translateObservationsAsIntToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
     f(x) = observationSpace.mapObservationToIndex[x]
     observationsAsIndex = map(f, observations)
     return observationsAsIndex

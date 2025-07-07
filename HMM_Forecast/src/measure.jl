@@ -69,7 +69,7 @@ end
 
 ## Eval forecast Vectors
 function loglikelihood(hmm::HMM, observations::Vector{Int64})::Float64
-    observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
+    observationsAsIndeces = translateObservationsAsIntToIndex(observations, hmm.observationSpace)
     alpha, loglikelihood = forwardAlgo(hmm, observationsAsIndeces)
     return loglikelihood
 end 

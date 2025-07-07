@@ -22,7 +22,7 @@ function testObservationToIndexMapping()
     discreteObser = discretize(observations)
     observationSpace = Set(discreteObser) |> ObservationSpace
 
-    observationsAsIndices = translateObservationsToIndex(discreteObser, observationSpace)
+    observationsAsIndices = translateObservationsAsIntToIndex(discreteObser, observationSpace)
     reconvertedObservations = translateIndexToObservations(observationsAsIndices, observationSpace)
     testingEquality("ObservationToIndexMapping1", reconvertedObservations, discreteObser)
 end
