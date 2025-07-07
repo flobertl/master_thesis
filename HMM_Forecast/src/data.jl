@@ -19,42 +19,6 @@ function normalizeWithMaxElement(observations::Vector{})::Vector{Float32}
     return normalizedObservations
 end 
 
-function abstractLoadObservations(observation::Array{Int64})
-    function abstractLoad(load::Int64) 
-        # Unter 700 watt in 10er Schritten
-        if load <= 700 
-            load_abstract = roundToGivenDigit(load, 10)
-        # Von 700 bis 1200 watt in 50er Schritten
-        elseif load <= 1200
-            load_abstract = roundToGivenDigit(load, 50)
-        # Von 1200 bis 2500 in 100er Schritten
-        elseif load <= 2500
-            load_abstract = roundToGivenDigit(load, 100)
-        # Ab 2500 in 300er Schritten
-        else 
-            load_abstract = roundToGivenDigit(load, 300)
-        end
-        return load_abstract
-    end
-
-    return abstractLoad.(observation)
-end
-
-function abstractLoadObservations_Simplified(observation::Array{Int64})
-    function abstractLoad(load::Int64) 
-        # Unter 700 watt in 10er Schritten
-        if load <= 2500
-            load_abstract = roundToGivenDigit(load, 100)
-        # Ab 2500 in 300er Schritten
-        else 
-            load_abstract = roundToGivenDigit(load, 500)
-        end
-        return load_abstract
-    end
-
-    return abstractLoad.(observation)
-end
-
 function addTimestamps(timeGranularity::Int, observations::Array{Int})::Array{Int}
     times = 96/timeGranularity
     observationWithTimestamp = []
@@ -228,6 +192,7 @@ function saveHMM(hmm::HMM, fileName::String)
         println(io, join(["$key:$value" for (key, value) in hmm.observationSpace.mapObservationToIndex], ","))
     end
 end
+
 function loadHMM(fileName::String)
     # path of directory
     folderPath = ".//HMM_Forecast//tmp//"
@@ -258,12 +223,12 @@ function loadHMM(fileName::String)
         startDist = parse.(Float64, split(readline(io), ",")) |> StochasticVector
 
         # Observation space
-        observations = parse.(Int, split(readline(io), ",")) |> Set
+        observations = parse.(Float32, split(readline(io), ",")) |> Set
         pairs = split(readline(io), ",")
         # Process each pair and convert to key-value format
         key_value_pairs = [split(pair, ":") for pair in pairs]
-        mapObserToIndex = Dict(parse(Int, kv[1]) => parse(Int, kv[2]) for kv in key_value_pairs)
-        mapIndexToObser = Dict(parse(Int, kv[2]) => parse(Int, kv[1]) for kv in key_value_pairs)
+        mapObserToIndex = Dict(parse(Float32, kv[1]) => parse(Int, kv[2]) for kv in key_value_pairs)
+        mapIndexToObser = Dict(parse(Int, kv[2]) => parse(Float32, kv[1]) for kv in key_value_pairs)
         obsSpace = ObservationSpace(M, observations, mapObserToIndex, mapIndexToObser)
         return HMM(N, A_, B_, startDist, obsSpace)
     end
@@ -377,4 +342,43 @@ function getTestData2Month()
     observationsAsIndeces = translateObservationsAsIntToIndex(discreteObser, observationSpace)
 
     return(observationSpace, observationsAsIndeces)
+end
+
+#-------------------------------------------------------------
+## legacy Code
+
+function abstractLoadObservations(observation::Array{Int64})
+    function abstractLoad(load::Int64) 
+        # Unter 700 watt in 10er Schritten
+        if load <= 700 
+            load_abstract = roundToGivenDigit(load, 10)
+        # Von 700 bis 1200 watt in 50er Schritten
+        elseif load <= 1200
+            load_abstract = roundToGivenDigit(load, 50)
+        # Von 1200 bis 2500 in 100er Schritten
+        elseif load <= 2500
+            load_abstract = roundToGivenDigit(load, 100)
+        # Ab 2500 in 300er Schritten
+        else 
+            load_abstract = roundToGivenDigit(load, 300)
+        end
+        return load_abstract
+    end
+
+    return abstractLoad.(observation)
+end
+
+function abstractLoadObservations_Simplified(observation::Array{Int64})
+    function abstractLoad(load::Int64) 
+        # Unter 700 watt in 10er Schritten
+        if load <= 2500
+            load_abstract = roundToGivenDigit(load, 100)
+        # Ab 2500 in 300er Schritten
+        else 
+            load_abstract = roundToGivenDigit(load, 500)
+        end
+        return load_abstract
+    end
+
+    return abstractLoad.(observation)
 end

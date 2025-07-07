@@ -52,7 +52,7 @@ struct ObservationSpace
         return ObservationSpace(observationsAsFloats)
     end
 
-    function ObservationSpace(dim::Int, observations::Set{Int}, mapObserToIndex::Dict{Int, Int}, mapIndexToObser::Dict{Int, Int})
+    function ObservationSpace(dim::Int, observations::Set{Float32}, mapObserToIndex::Dict{Float32, Int}, mapIndexToObser::Dict{Int, Float32})
         new(dim, observations, mapObserToIndex, mapIndexToObser)
     end
 end
