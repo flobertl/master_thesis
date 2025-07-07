@@ -1,16 +1,3 @@
-struct Probability
-    value::Float64
-
-    function Probability(value::Float64)
-        # Überprüfe, ob die Matrix quadratisch ist
-        if (value < 0.) || (value > 1.)
-            error("Probability $value not in [0,1].")
-        end
-        # Erzeuge das Objekt
-        new(value)
-    end
-end
-
 struct A
     dimension::UInt
     transitionMatrix::Array{Float64, 2}
@@ -40,14 +27,13 @@ struct B
     end
 end
 
-
 struct ObservationSpace
     dimension::Int
-    observations::Set{Int}
-    mapObservationToIndex::Dict{Int, Int}
-    mapIndexToObservation::Dict{Int, Int}
+    observations::Set{Float32}
+    mapObservationToIndex::Dict{Float32, Int}
+    mapIndexToObservation::Dict{Int, Float32}
 
-    function ObservationSpace(observations::Set{Int})
+    function ObservationSpace(observations::Set{Float32})
         sortedObservations = observations |> collect |> sort
         mapObservationToIndex = Dict()
         mapIndexToObservation = Dict()
@@ -55,12 +41,17 @@ struct ObservationSpace
         for i in 1:dim 
             mapObservationToIndex[sortedObservations[i]] = i
         end
-        mapIndexToObservation = Dict()
         for i in 1:(length(sortedObservations)) 
             mapIndexToObservation[i] = sortedObservations[i]
         end
         new(dim, observations, mapObservationToIndex, mapIndexToObservation)
     end
+
+    function ObservationSpace(observations::Set{Int64})
+        observationsAsFloats = Set(Float32(obs) for obs in observations)
+        return ObservationSpace(observationsAsFloats)
+    end
+
     function ObservationSpace(dim::Int, observations::Set{Int}, mapObserToIndex::Dict{Int, Int}, mapIndexToObser::Dict{Int, Int})
         new(dim, observations, mapObserToIndex, mapIndexToObser)
     end
