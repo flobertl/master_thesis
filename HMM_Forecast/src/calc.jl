@@ -1,4 +1,5 @@
 using Random
+# Convention: In Calc all observations are as indeces
 
 function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)

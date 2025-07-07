@@ -6,7 +6,7 @@ function isNumericalEqual(leftSide, rightSide)::Bool
     (rightSide - epsilon < leftSide) && (leftSide < rightSide + epsilon)
 end
 
-function translateObservationsAsIntToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
+function translateObservationsToIndex(observations::Vector{Float32}, observationSpace::ObservationSpace)
     f(x) = observationSpace.mapObservationToIndex[x]
     observationsAsIndex = map(f, observations)
     return observationsAsIndex
@@ -16,6 +16,13 @@ function translateIndexToObservations(observationsAsIndex::Array{Int, 1}, observ
     f(x) = observationSpace.mapIndexToObservation[x]
     observations = map(f, observationsAsIndex)
     return observations
+end
+
+# Alte  funktion zum mappen von Int-obsevationen in legacy code
+function translateObservationsAsIntToIndex(observations::Vector{Int}, observationSpace::ObservationSpace)
+    f(x) = observationSpace.mapObservationToIndex[x]
+    observationsAsIndex = map(f, observations)
+    return observationsAsIndex
 end
 
 function randomDirichletVector(n::Int)
