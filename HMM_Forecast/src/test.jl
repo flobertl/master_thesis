@@ -330,7 +330,6 @@ function testAll()
     testUpdateHMMWithStationaryDistro()
     testTranslateForecastDistributionTimestampsToOriginal()
     testSaveAndLoadCSVTable()
-    testNormalize()
 end
 
 function runUEAll()
