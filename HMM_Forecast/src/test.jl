@@ -306,6 +306,15 @@ function testSaveAndLoadCSVTable()
     testingEquality(name, resultTable, table)
 end
 
+function testNormalize()
+    name = "Normalize by max Element"
+    vec = [4., 2., 1.]
+    
+    result = normalizeWithMaxElement(vec)
+    expectedResult = [1f0, 1/2f0, 1/4f0] 
+    testingEquality(name, result, expectedResult)
+end
+
 function testAll()
     testObservationToIndexMapping()
     testBackwardAndForwardAlgo()
@@ -321,6 +330,7 @@ function testAll()
     testUpdateHMMWithStationaryDistro()
     testTranslateForecastDistributionTimestampsToOriginal()
     testSaveAndLoadCSVTable()
+    testNormalize
 end
 
 function runUEAll()
