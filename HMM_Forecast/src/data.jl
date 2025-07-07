@@ -13,6 +13,12 @@ function roundToGivenDigit(x, stepWidth::Int)
     return map(Int, x_round*stepWidth)
 end
 
+function normalizeWithMaxElement(observations::Vector{})::Vector{Float32}
+    maxElement = maximum(observations)
+    normalizedObservations = map(Float32, observations./maxElement)
+    return normalizedObservations
+end 
+
 function abstractLoadObservations(observation::Array{Int64})
     function abstractLoad(load::Int64) 
         # Unter 700 watt in 10er Schritten
