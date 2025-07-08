@@ -70,6 +70,26 @@ function loadAndNormalizeData(hh::Int)::Vector{Float32}
     return(observations)
 end
 
+#----------------------------------------------------------------------------
+# Discretizer
+
+function discretizeEqualMassBins(numberBins::Int, observations::Vector{Float32})::Vector{Float32}
+    quantiles = [(1/numberBins)* quant for quant in 1:numberBins]
+    empiricQuantiles = quantile(observations, quantiles, sorted=false)
+
+    observationsDiscretized = Vector{Float32}(undef, length(observations))
+    corresponingBins = [searchsortedfirst(empiricQuantiles, obs) for obs in observations]
+    for bin in 1:numberBins
+        indecesBin = corresponingBins .== bin
+        binMedian = median(observations[indecesBin])
+        observationsDiscretized[indecesBin] .= binMedian
+    end
+
+    if (length(Set(observationsDiscretized)) != numberBins)
+        error("Diskretisierung fehlgeschlagen! Anzahl der Bins nicht erfuellt.")
+    end
+    return observationsDiscretized
+end
 
 #-------------------------------------------------------------------------
 # Saving and Loading HMMs

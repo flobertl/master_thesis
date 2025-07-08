@@ -323,6 +323,22 @@ function testLoadAndNormalizeData()
     testingEquality(name, result, expectedResult)
 end
 
+function testDiscretizeEaualMassBins()
+    name = "Discretize data with equal mass bins"
+
+    # Test 1
+    observations = [1f0, 2f0, 3f0, 4f0]
+    result = discretizeEqualMassBins(2, observations)
+    expectedResult = [1.5f0, 1.5f0, 3.5f0, 3.5f0]
+    testingEquality(name*" 1", result, expectedResult)
+
+    # Test 2
+    observations = [1f0, 2f0, 3f0, 4f0, 5f0]
+    result = discretizeEqualMassBins(2, observations)
+    expectedResult = [2f0, 2f0, 2f0, 4.5f0, 4.5f0]
+    testingEquality(name*" 2", result, expectedResult)
+end
+
 function testAll()
     testObservationToIndexMapping()
     testBackwardAndForwardAlgo()
@@ -338,6 +354,10 @@ function testAll()
     testUpdateHMMWithStationaryDistro()
     testTranslateForecastDistributionTimestampsToOriginal()
     testSaveAndLoadCSVTable()
+    testNormalize()
+    #testLoadAndNormalizeData() auskommentiert um Geschwindigkeit zu garantieren
+    testDiscretizeEaualMassBins()
+
 end
 
 function runUEAll()
