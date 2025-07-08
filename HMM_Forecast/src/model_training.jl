@@ -1,5 +1,29 @@
 # Function to run BasisModel runBasisModelAnalysis
-using Random
+using Random, Printf
+
+function trainBasisModel(hh, discretTyp::String, numberOfObservations::Int, numberOfStatesVector = 30:5:60)
+    iter = 100
+
+    # Data
+    originalObservations = readAndNormalizeData(hh)
+    observationSpace, observations, observationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
+
+    # Extract Trainigsdata
+    dataTrainingAsIndeces  = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]
+
+    prevTime = now()
+    for N in numberOfStatesVector
+        # Train and store model 
+        println("-------------- Train Basis Model with timestamps $(numberOfTimeBlocks) with $N states------------------")
+        hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
+        filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discret_type, discret_num, states)
+        saveHMM(hmm, "hyperparameter_analysis/"*filename)
+        prevTime = printTimeAndResetTimeStamp(prevTime)
+    end
+end
+
+# ---------------------------------------------------------------------------
+# Legacy Code
 
 
 # function runSeasonModelFullYear(numberOfStatesVector = 50:150:250, hh = 1) 
