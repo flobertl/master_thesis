@@ -14,9 +14,9 @@ function trainBasisModel(hh, discretTyp::String, numberOfObservations::Int, numb
     prevTime = now()
     for N in numberOfStatesVector
         # Train and store model 
-        println("-------------- Train Basis Model with timestamps $(numberOfTimeBlocks) with $N states------------------")
+        println("-------------- Train Basis Model with Discretization $discretTyp and $N states------------------")
         hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-        filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discret_type, discret_num, states)
+        filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
         saveHMM(hmm, "hyperparameter_analysis/"*filename)
         prevTime = printTimeAndResetTimeStamp(prevTime)
     end

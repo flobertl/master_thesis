@@ -5,7 +5,7 @@ using XLSX, DataFrames, Dates, CSV, Statistics
 # Preprocessing for HMM 
 # Discretizes Observations and generates coresponding HMM observation Space
 function preprocessing(originalObservations::Vector{Float32}, discretTyp::String, numberOfObservations::Int)::Tuple{ObservationSpace, Vector{Float32}, Vector{Int}}
-    Discretization
+    # Discretization
     if discretTyp == "A"
         observations = discretizeEqualMassBins(numberOfObservations, originalObservations)
     elseif discretTyp == "B"
@@ -13,7 +13,7 @@ function preprocessing(originalObservations::Vector{Float32}, discretTyp::String
     else
         error("No valid discretization type (A/B).")
     end
-    observationSpace = observationSpace(observations)
+    observationSpace = Set(observations) |> ObservationSpace
     observationsAsIndeces = translateObservationsToIndex(observations, observationSpace)
     return (observationSpace, observations, observationsAsIndeces)
 end
