@@ -58,107 +58,18 @@ end
 # ------------------------------------------------------------------------------
 # Productive Load data
 
-function getData2YearsOriginal(householdId::Int64)
-    # Load Data
+# Ladet und normalisiert aus Datentabelle die Zeitreihe des entsprechenden Haushalts (hh)
+function loadAndNormalizeData(hh::Int)::Vector{Float32}
+        # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
     df = DataFrame(XLSX.readtable(path, "Sheet1"))
-    observations = df[:, string(householdId)]
+    originalObservations = df[:, string(hh)]
 
     # Convert Data
-    originalObser = observations |> discretize
-    return(originalObser)
+    observations = originalObservations |> normalizeWithMaxElement
+    return(observations)
 end
 
-function getData2Years(householdId::Int64)
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
-    df = DataFrame(XLSX.readtable(path, "Sheet1"))
-    observations = df[:, string(householdId)]
-
-    # Convert Data
-    abstractObser = observations |> discretize |> abstractLoadObservations
-    observationSpace = Set(abstractObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObser, observationSpace)
-
-    return(observationSpace, abstractObser, observationsAsIndeces)
-end
-
-function getData2Years_Seasonstamps(householdId::Int64)
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
-    df = DataFrame(XLSX.readtable(path, "Sheet1"))
-    observations = df[:, string(householdId)]
-
-    # Convert Data
-    abstractObser = observations |> discretize |> abstractLoadObservations
-    abstractObserWithTimestamps = addSeasonstamps(abstractObser, dateTimesOf2YearsData())
-    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
-
-    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
-end
-
-function getData2Years_Simplified(householdId::Int64)
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
-    df = DataFrame(XLSX.readtable(path, "Sheet1"))
-
-    observations = df[:, string(householdId)]
-
-    # Convert Data
-    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
-    observationSpace = Set(abstractObser) |> ObservationSpace
-    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObser, observationSpace)
-
-    return(observationSpace, abstractObser, observationsAsIndeces)
-end
-
-function getData2Years_SimplifiedAndTimestamps(householdId::Int64, numberOfTimeBlocks::Int64)
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
-    df = DataFrame(XLSX.readtable(path, "Sheet1"))
-
-    observations = df[:, string(householdId)]
-
-    # Convert Data
-    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
-    abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
-    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
-
-    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
-end
-
-function getData2Years_Timestamps(householdId::Int64, numberOfTimeBlocks::Int64)
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
-    df = DataFrame(XLSX.readtable(path, "Sheet1"))
-    observations = df[:, string(householdId)]
-
-    # Convert Data
-    abstractObser = observations |> discretize |> abstractLoadObservations
-    abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
-    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
-
-    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
-end
-
-function getData2Years_EveryQHTimestamps(householdId::Int64)
-    # Load Data
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
-    df = DataFrame(XLSX.readtable(path, "Sheet1"))
-
-    observations = df[:, string(householdId)]
-
-    # Convert Data
-    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
-    abstractObserWithTimestamps = addTimestamps(96, abstractObser)
-    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
-    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
-
-    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
-end
 
 #-------------------------------------------------------------------------
 # Saving and Loading HMMs
@@ -381,4 +292,106 @@ function abstractLoadObservations_Simplified(observation::Array{Int64})
     end
 
     return abstractLoad.(observation)
+end
+
+function getData2YearsOriginal(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    originalObser = observations |> discretize
+    return(originalObser)
+end
+
+function getData2Years(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations
+    observationSpace = Set(abstractObser) |> ObservationSpace
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObser, observationSpace)
+
+    return(observationSpace, abstractObser, observationsAsIndeces)
+end
+
+function getData2Years_Seasonstamps(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations
+    abstractObserWithTimestamps = addSeasonstamps(abstractObser, dateTimesOf2YearsData())
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
+end
+
+function getData2Years_Simplified(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
+    observationSpace = Set(abstractObser) |> ObservationSpace
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObser, observationSpace)
+
+    return(observationSpace, abstractObser, observationsAsIndeces)
+end
+
+function getData2Years_SimplifiedAndTimestamps(householdId::Int64, numberOfTimeBlocks::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
+    abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
+end
+
+function getData2Years_Timestamps(householdId::Int64, numberOfTimeBlocks::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations
+    abstractObserWithTimestamps = addTimestamps(numberOfTimeBlocks, abstractObser)
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
+end
+
+function getData2Years_EveryQHTimestamps(householdId::Int64)
+    # Load Data
+    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    df = DataFrame(XLSX.readtable(path, "Sheet1"))
+
+    observations = df[:, string(householdId)]
+
+    # Convert Data
+    abstractObser = observations |> discretize |> abstractLoadObservations_Simplified
+    abstractObserWithTimestamps = addTimestamps(96, abstractObser)
+    observationSpace = Set(abstractObserWithTimestamps) |> ObservationSpace
+    observationsAsIndeces = translateObservationsAsIntToIndex(abstractObserWithTimestamps, observationSpace)
+
+    return(observationSpace, abstractObserWithTimestamps, observationsAsIndeces)
 end

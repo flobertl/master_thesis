@@ -4,6 +4,6 @@ using Revise, ChangePrecision
 using HMM_Forecast
 
 #runUEAll()
-HMM_Forecast.testAll()
+#HMM_Forecast.testAll()
 
-HMM_Forecast.testSaveAndLoadHMM()
+HMM_Forecast.testLoadAndNormalizeData()

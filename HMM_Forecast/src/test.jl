@@ -315,6 +315,14 @@ function testNormalize()
     testingEquality(name, result, expectedResult)
 end
 
+function testLoadAndNormalizeData()
+    name = "Load and Normalize data"
+    
+    result = loadAndNormalizeData(1)[1]
+    expectedResult = 0.02124232f0
+    testingEquality(name, result, expectedResult)
+end
+
 function testAll()
     testObservationToIndexMapping()
     testBackwardAndForwardAlgo()
