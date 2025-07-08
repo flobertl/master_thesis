@@ -323,21 +323,38 @@ function testLoadAndNormalizeData()
     testingEquality(name, result, expectedResult)
 end
 
-function testDiscretizeEaualMassBins()
+function testDiscretizeEqualMassBins()
     name = "Discretize data with equal mass bins"
 
     # Test 1
-    observations = [1f0, 2f0, 3f0, 4f0]
+    observations = [1f0, 2f0, 3f0, 4f0]./4
     result = discretizeEqualMassBins(2, observations)
-    expectedResult = [1.5f0, 1.5f0, 3.5f0, 3.5f0]
+    expectedResult = [1.5f0, 1.5f0, 3.5f0, 3.5f0] ./4
     testingEquality(name*" 1", result, expectedResult)
 
     # Test 2
-    observations = [1f0, 2f0, 3f0, 4f0, 5f0]
+    observations = [1f0, 2f0, 3f0, 4f0, 5f0] ./ 5
     result = discretizeEqualMassBins(2, observations)
-    expectedResult = [2f0, 2f0, 2f0, 4.5f0, 4.5f0]
+    expectedResult = [2f0, 2f0, 2f0, 4.5f0, 4.5f0] ./ 5
     testingEquality(name*" 2", result, expectedResult)
 end
+
+function testDiscretizeEqualSizeBins()
+    name = "Discretize data with equal size bins"
+
+    # Test 1
+    observations = [1f0, 2f0, 3f0, 4f0]./4
+    result = discretizeEqualSizeBins(2, observations)
+    expectedResult = [1.5f0, 1.5f0, 3.5f0, 3.5f0] ./4
+    testingEquality(name*" 1", result, expectedResult)
+
+    # Test 2
+    observations = [1f0, 2f0, 3f0, 4f0, 5f0] ./ 5
+    result = discretizeEqualSizeBins(2, observations)
+    expectedResult = [1.5f0, 1.5f0, 4f0, 4f0, 4f0] ./ 5
+    testingEquality(name*" 2", result, expectedResult)
+end
+
 
 function testAll()
     testObservationToIndexMapping()
@@ -356,7 +373,8 @@ function testAll()
     testSaveAndLoadCSVTable()
     testNormalize()
     #testLoadAndNormalizeData() auskommentiert um Geschwindigkeit zu garantieren
-    testDiscretizeEaualMassBins()
+    testDiscretizeEqualMassBins()
+    testDiscretizeEqualSizeBins()
 
 end
 

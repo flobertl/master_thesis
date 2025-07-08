@@ -1,4 +1,4 @@
-using XLSX, DataFrames, Dates, CSV
+using XLSX, DataFrames, Dates, CSV, Statistics
 
 # --------------------------------------------------------------------------
 # Helpers
@@ -83,6 +83,23 @@ function discretizeEqualMassBins(numberBins::Int, observations::Vector{Float32})
         indecesBin = corresponingBins .== bin
         binMedian = median(observations[indecesBin])
         observationsDiscretized[indecesBin] .= binMedian
+    end
+
+    if (length(Set(observationsDiscretized)) != numberBins)
+        error("Diskretisierung fehlgeschlagen! Anzahl der Bins nicht erfuellt.")
+    end
+    return observationsDiscretized
+end
+
+function discretizeEqualSizeBins(numberBins::Int, observations::Vector{Float32})::Vector{Float32}
+    nodes = [(1/numberBins)* quant for quant in 1:numberBins]
+
+    observationsDiscretized = Vector{Float32}(undef, length(observations))
+    corresponingBins = [searchsortedfirst(nodes, obs) for obs in observations]
+    for bin in 1:numberBins
+        indecesBin = corresponingBins .== bin
+        binMean = Statistics.mean(observations[indecesBin])
+        observationsDiscretized[indecesBin] .= binMean
     end
 
     if (length(Set(observationsDiscretized)) != numberBins)
