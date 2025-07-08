@@ -1,65 +1,28 @@
-using XLSX, DataFrames, Dates, CSV
+using XLSX, DataFrames, Dates, CSV, Statistics
 
-# --------------------------------------------------------------------------
-# Helpers
-
-function discretize(observations)
-    discreteObs = map(round, observations)
-    return map(Int, discreteObs)
-end
-
-function roundToGivenDigit(x, stepWidth::Int)
-    x_round = (x/stepWidth) |> round
-    return map(Int, x_round*stepWidth)
-end
-
-function normalizeWithMaxElement(observations::Vector{})::Vector{Float32}
-    maxElement = maximum(observations)
-    normalizedObservations = map(Float32, observations./maxElement)
-    return normalizedObservations
-end 
-
-function addTimestamps(timeGranularity::Int, observations::Array{Int})::Array{Int}
-    times = 96/timeGranularity
-    observationWithTimestamp = []
-    count = 0
-    for obser in observations
-       obserWithTimestamp = obser + floor(count/times) |> Int
-       push!(observationWithTimestamp, obserWithTimestamp)
-       count += 1
-       if count == 96
-        count = 0
-       end
-    end
-    return observationWithTimestamp
-end
-
-function addSeasonstamps(observations::Array{Int}, dates)::Array{Int}
-    if length(observations) != length(dates)
-        println("fail")
-    end
-    isSeason((lb, ub), t) = lb <= Dates.month(t) && Dates.month(t) <= ub
-    isWinter((lb, ub), t) = lb <= Dates.month(t) || Dates.month(t) <= ub
-    curry(f, arg1) = x -> f(arg1, x)
-    indecesSpring = findall(curry(isSeason, (3,5)), dates)
-    indecesSummer = findall(curry(isSeason, (6,8)), dates)
-    indecesFall = findall(curry(isSeason, (9,11)), dates)
-    indecesWinter = findall(curry(isWinter, (12,2)), dates)
-
-    newObservations = copy(observations)
-    newObservations[indecesSpring] += ones(length(indecesSpring))
-    newObservations[indecesSummer] += ones(length(indecesSummer)) .* 2
-    newObservations[indecesFall] += ones(length(indecesFall)) .* 3
-    newObservations[indecesWinter] += ones(length(indecesWinter)) .* 4
-
-    newObservations
-end
 
 # ------------------------------------------------------------------------------
-# Productive Load data
+# Preprocessing for HMM 
+# Discretizes Observations and generates coresponding HMM observation Space
+function preprocessing(originalObservations::Vector{Float32}, discretTyp::String, numberOfObservations::Int)::Tuple{ObservationSpace, Vector{Float32}, Vector{Int}}
+    Discretization
+    if discretTyp == "A"
+        observations = discretizeEqualMassBins(numberOfObservations, originalObservations)
+    elseif discretTyp == "B"
+        observations = discretizeEqualSizeBins(numberOfObservations, originalObservations)
+    else
+        error("No valid discretization type (A/B).")
+    end
+    observationSpace = observationSpace(observations)
+    observationsAsIndeces = translateObservationsToIndex(observations, observationSpace)
+    return (observationSpace, observations, observationsAsIndeces)
+end
+
+# ---------------------------------------------------------------------------
+# Productive Load Function
 
 # Ladet und normalisiert aus Datentabelle die Zeitreihe des entsprechenden Haushalts (hh)
-function loadAndNormalizeData(hh::Int)::Vector{Float32}
+function readAndNormalizeData(hh::Int)::Vector{Float32}
         # Load Data
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
     df = DataFrame(XLSX.readtable(path, "Sheet1"))
@@ -83,6 +46,23 @@ function discretizeEqualMassBins(numberBins::Int, observations::Vector{Float32})
         indecesBin = corresponingBins .== bin
         binMedian = median(observations[indecesBin])
         observationsDiscretized[indecesBin] .= binMedian
+    end
+
+    if (length(Set(observationsDiscretized)) != numberBins)
+        error("Diskretisierung fehlgeschlagen! Anzahl der Bins nicht erfuellt.")
+    end
+    return observationsDiscretized
+end
+
+function discretizeEqualSizeBins(numberBins::Int, observations::Vector{Float32})::Vector{Float32}
+    nodes = [(1/numberBins)* quant for quant in 1:numberBins]
+
+    observationsDiscretized = Vector{Float32}(undef, length(observations))
+    corresponingBins = [searchsortedfirst(nodes, obs) for obs in observations]
+    for bin in 1:numberBins
+        indecesBin = corresponingBins .== bin
+        binMean = Statistics.mean(observations[indecesBin])
+        observationsDiscretized[indecesBin] .= binMean
     end
 
     if (length(Set(observationsDiscretized)) != numberBins)
@@ -273,6 +253,61 @@ function getTestData2Month()
     observationsAsIndeces = translateObservationsAsIntToIndex(discreteObser, observationSpace)
 
     return(observationSpace, observationsAsIndeces)
+end
+
+# --------------------------------------------------------------------------
+# Helpers
+
+function discretize(observations)
+    discreteObs = map(round, observations)
+    return map(Int, discreteObs)
+end
+
+function roundToGivenDigit(x, stepWidth::Int)
+    x_round = (x/stepWidth) |> round
+    return map(Int, x_round*stepWidth)
+end
+
+function normalizeWithMaxElement(observations::Vector{})::Vector{Float32}
+    maxElement = maximum(observations)
+    normalizedObservations = map(Float32, observations./maxElement)
+    return normalizedObservations
+end 
+
+function addTimestamps(timeGranularity::Int, observations::Array{Int})::Array{Int}
+    times = 96/timeGranularity
+    observationWithTimestamp = []
+    count = 0
+    for obser in observations
+       obserWithTimestamp = obser + floor(count/times) |> Int
+       push!(observationWithTimestamp, obserWithTimestamp)
+       count += 1
+       if count == 96
+        count = 0
+       end
+    end
+    return observationWithTimestamp
+end
+
+function addSeasonstamps(observations::Array{Int}, dates)::Array{Int}
+    if length(observations) != length(dates)
+        println("fail")
+    end
+    isSeason((lb, ub), t) = lb <= Dates.month(t) && Dates.month(t) <= ub
+    isWinter((lb, ub), t) = lb <= Dates.month(t) || Dates.month(t) <= ub
+    curry(f, arg1) = x -> f(arg1, x)
+    indecesSpring = findall(curry(isSeason, (3,5)), dates)
+    indecesSummer = findall(curry(isSeason, (6,8)), dates)
+    indecesFall = findall(curry(isSeason, (9,11)), dates)
+    indecesWinter = findall(curry(isWinter, (12,2)), dates)
+
+    newObservations = copy(observations)
+    newObservations[indecesSpring] += ones(length(indecesSpring))
+    newObservations[indecesSummer] += ones(length(indecesSummer)) .* 2
+    newObservations[indecesFall] += ones(length(indecesFall)) .* 3
+    newObservations[indecesWinter] += ones(length(indecesWinter)) .* 4
+
+    newObservations
 end
 
 #-------------------------------------------------------------
