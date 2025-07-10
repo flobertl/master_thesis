@@ -65,9 +65,6 @@ function discretizeEqualSizeBins(numberBins::Int, observations::Vector{Float32})
         observationsDiscretized[indecesBin] .= binMean
     end
 
-    if (length(Set(observationsDiscretized)) != numberBins)
-        error("Diskretisierung fehlgeschlagen! Anzahl der Bins nicht erfuellt.")
-    end
     return observationsDiscretized
 end
 

@@ -1,24 +1,28 @@
 # Function to run BasisModel runBasisModelAnalysis
 using Random, Printf
 
-function trainBasisModel(hh, discretTyp::String, numberOfObservations::Int, numberOfStatesVector = 30:5:60)
+function trainBasisModel(hh, discretTyp::String, numberOfObservationsVector::Vector{Int}, numberOfStatesVector = 30:5:60)
     iter = 100
 
     # Data
     originalObservations = readAndNormalizeData(hh)
-    observationSpace, observations, observationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
 
-    # Extract Trainigsdata
-    dataTrainingAsIndeces  = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]
-
-    prevTime = now()
-    for N in numberOfStatesVector
-        # Train and store model 
-        println("-------------- Train Basis Model with Discretization $discretTyp and $N states------------------")
-        hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
-        filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
-        saveHMM(hmm, "hyperparameter_analysis/"*filename)
+    
+    for numberOfObservations in numberOfObservationsVector
         prevTime = printTimeAndResetTimeStamp(prevTime)
+        observationSpace, observations, observationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
+
+        # Extract Trainigsdata
+        dataTrainingAsIndeces  = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]
+
+        for N in numberOfStatesVector
+            # Train and store model 
+            println("-------------- Train Basis Model with Discretization $discretTyp, $numberOfObservations Observations and $N states------------------")
+            hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
+            filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
+            saveHMM(hmm, "hyperparameter_analysis/"*filename)
+            prevTime = printTimeAndResetTimeStamp(prevTime)
+        end
     end
 end
 
