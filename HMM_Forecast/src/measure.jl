@@ -34,6 +34,13 @@ function quantileForecast(observationSpace::ObservationSpace, distribution::Vect
     return forecast
 end
 
+function quantileForecastContinuous((observationSpace::ObservationSpace, infoBin),(distribution, distributionCDF), quantile)::Float32
+    correspondingBin = searchsortedfirst(distributionCDF, quantile)
+    quantForecast = infoBin[correspondingBin][1] + infoBin[correspondingBin][2]*(distributionCDF[correspondingBin] - quantile)/(distribution[correspondingBin])
+    return quantForecast
+end
+
+
 ## Scoring rules
 function pinball(observationSpace::ObservationSpace, observation, distribution::Vector{Float64}, quantile::Float64)
     quantForecast = quantileForecast(observationSpace, distribution, quantile)
@@ -50,7 +57,28 @@ function crps(observationSpace::ObservationSpace, observation, distribution::Vec
     quantiles = 0.01:0.01:1.
     crps = 0.
     for quantile in quantiles
-        crps += pinball(observationSpace, observation, distribution, quantile)
+        crps += pinball(observationSpace, observation, distributionCDF, quantile)
+    end
+    return crps
+end
+
+function pinballContinuous((observationSpace::ObservationSpace, infoBins::Array{Tuple{Float32, Float32}}), observation, (distribution, distributionCDF), quantile::Float64)
+    quantForecast = quantileForecastContinuous((observationSpace, infoBins), distributionCDF, quantile)
+    if quantForecast >= observation
+        return (1 - quantile)*(quantForecast- observation)
+    elseif quantForecast < observation
+        return quantile*(observation - quantForecast)
+    else
+        println("FAIL!")
+    end
+end
+
+function crpsContinuous((observationSpace::ObservationSpace, infoBins::Array{Tuple{Float32, Float32}}), observation, distribution::Vector{Float64})
+    distributionCDF = cumsum(distribution)
+    quantiles = 0.01:0.01:1.
+    crps = 0.
+    for quantile in quantiles
+        crps += pinballContinuous((observationSpace, infoBins), observation, (distribution, distributionCDF), quantile)
     end
     return crps
 end
@@ -82,6 +110,18 @@ function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64
     meanCRPS = 0
     for t in 1:T
         meanCRPS +=  crps(observationSpace, observations[t], distributionVector[t])
+    end
+    return meanCRPS/T
+end
+
+function meanCRPSContinuous((observationSpace::ObservationSpace, infoBins), observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
+    T = length(observations)
+    if T != length(distributionVector)
+        throw(DimensionMismatch("$distributionVector and $observations"))
+    end
+    meanCRPS = 0
+    for t in 1:T
+        meanCRPS +=  crpsContinuous((observationSpace, infoBins), observations[t], distributionVector[t])
     end
     return meanCRPS/T
 end

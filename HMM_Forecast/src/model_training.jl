@@ -6,11 +6,11 @@ function trainBasisModel(hh, discretTyp::String, numberOfObservationsVector::Vec
 
     # Data
     originalObservations = readAndNormalizeData(hh)
-
+    prevTime = now()
     
     for numberOfObservations in numberOfObservationsVector
         prevTime = printTimeAndResetTimeStamp(prevTime)
-        observationSpace, observations, observationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
+        (observationSpace, infoBins), observations, observationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
 
         # Extract Trainigsdata
         dataTrainingAsIndeces  = observationsAsIndeces[dateIndeces[2,1]:dateIndeces[3,1]-1]

@@ -5,9 +5,10 @@ using Revise, Dates, Statistics, Random, Plots
 using HMM_Forecast
 
 # Parameters
-hh = 2
-numberOfStatesVector = [80, 100] #vcat(5:5:30,40:10:60)
-numberOfTimeBlocks = [4, 8, 12, 24, 96]
+hh = 1
+discretTyp = "A"
+numberOfObservationsVector =  [2] #[[50, 100, 200]
+numberOfStatesVector = [1] #[10, 20, 30, 40, 50, 60]
 
-HMM_Forecast.trainBasisModels(2, numberOfStatesVector)
-HMM_Forecast.trainBasisModels(3, numberOfStatesVector)
+# Run Training
+HMM_Forecast.trainBasisModel(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)

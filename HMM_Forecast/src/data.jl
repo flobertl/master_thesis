@@ -4,18 +4,18 @@ using XLSX, DataFrames, Dates, CSV, Statistics
 # ------------------------------------------------------------------------------
 # Preprocessing for HMM 
 # Discretizes Observations and generates coresponding HMM observation Space
-function preprocessing(originalObservations::Vector{Float32}, discretTyp::String, numberOfObservations::Int)::Tuple{ObservationSpace, Vector{Float32}, Vector{Int}}
+function preprocessing(originalObservations::Vector{Float32}, discretTyp::String, numberOfObservations::Int)
     # Discretization
     if discretTyp == "A"
-        observations = discretizeEqualMassBins(numberOfObservations, originalObservations)
+        observations, infoBins = discretizeEqualMassBins(numberOfObservations, originalObservations)
     elseif discretTyp == "B"
-        observations = discretizeEqualSizeBins(numberOfObservations, originalObservations)
+        observations, infoBins = discretizeEqualSizeBins(numberOfObservations, originalObservations)
     else
         error("No valid discretization type (A/B).")
     end
     observationSpace = Set(observations) |> ObservationSpace
     observationsAsIndeces = translateObservationsToIndex(observations, observationSpace)
-    return (observationSpace, observations, observationsAsIndeces)
+    return((observationSpace, infoBins), observations, observationsAsIndeces)
 end
 
 # ---------------------------------------------------------------------------
@@ -36,36 +36,49 @@ end
 #----------------------------------------------------------------------------
 # Discretizer
 
-function discretizeEqualMassBins(numberBins::Int, observations::Vector{Float32})::Vector{Float32}
+function discretizeEqualMassBins(numberBins::Int, observations::Vector{Float32})
     quantiles = [(1/numberBins)* quant for quant in 1:numberBins]
     empiricQuantiles = quantile(observations, quantiles, sorted=false)
 
     observationsDiscretized = Vector{Float32}(undef, length(observations))
     corresponingBins = [searchsortedfirst(empiricQuantiles, obs) for obs in observations]
+    nodes = vcat(0, quantiles)
+    infoBins = []
     for bin in 1:numberBins
         indecesBin = corresponingBins .== bin
         binMedian = median(observations[indecesBin])
         observationsDiscretized[indecesBin] .= binMedian
+        infoBin = (nodes[bin], nodes[bin+1]-nodes[bin]) # Tuple (first "stuetzstelle", length of bin)
+        push!(infoBins, infoBin)
     end
 
     if (length(Set(observationsDiscretized)) != numberBins)
         error("Diskretisierung fehlgeschlagen! Anzahl der Bins nicht erfuellt.")
     end
-    return observationsDiscretized
+    return observationsDiscretized, infoBins
 end
 
-function discretizeEqualSizeBins(numberBins::Int, observations::Vector{Float32})::Vector{Float32}
+function discretizeEqualSizeBins(numberBins::Int, observations::Vector{Float32})
     nodes = [(1/numberBins)* quant for quant in 1:numberBins]
 
     observationsDiscretized = Vector{Float32}(undef, length(observations))
     corresponingBins = [searchsortedfirst(nodes, obs) for obs in observations]
+    nodes = vcat(0, nodes)
+    infoBins = []   
     for bin in 1:numberBins
         indecesBin = corresponingBins .== bin
         binMean = Statistics.mean(observations[indecesBin])
         observationsDiscretized[indecesBin] .= binMean
+        if any(indecesBin)          #Check for non-empty bin
+            infoBin = (nodes[bin], nodes[bin+1]-nodes[bin]) # Tuple (first "stuetzstelle", length of bin)
+            push!(infoBins, infoBin)
+        end
+    end
+    if lenght(infoBins) != length(unique(observationsDiscretized))
+        throw(DomainError("Info of bins not in accordance with the total number of bins."))
     end
 
-    return observationsDiscretized
+    return observationsDiscretized, infoBins
 end
 
 #-------------------------------------------------------------------------
