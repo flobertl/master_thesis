@@ -1,5 +1,57 @@
 # Function to run BasisModel runBasisModelAnalysis
-using Random
+using Random, Printf
+
+function calcEvaluation((hmm, infoBins), discretizedDataAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, historicWindowLength)
+    # Calc Prediction
+    distributionForecastVector = calcSlidingWindowPrediction(hmm, discretizedDataAsIndeces, testDateIndeces, historicWindowLength)::Vector{Vector{Float64}}
+
+    # Calc Likelihood
+    loglikelihood_train = loglikelihood(hmm, discretizedDataAsIndeces[trainDateIndeces])
+    loglikelihood_test = loglikelihood(hmm, discretizedDataAsIndeces[testDateIndeces])
+
+    # Calc CRPS
+    crps = meanCRPSContinuous((hmm.observationSpace, infoBins), testDataOriginal, distributionForecastVector)
+
+    return ((loglikelihood_test,loglikelihood_train), crps)
+end
+
+# Calcs the evaluation (CRPS) for basismodel in folder 'hyperparameter_analysis'. 
+# See section 'Hyperparameter Analysis' for detailed methodology
+function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVector::Vector{Int}, numberOfStatesVector = 30:5:60, historicWindowLength = 200)
+    # Data
+    originalObservations = readAndNormalizeData(hh)
+    dateIndeces = calcFirstQHofYearAndMonth()  
+    trainDateIndeces = dateIndeces[2,1]:dateIndeces[3,1]-1 |> Vector      
+    testDateIndeces = dateIndeces[3,1]:endOfDecember20() |> Vector
+    testDataOriginal = originalObservations[testDateIndeces]
+
+    results = []
+    println("------------------ Evaluate basismodel_hh($hh) with discretization $discretTyp --------------------")
+    prevTime = now()
+    for numberOfObservations in numberOfObservationsVector
+        (observationSpace, infoBins), discreteObservations, discreteObservationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
+        
+    
+        for N in numberOfStatesVector
+            # Load HMM model and evaluate
+            filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
+            # try
+                hmm = loadHMM("hyperparameter_analysis/"*filename) |> updateHMMNumericalStable  # Adding an epsilon probability to each entry of the observationMatrix      
+                                                                                                # => Avoids zero values.
+                result = calcEvaluation((hmm, infoBins), discreteObservationsAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, historicWindowLength)
+                push!(results, result)
+                printEvaluation(filename, result)
+            # catch e
+             #   println("EROR IN EVALUATION OF ", filename, ": ")
+           # end
+        end
+    end
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+    return results
+end
+
+#----------------------------------------------------------------------------------------------------------
+# Legacy
 
 function generatePITforSeasonModels(hmm::HMM, trainData, testData, folderPath::String, name = "")
     trainDataAsIndeces = translateObservationsAsIntToIndex(trainData, hmm.observationSpace)
@@ -65,7 +117,7 @@ function generatePITforFullyearModels(hmm::HMM, trainData, testData, folderPath:
     end
 end
 
-function calcEvaluation(hmm::HMM, trainData, testData)
+function calcEvaluationLegacy(hmm::HMM, trainData, testData)
     testDataAsIndeces = translateObservationsAsIntToIndex(testData, hmm.observationSpace)
     trainDataAsIndeces = translateObservationsAsIntToIndex(trainData, hmm.observationSpace)
     hmmStable = hmm |> updateHMMNumericalStable
@@ -109,8 +161,8 @@ function calcEvaluationTimestampModel(hmmTS::HMM, trainDataTS, testDataTS,  obse
     return ((loglikelihood_test,loglikelihood_train), mape, r_sqare, crps)
 end
 
-function printEvaluation(name::String, ((loglikelihood_test,loglikelihood_train), mape, r_sqare, crps))
-    println("$name --- loglike-Train: $loglikelihood_train /// loglike-Test: $loglikelihood_test /// MAE: $mape /// Mean CRPS: $crps")
+function printEvaluation(name::String, ((loglikelihood_test,loglikelihood_train), crps))
+    println("$name --- loglike-Train: $loglikelihood_train /// loglike-Test: $loglikelihood_test /// Mean CRPS: $crps")
 end
 
 function calcEvaluationGivenForecast(observationSpace::ObservationSpace, testData, distributionForecastVector)
@@ -143,35 +195,12 @@ function evaluateSeasonmodels(hh = 1, numberOfStatesVector = 5:5:30)
         for N in numberOfStatesVector
             # Train and store model 
             hmm = loadHMM("simplified_experiments/seasonmodel_hh($hh)//seasonmodel_"*seasonStrings[seasonIndex]*"_states($N)") |> updateHMMNumericalStable
-            result = calcEvaluation(hmm, dataTraining, dataTest)
+            result = calcEvaluationLegacy(hmm, dataTraining, dataTest)
             push!(resultSeason, result)
             printEvaluation("seasonmodel_($hh)_"*seasonStrings[seasonIndex]*"_states($N)" , result)
         end
         results[seasonIndex] = resultSeason
         println(" ")
-    end
-    prevTime = printTimeAndResetTimeStamp(prevTime)
-    return results
-end
-
-
-function evaluateBasismodel(hh = 1, numberOfStatesVector = 30:5:60)
-    # Data
-    (observationSpaceOriginal, observations, observationsAsIndecesOriginal) = getData2Years_Simplified(hh);
-    dateIndeces = calcFirstQHofYearAndMonth()
-
-    dataTraining = observations[dateIndeces[2,1]:dateIndeces[3,1]-1]
-    dataTest     = observations[dateIndeces[3,1]:endOfDecember20()]
-
-    prevTime = now()
-    results = []
-    println("------------------ Evaluate basismodel_hh($hh) --------------------")
-    for N in numberOfStatesVector
-        # Train and store model 
-        hmm = loadHMM("simplified_experiments/basismodel_hh($hh)//basismodel_states($N)") 
-        result = calcEvaluation(hmm, dataTraining, dataTest)
-        push!(results, result)
-        printEvaluation("basismodel_hh($hh)_states($N)" , result)
     end
     prevTime = printTimeAndResetTimeStamp(prevTime)
     return results
@@ -237,7 +266,7 @@ function evaluateBasismodel2(hh::Int, numberOfStatesVector::Vector{Int}, histori
         hmm = hmm_unchanged |> updateHMMNumericalStable |> updateHMMWithStationaryInitDistro 
         for (i_hwl, historicWindowLength) in enumerate(historicWindowLengthVector)
             println("------------------ Evaluate basismodel_hh($hh): states($N) historicWindowLength($historicWindowLength) --------------------")
-            forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, historicWindowLength, sampleTestDataIndeces)
+            forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, sampleTestDataIndeces, historicWindowLength)
             meanForecast = transformDistributionToMeanPointForecast(observationSpace, forecastVector)
             resultsMAE[i_states, i_hwl] = mae_forPointForecast( observations[sampleTestDataIndeces], meanForecast)
             resultsResidualVariance[i_states, i_hwl] = residualVariance_forPointForecast(observations[sampleTestDataIndeces], meanForecast)
@@ -266,7 +295,7 @@ function evaluateBasismodel3(hh::Int, numberOfStatesVector::Vector{Int}, histori
         hmm = hmm_unchanged |> updateHMMNumericalStable |> updateHMMWithStationaryInitDistro 
         for (i_hwl, historicWindowLength) in enumerate(historicWindowLengthVector)
             println("------------------ Evaluate basismodel_hh($hh): states($N) historicWindowLength($historicWindowLength) --------------------")
-            forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, historicWindowLength, sampleTestDataIndeces)
+            forecastVector = calcSlidingWindowPrediction(hmm, observationsAsIndeces, sampleTestDataIndeces, historicWindowLength)
             bestPathForecast = transformDistributionToBestPathPointForecast(observationSpace, forecastVector)
             resultsMAE[i_states, i_hwl] = mae_forPointForecast( originalObservations[sampleTestDataIndeces], map(Float64, bestPathForecast))
             resultsAccuracy[i_states, i_hwl] = accuracy_forPointForecast(observations[sampleTestDataIndeces], bestPathForecast)

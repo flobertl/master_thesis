@@ -34,9 +34,9 @@ function quantileForecast(observationSpace::ObservationSpace, distribution::Vect
     return forecast
 end
 
-function quantileForecastContinuous((observationSpace::ObservationSpace, infoBin),(distribution, distributionCDF), quantile)::Float32
+function quantileForecastContinuous((observationSpace, infoBin), (distribution, distributionCDF), quantile)::Float32
     correspondingBin = searchsortedfirst(distributionCDF, quantile)
-    quantForecast = infoBin[correspondingBin][1] + infoBin[correspondingBin][2]*(distributionCDF[correspondingBin] - quantile)/(distribution[correspondingBin])
+    quantForecast = infoBin[correspondingBin][1] + infoBin[correspondingBin][2]*(distributionCDF[correspondingBin]- quantile)/(distribution[correspondingBin])
     return quantForecast
 end
 
@@ -62,8 +62,8 @@ function crps(observationSpace::ObservationSpace, observation, distribution::Vec
     return crps
 end
 
-function pinballContinuous((observationSpace::ObservationSpace, infoBins::Array{Tuple{Float32, Float32}}), observation, (distribution, distributionCDF), quantile::Float64)
-    quantForecast = quantileForecastContinuous((observationSpace, infoBins), distributionCDF, quantile)
+function pinballContinuous((observationSpace, infoBins), observation, (distribution, distributionCDF), quantile::Float64)
+    quantForecast = quantileForecastContinuous((observationSpace, infoBins), (distribution, distributionCDF), quantile)
     if quantForecast >= observation
         return (1 - quantile)*(quantForecast- observation)
     elseif quantForecast < observation
@@ -73,7 +73,7 @@ function pinballContinuous((observationSpace::ObservationSpace, infoBins::Array{
     end
 end
 
-function crpsContinuous((observationSpace::ObservationSpace, infoBins::Array{Tuple{Float32, Float32}}), observation, distribution::Vector{Float64})
+function crpsContinuous((observationSpace, infoBins), observation, distribution::Vector{Float64})
     distributionCDF = cumsum(distribution)
     quantiles = 0.01:0.01:1.
     crps = 0.
@@ -96,8 +96,7 @@ end
 
 
 ## Eval forecast Vectors
-function loglikelihood(hmm::HMM, observations::Vector{Float32})::Float64
-    observationsAsIndeces = translateObservationsToIndex(observations, hmm.observationSpace)
+function loglikelihood(hmm::HMM, observationsAsIndeces)::Float64
     alpha, loglikelihood = forwardAlgo(hmm, observationsAsIndeces)
     return loglikelihood
 end 
@@ -114,7 +113,7 @@ function meanCRPS(observationSpace::ObservationSpace, observations::Vector{Int64
     return meanCRPS/T
 end
 
-function meanCRPSContinuous((observationSpace::ObservationSpace, infoBins), observations::Vector{Int64}, distributionVector::Vector{Vector{Float64}})::Float64
+function meanCRPSContinuous((observationSpace, infoBins), observations, distributionVector::Vector{Vector{Float64}})::Float64
     T = length(observations)
     if T != length(distributionVector)
         throw(DimensionMismatch("$distributionVector and $observations"))
