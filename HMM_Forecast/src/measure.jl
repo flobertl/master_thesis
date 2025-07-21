@@ -36,7 +36,8 @@ end
 
 function quantileForecastContinuous((observationSpace, infoBin), (distribution, distributionCDF), quantile)::Float32
     correspondingBin = searchsortedfirst(distributionCDF, quantile)
-    quantForecast = infoBin[correspondingBin][1] + infoBin[correspondingBin][2]*(distributionCDF[correspondingBin]- quantile)/(distribution[correspondingBin])
+    quantForecast = infoBin[correspondingBin][1] + infoBin[correspondingBin][2]*(distributionCDF[correspondingBin]- quantile)/(distribution[correspondingBin])        
+    
     return quantForecast
 end
 
@@ -75,6 +76,7 @@ end
 
 function crpsContinuous((observationSpace, infoBins), observation, distribution::Vector{Float64})
     distributionCDF = cumsum(distribution)
+    distributionCDF[end] = 1.
     quantiles = 0.01:0.01:1.
     crps = 0.
     for quantile in quantiles
