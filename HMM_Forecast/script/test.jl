@@ -6,4 +6,4 @@ using HMM_Forecast
 #runUEAll()
 HMM_Forecast.testAll()
 
-HMM_Forecast.testDiscretizeEqualSizeBins()
+HMM_Forecast.testSaveAndLoadCSVTable()

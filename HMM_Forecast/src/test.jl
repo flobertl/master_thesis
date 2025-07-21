@@ -301,8 +301,8 @@ function testSaveAndLoadCSVTable()
     states = [10, 20]
     windows = [100, 1000]
 
-    saveCSVTable("test", table, states, windows)
-    resultTable, resutlStates, resultWindows = loadCSVTable("test")
+    saveCSVTable("archive//test", table, states, windows)
+    resultTable, resultStates, resultWindows = loadCSVTable("archive//test")
     testingEquality(name, resultTable, table)
 end
 

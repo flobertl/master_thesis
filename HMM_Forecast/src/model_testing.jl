@@ -25,28 +25,29 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
     testDateIndeces = dateIndeces[3,1]:endOfDecember20() |> Vector
     testDataOriginal = originalObservations[testDateIndeces]
 
-    results = []
+    results = Array{Tuple{Tuple{Float64, Float64}, Float64} , 2}(undef, (length(numberOfObservationsVector), length(numberOfStatesVector)))
+
     println("------------------ Evaluate basismodel_hh($hh) with discretization $discretTyp --------------------")
     prevTime = now()
-    for numberOfObservations in numberOfObservationsVector
+    for (i, numberOfObservations) in enumerate(numberOfObservationsVector)
         (observationSpace, infoBins), discreteObservations, discreteObservationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
-        
-    
-        for N in numberOfStatesVector
+        for (j, N) in enumerate(numberOfStatesVector)
             # Load HMM model and evaluate
             filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
             # try
                 hmm = loadHMM("hyperparameter_analysis/"*filename) |> updateHMMNumericalStable  # Adding an epsilon probability to each entry of the observationMatrix      
                                                                                                 # => Avoids zero values.
                 result = calcEvaluation((hmm, infoBins), discreteObservationsAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, historicWindowLength)
-                push!(results, result)
+                results[i, j] = result
                 printEvaluation(filename, result)
             # catch e
              #   println("EROR IN EVALUATION OF ", filename, ": ")
            # end
+            prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end
-    prevTime = printTimeAndResetTimeStamp(prevTime)
+    resultsFile = @sprintf("hyperparameter_analysis/results/basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
+    saveCSVTable(resultsFile, results, numberOfStatesVector, numberOfStatesVector)
     return results
 end
 

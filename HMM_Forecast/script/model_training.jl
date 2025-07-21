@@ -7,8 +7,8 @@ using HMM_Forecast
 # Parameters
 hh = 1
 discretTyp = "A"
-numberOfObservationsVector =  [2] #[[50, 100, 200]
-numberOfStatesVector = [1] #[10, 20, 30, 40, 50, 60]
+numberOfObservationsVector =  [10, 25, 50, 100, 200]
+numberOfStatesVector = [10, 20, 30, 40, 50, 60]
 
 # Run Training
 #HMM_Forecast.trainBasisModel(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)

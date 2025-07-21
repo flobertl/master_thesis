@@ -185,14 +185,14 @@ end
 
 #-------------------------------------------------------------------------
 # Save and load data tables
-tmpPath = ".//HMM_Forecast//tmp//simplified_experiments//"
+tmpPath = ".//HMM_Forecast//tmp//"
 
-function saveCSVTable(title::String, mae_table, numberOfStatesVector, historicWindowLengthVector)
+function saveCSVTable(title::String, table, variableA, variableB)
     rows = []
 
-    for (i, state) in enumerate(numberOfStatesVector)
-        for (j, window) in enumerate(historicWindowLengthVector)
-            push!(rows, (NumberOfStates = state, HistoricWindowLength =window, mae=mae_table[i, j]))
+    for (i, a) in enumerate(variableA)
+        for (j, b) in enumerate(variableB)
+            push!(rows, (VarA = a, VarB = b, Value = table[i, j]))
         end
     end
     df = DataFrame(rows)
@@ -203,20 +203,20 @@ function loadCSVTable(title::String)
     df = CSV.read(tmpPath*title*".csv", DataFrame)
 
     # Eindeutige Zustände (x-Achse) und Fenstergrößen (für Linien)
-    states  = sort(unique(df.NumberOfStates))
-    window = sort(unique(df.HistoricWindowLength))
+    variablesA  = sort(unique(df.VarA))
+    variablesB = sort(unique(df.VarB))
 
     # MAE-Matrix initialisieren
-    mae_matrix = Array{Float64}(undef, length(states), length(window))
+    table = Array{Float64}(undef, length(variablesA), length(variablesB))
 
     # Füllen der Matrix
     for row in eachrow(df)
-        i = findfirst(==(row.NumberOfStates), states)
-        j = findfirst(==(row.HistoricWindowLength), window)
-        mae_matrix[i, j] = row.mae
+        i = findfirst(==(row.VarA), variablesA)
+        j = findfirst(==(row.VarB), variablesB)
+        table[i, j] = row.Value
     end
 
-    return mae_matrix, states, window
+    return table, variablesA, variablesB
 end
 
 #-------------------------------------------------------------------------
