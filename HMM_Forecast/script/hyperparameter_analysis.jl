@@ -15,3 +15,4 @@ numberOfStatesVector = [10, 20, 30, 40, 50, 60]
 
 # Run evaluation
 HMM_Forecast.hyperparameterAnalysis(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)
+HMM_Forecast.hyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)

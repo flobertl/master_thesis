@@ -19,49 +19,19 @@ function argmaxDistro(observationSpace::ObservationSpace, distribution::Vector{F
     return argmaxPrediction
 end
 
-## Quantile functions
-function empiricQuantile(observationSpace::ObservationSpace, distribution::Vector{Float64}, observation)::Float64
-    f(x) = (x<= observation)
-    frequencyVector =  transformDistributionVectorToFrequencyVector(observationSpace, distribution)
-    quantile = count(f, frequencyVector)/length(frequencyVector)
-    return quantile
-end
-
-function quantileForecast(observationSpace::ObservationSpace, distribution::Vector{Float64}, quantile)::Int64
-    frequencyVector =  transformDistributionVectorToFrequencyVector(observationSpace, distribution)
-    n = length(frequencyVector) * quantile |> ceil |> Int
-    forecast = sort(frequencyVector)[n]
-    return forecast
-end
-
+# Returns the quantile of the realization in the forecasted distribution
+## Calculates the quantile of the continuous linearised distribution
 function quantileForecastContinuous((observationSpace, infoBin), (distribution, distributionCDF), quantile)::Float32
-    correspondingBin = searchsortedfirst(distributionCDF, quantile)
-    quantForecast = infoBin[correspondingBin][1] + infoBin[correspondingBin][2]*(distributionCDF[correspondingBin]- quantile)/(distribution[correspondingBin])        
+    correspondingBin = searchsortedfirst(distributionCDF, quantile) # returns first bin, where the quantile is lower than the discrete cdf value
+    # infoBin[1] = left bound of bin; infoBin[2] = length of bin
+    # => quantile = left bound + length of bin * Relation Factor of Quantile Position inside the bin (0=left; 1=right)
+    quantForecast = infoBin[correspondingBin][1] + infoBin[correspondingBin][2]*(1 - (distributionCDF[correspondingBin] - quantile)/(distribution[correspondingBin]))
     
     return quantForecast
 end
 
-
+#----------------------------------------------------------------------
 ## Scoring rules
-function pinball(observationSpace::ObservationSpace, observation, distribution::Vector{Float64}, quantile::Float64)
-    quantForecast = quantileForecast(observationSpace, distribution, quantile)
-    if quantForecast >= observation
-        return (1 - quantile)*(quantForecast- observation)
-    elseif quantForecast < observation
-        return quantile*(observation - quantForecast)
-    else
-        println("FAIL!")
-    end
-end
-
-function crps(observationSpace::ObservationSpace, observation, distribution::Vector{Float64})
-    quantiles = 0.01:0.01:1.
-    crps = 0.
-    for quantile in quantiles
-        crps += pinball(observationSpace, observation, distributionCDF, quantile)
-    end
-    return crps
-end
 
 function pinballContinuous((observationSpace, infoBins), observation, (distribution, distributionCDF), quantile::Float64)
     quantForecast = quantileForecastContinuous((observationSpace, infoBins), (distribution, distributionCDF), quantile)
@@ -74,10 +44,12 @@ function pinballContinuous((observationSpace, infoBins), observation, (distribut
     end
 end
 
+# Calculates the mean CRPS based on the distribution vector over the discretized observation Space
+# The continuous version continuousizes the discrete distribution
 function crpsContinuous((observationSpace, infoBins), observation, distribution::Vector{Float64})
     distributionCDF = cumsum(distribution)
     distributionCDF[end] = 1.
-    quantiles = 0.01:0.01:1.
+    quantiles = 0.01:0.01:0.99
     crps = 0.
     for quantile in quantiles
         crps += pinballContinuous((observationSpace, infoBins), observation, (distribution, distributionCDF), quantile)
@@ -166,4 +138,43 @@ function r_squared_forMeanPointForecast(observationSpace::ObservationSpace, obse
     SS_res = map(i -> (observations[i] - pointForecast[i])^2, 1:H) |> sum
     SS_tot = map(i -> (observations[i] - meanObs)^2, 1:H) |> sum
     return 1 - SS_res/SS_tot
+end
+
+# -----------------------------------------------
+# LEGACY CODE
+
+function crps(observationSpace::ObservationSpace, observation, distribution::Vector{Float64})
+    quantiles = 0.01:0.01:1.
+    crps = 0.
+    for quantile in quantiles
+        crps += pinball(observationSpace, observation, distributionCDF, quantile)
+    end
+    return crps
+end
+
+function pinball(observationSpace::ObservationSpace, observation, distribution::Vector{Float64}, quantile::Float64)
+    quantForecast = quantileForecast(observationSpace, distribution, quantile)
+    if quantForecast >= observation
+        return (1 - quantile)*(quantForecast- observation)
+    elseif quantForecast < observation
+        return quantile*(observation - quantForecast)
+    else
+        println("FAIL!")
+    end
+end
+
+function quantileForecast(observationSpace::ObservationSpace, distribution::Vector{Float64}, quantile)::Int64
+    frequencyVector =  transformDistributionVectorToFrequencyVector(observationSpace, distribution)
+    n = length(frequencyVector) * quantile |> ceil |> Int
+    forecast = sort(frequencyVector)[n]
+    return forecast
+end
+
+
+## Quantile functions
+function empiricQuantile(observationSpace::ObservationSpace, distribution::Vector{Float64}, observation)::Float64
+    f(x) = (x<= observation)
+    frequencyVector =  transformDistributionVectorToFrequencyVector(observationSpace, distribution)
+    quantile = count(f, frequencyVector)/length(frequencyVector)
+    return quantile
 end

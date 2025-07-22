@@ -83,7 +83,8 @@ function printTimeAndResetTimeStamp(prevTime)
     newTime = now()
     return newTime
 end
-
+# Adding an epsilon probability to each entry of the observationMatrix
+# Avoids numerical total zeros
 function updateHMMNumericalStable(hmm::HMM)
     obsMatrix_numStable = hmm.observationMatrix.transitionMatrix .+ 10e-15 
     newObservationMatrix = B(hmm.observationMatrix.dimension, obsMatrix_numStable./ sum(obsMatrix_numStable, dims = 2))

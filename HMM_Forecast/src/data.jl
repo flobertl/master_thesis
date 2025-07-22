@@ -74,7 +74,7 @@ function discretizeEqualSizeBins(numberBins::Int, observations::Vector{Float32})
             push!(infoBins, infoBin)
         end
     end
-    if lenght(infoBins) != length(unique(observationsDiscretized))
+    if length(infoBins) != length(unique(observationsDiscretized))
         throw(DomainError("Info of bins not in accordance with the total number of bins."))
     end
 

@@ -17,7 +17,7 @@ end
 
 # Calcs the evaluation (CRPS) for basismodel in folder 'hyperparameter_analysis'. 
 # See section 'Hyperparameter Analysis' for detailed methodology
-function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVector::Vector{Int}, numberOfStatesVector = 30:5:60, historicWindowLength = 200)
+function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVector::Vector{Int}, numberOfStatesVector = 30:5:60, historicWindowLength = 100)
     # Data
     originalObservations = readAndNormalizeData(hh)
     dateIndeces = calcFirstQHofYearAndMonth()  
@@ -34,20 +34,15 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
         for (j, N) in enumerate(numberOfStatesVector)
             # Load HMM model and evaluate
             filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
-            # try
-                hmm = loadHMM("hyperparameter_analysis/"*filename) |> updateHMMNumericalStable  # Adding an epsilon probability to each entry of the observationMatrix      
-                                                                                                # => Avoids zero values.
-                result = calcEvaluation((hmm, infoBins), discreteObservationsAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, historicWindowLength)
-                results[i, j] = result
-                printEvaluation(filename, result)
-            # catch e
-             #   println("EROR IN EVALUATION OF ", filename, ": ")
-           # end
+            hmm = loadHMM("hyperparameter_analysis/"*filename) |> updateHMMNumericalStable  
+            result = calcEvaluation((hmm, infoBins), discreteObservationsAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, historicWindowLength)
+            results[i, j] = result
+            printEvaluation(filename, result)
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end
     resultsFile = @sprintf("hyperparameter_analysis/results/basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
-    saveCSVTable(resultsFile, results, numberOfStatesVector, numberOfStatesVector)
+    saveCSVTable(resultsFile, results, numberOfObservationsVector, numberOfStatesVector)
     return results
 end
 
