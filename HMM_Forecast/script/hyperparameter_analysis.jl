@@ -8,11 +8,12 @@ using HMM_Forecast
 hh = 1
 discretTyp = "A"
 numberOfObservationsVector =  [10, 25, 50, 100, 200]
-numberOfStatesVector = [10, 20, 30, 40, 50, 60]
+numberOfStatesVector = [35, 45, 55] #[10, 20, 30, 40, 50, 60]
 
 # Run Training
-#HMM_Forecast.trainBasisModel(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)
+HMM_Forecast.trainBasisModel(hh, "A", numberOfObservationsVector, numberOfStatesVector)
+HMM_Forecast.trainBasisModel(hh, "B", numberOfObservationsVector, numberOfStatesVector)
 
 # Run evaluation
-HMM_Forecast.hyperparameterAnalysis(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)
-HMM_Forecast.hyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)
+# HMM_Forecast.hyperparameterAnalysis(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)
+# HMM_Forecast.hyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)

@@ -328,15 +328,17 @@ function testDiscretizeEqualMassBins()
 
     # Test 1
     observations = [1f0, 2f0, 3f0, 4f0]./4
-    result = discretizeEqualMassBins(2, observations)
-    expectedResult = [1.5f0, 1.5f0, 3.5f0, 3.5f0] ./4
-    testingEquality(name*" 1", result, expectedResult)
+    result, infoBins = discretizeEqualMassBins(2, observations)
+    expectedResult, expectedInfoBins = ([1.5f0, 1.5f0, 3.5f0, 3.5f0] ./4, [(0, 2.5/4), (2.5/4, 1-2.5/4)])
+    testingEquality(name*" 1A", result, expectedResult)
+
 
     # Test 2
     observations = [1f0, 2f0, 3f0, 4f0, 5f0] ./ 5
-    result = discretizeEqualMassBins(2, observations)
+    result, infoBins = discretizeEqualMassBins(2, observations)
     expectedResult = [2f0, 2f0, 2f0, 4.5f0, 4.5f0] ./ 5
     testingEquality(name*" 2", result, expectedResult)
+    println(infoBins)
 end
 
 function testDiscretizeEqualSizeBins()
@@ -344,15 +346,17 @@ function testDiscretizeEqualSizeBins()
 
     # Test 1
     observations = [1f0, 2f0, 3f0, 4f0]./4
-    result = discretizeEqualSizeBins(2, observations)
+    result, infoBins  = discretizeEqualSizeBins(2, observations)
     expectedResult = [1.5f0, 1.5f0, 3.5f0, 3.5f0] ./4
     testingEquality(name*" 1", result, expectedResult)
+    println(infoBins)
 
     # Test 2
     observations = [1f0, 2f0, 3f0, 4f0, 5f0] ./ 5
-    result = discretizeEqualSizeBins(2, observations)
+    result, infoBins = discretizeEqualSizeBins(2, observations)
     expectedResult = [1.5f0, 1.5f0, 4f0, 4f0, 4f0] ./ 5
     testingEquality(name*" 2", result, expectedResult)
+    println(infoBins)
 end
 
 

@@ -129,14 +129,14 @@ function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast:
     hline!([(N/10)], color=:blue, linestyle=:dash, linewidth=2)
 end
 
-function plotMAE(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHistoryWindow::Vector{Int})
+function plotHyperparameterAnalysis(tableResults, numberOfStatesVector::Vector{Int}, hyperparameterVector::Vector{Int}, hyperparameterName::String)
         # Plot erstellen
     plt = plot()
-    for (i, historyWindowLength) in enumerate(lengthsOfHistoryWindow)
+    for (i, hyperparameter) in enumerate(hyperparameterVector)
         mae_values = tableResults[:, i]
         plot!(plt,
             numberOfStatesVector, mae_values;
-            label = "HWL= $historyWindowLength",
+            label = "HWL= $hyperparameter",
             lw = 4,
             marker = :circle,
             markersize = 4,
@@ -145,52 +145,11 @@ function plotMAE(tableResults, numberOfStatesVector::Vector{Int}, lengthsOfHisto
     end
 
     xlabel!("Number of States")
-    ylabel!("MAE")
-    title!("Hyperparameter Analysis: MAE")
+    ylabel!("CRPS")
+    title!("Hyperparameter Analysis")
     display(plt)
 end
 
-function plotResidualVariance(tableResults, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
-    # Plot erstellen
-    plt = plot()
-    for (i, historyWindowLength) in enumerate(historicWindowLengthVector)
-        mae_values = tableResults[:, i]
-        plot!(plt,
-            numberOfStatesVector, mae_values;
-            label = "HWL = $historyWindowLength",
-            lw = 4,
-            marker = :circle,
-            markersize = 4,
-            legend=:outertopright
-        )
-    end
 
-    xlabel!("Number of States")
-    ylabel!("Residual Variance")
-    title!("Hyperparameter Analysis: Variance of Residuals")
 
-    display(plt)
-end
-
-function plotAccuracy(tableResults, numberOfStatesVector::Vector{Int}, historicWindowLengthVector::Vector{Int})
-    # Plot erstellen
-    plt = plot()
-    for (i, historyWindowLength) in enumerate(historicWindowLengthVector)
-        mae_values = tableResults[:, i]
-        plot!(plt,
-            numberOfStatesVector, mae_values;
-            label = "HWL = $historyWindowLength",
-            lw = 4,
-            marker = :circle,
-            markersize = 4,
-            legend=:outertopright
-        )
-    end
-
-    xlabel!("Number of States")
-    ylabel!("Accuracy")
-    title!("Hyperparameter Analysis: Accuracy")
-
-    display(plt)
-end
 

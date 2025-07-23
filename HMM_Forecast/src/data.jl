@@ -42,7 +42,7 @@ function discretizeEqualMassBins(numberBins::Int, observations::Vector{Float32})
 
     observationsDiscretized = Vector{Float32}(undef, length(observations))
     corresponingBins = [searchsortedfirst(empiricQuantiles, obs) for obs in observations]
-    nodes = vcat(0, quantiles)
+    nodes = vcat(0, empiricQuantiles)
     infoBins = []
     for bin in 1:numberBins
         indecesBin = corresponingBins .== bin
