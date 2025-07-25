@@ -207,13 +207,13 @@ function loadCSVTable(title::String)
     variablesB = sort(unique(df.VarB))
 
     # MAE-Matrix initialisieren
-    table = Array{Float64}(undef, length(variablesA), length(variablesB))
+    table = Array{Tuple{Tuple{Float64, Float64}, Float64}}(undef, length(variablesA), length(variablesB))
 
     # Füllen der Matrix
     for row in eachrow(df)
         i = findfirst(==(row.VarA), variablesA)
         j = findfirst(==(row.VarB), variablesB)
-        table[i, j] = row.Value
+        table[i, j] = eval(Meta.parse(row.Value))
     end
 
     return table, variablesA, variablesB

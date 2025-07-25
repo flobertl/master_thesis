@@ -63,3 +63,29 @@ seasonStrings = ["spring", "summer", "fall", "winter"]
 
 # Indeces first 2 Weeks of Seasons 
 testData2WeeksForAllSeasons = vcat(testDataSpringIndeces[1:96*7*2], testDataSummerIndeces[1:96*7*2], testDataFallIndeces[1:96*7*2], testDataWinterIndeces) 
+
+# Indeces Test Data Set
+# Every 2nd month (Feb, April, June,...) of the 3rd Year
+function testDataIndeces()
+    testDataIndeces = []
+    for month in 2:2:10
+        indeces = dateIndeces[2, month] : dateIndeces[2, month+1]-1
+        append!(testDataIndeces, indeces)
+    end
+    december20Indeces = dateIndeces[3, 12]: endOfDecember20()
+    append!(testDataIndeces, december20Indeces)
+    return testDataIndeces
+end
+
+x = validationDataIndeces() |> length
+
+# Indeces validation Data Set
+# Every 2nd Month (Jan, March, May,..) of the 3rd Year
+function validationDataIndeces()
+    validationDataIndeces = []
+    for month in 1:2:11
+        indeces = dateIndeces[2, month] : dateIndeces[2, month+1]-1
+        append!(validationDataIndeces, indeces)
+    end
+    return validationDataIndeces
+end

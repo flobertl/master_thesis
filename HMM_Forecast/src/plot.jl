@@ -129,14 +129,14 @@ function plotPIT(hmm::HMM, observationFuture::Vector{Int}, distributionForecast:
     hline!([(N/10)], color=:blue, linestyle=:dash, linewidth=2)
 end
 
-function plotHyperparameterAnalysis(tableResults, numberOfStatesVector::Vector{Int}, hyperparameterVector::Vector{Int}, hyperparameterName::String)
+function plotHyperparameterAnalysis(title::String, tableResults, hyperparameterVector::Vector{Int}, numberOfStatesVector::Vector{Int}, hyperparameterName::String)
         # Plot erstellen
-    plt = plot()
+    plt = plot(dpi = 300)
     for (i, hyperparameter) in enumerate(hyperparameterVector)
-        mae_values = tableResults[:, i]
+        mae_values = tableResults[i , :]
         plot!(plt,
             numberOfStatesVector, mae_values;
-            label = "HWL= $hyperparameter",
+            label = "# Observations = $hyperparameter",
             lw = 4,
             marker = :circle,
             markersize = 4,
@@ -146,8 +146,8 @@ function plotHyperparameterAnalysis(tableResults, numberOfStatesVector::Vector{I
 
     xlabel!("Number of States")
     ylabel!("CRPS")
-    title!("Hyperparameter Analysis")
-    display(plt)
+    title!(title)
+    return plt
 end
 
 
