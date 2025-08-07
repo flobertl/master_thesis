@@ -23,3 +23,5 @@
 - Literatur recherche Website: arxiv,...
     - Index: Scopus, ScienceDirect, dplb
     - Chain of Stichwörterns
+- Interpretierbarkeit von CRPS:
+    - Schwer interpretierbar; Scoring Rules im Allgemeinen eher relative/comperative

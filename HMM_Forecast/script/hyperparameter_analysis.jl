@@ -5,17 +5,18 @@ using Revise, Dates, Statistics, Random, Plots
 using HMM_Forecast
 
 # Parameters
-hh = 1
+hhs = [2, 3, 4, 5]
 numberOfObservationsVector =  [25, 50, 100, 200]
-numberOfStatesVector = [10, 20, 30, 35, 40, 45, 50, 55, 60]
+numberOfStatesVector = [10, 20, 30, 40, 50, 60, 70, 80]
 
-# Run Training
-# HMM_Forecast.trainBasisModel(hh, "A", numberOfObservationsVector, numberOfStatesVector)
-# HMM_Forecast.trainBasisModel(hh, "B", numberOfObservationsVector, numberOfStatesVector)
+for hh in hhs
+    # Run Training
+    HMM_Forecast.trainBasisModel(hh, "A", numberOfObservationsVector, numberOfStatesVector)
+    HMM_Forecast.trainBasisModel(hh, "B", numberOfObservationsVector, numberOfStatesVector)
+end
+# # Run evaluation
+# HMM_Forecast.hyperparameterAnalysis(hh, "A", numberOfObservationsVector, numberOfStatesVector)
+# HMM_Forecast.hyperparameterAnalysis(hh, "A", numberOfObservationsVector, numberOfStatesVector)
 
-# Run evaluation
-HMM_Forecast.hyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)
-HMM_Forecast.hyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)
-
-# Plot results
-# HMM_Forecast.plotHyperparameterAnalysis(hh, "B")
+# # Plot results
+HMM_Forecast.plotHyperparameterAnalysis(hh, "A")

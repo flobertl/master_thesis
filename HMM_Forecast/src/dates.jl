@@ -77,11 +77,10 @@ function testDataIndeces()
     return testDataIndeces
 end
 
-x = validationDataIndeces() |> length
 
 # Indeces validation Data Set
 # Every 2nd Month (Jan, March, May,..) of the 3rd Year
-function validationDataIndeces()
+function validationDataIndeces()::Vector{Int64}
     validationDataIndeces = []
     for month in 1:2:11
         indeces = dateIndeces[2, month] : dateIndeces[2, month+1]-1

@@ -49,7 +49,7 @@ end
 # Loads saved csv table and plots
 function plotHyperparameterAnalysis(hh, discretTyp)
     folderPath = "hyperparameter_analysis/results/"
-    fileName = @sprintf("basismodel_hh(%02d)_diskr(%c)_1",hh, discretTyp)
+    fileName = @sprintf("basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
     resultsTable, numberOfObservationsVector, numberOfStatesVector = loadCSVTable(folderPath*fileName)
     crpsTable = getindex.(resultsTable, 2)
     plt = plotHyperparameterAnalysis(fileName, crpsTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
