@@ -4,6 +4,6 @@ using Revise, ChangePrecision
 using HMM_Forecast
 
 #runUEAll()
-# HMM_Forecast.testAll()
+HMM_Forecast.testAll()
 
-HMM_Forecast.testDiscretizeEqualMassBins()
+#HMM_Forecast.testDiscretizeEqualMassBins()

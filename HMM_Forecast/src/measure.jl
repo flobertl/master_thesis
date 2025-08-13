@@ -30,6 +30,19 @@ function quantileForecastContinuous((observationSpace, infoBin), (distribution, 
     return quantForecast
 end
 
+# Calculates the PIT
+# uses information about the observationSpace/Discretization, the forecasted distribution and the observation.
+function pitValue((observationSpace, infoBins, rightNodes), (distribution, distributionCDF), observation)
+    correspondingBin = searchsortedfirst(rightNodes, observation)   # bin in which observation lies
+    ratio = (observation - infoBins[correspondingBin][1])/infoBins[correspondingBin][2] # where exactly the observation lies in the bin relatively
+    if ratio < 0 
+        throw(DomainError("ratio negativ."))
+    end
+    distributionCDFWithZero = vcat(0, distributionCDF)
+    pit = distributionCDFWithZero[correspondingBin] + distribution[correspondingBin]*ratio # probability of all bins before + part of bin probability calculated linearly 
+    return pit
+end
+
 #----------------------------------------------------------------------
 ## Scoring rules
 

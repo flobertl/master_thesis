@@ -32,6 +32,7 @@ struct ObservationSpace
     observations::Set{Float32}
     mapObservationToIndex::Dict{Float32, Int}
     mapIndexToObservation::Dict{Int, Float32}
+    sortedObservations::Array{Float32}
 
     function ObservationSpace(observations::Set{Float32})
         sortedObservations = observations |> collect |> sort
@@ -44,7 +45,7 @@ struct ObservationSpace
         for i in 1:(length(sortedObservations)) 
             mapIndexToObservation[i] = sortedObservations[i]
         end
-        new(dim, observations, mapObservationToIndex, mapIndexToObservation)
+        new(dim, observations, mapObservationToIndex, mapIndexToObservation, sortedObservations)
     end
 
     function ObservationSpace(observations::Set{Int64})
@@ -53,7 +54,8 @@ struct ObservationSpace
     end
 
     function ObservationSpace(dim::Int, observations::Set{Float32}, mapObserToIndex::Dict{Float32, Int}, mapIndexToObser::Dict{Int, Float32})
-        new(dim, observations, mapObserToIndex, mapIndexToObser)
+        sortedObservations = observations |> collect |> sort
+        new(dim, observations, mapObserToIndex, mapIndexToObser, sortedObservations)
     end
 end
 
