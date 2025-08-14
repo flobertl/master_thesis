@@ -48,13 +48,17 @@ end
 
 # Loads saved csv table and plots
 function plotHyperparameterAnalysis(hh, discretTyp)
-    folderPath = "hyperparameter_analysis/results/"
+    folderPath = "hyperparameter_analysis/"
     fileName = @sprintf("basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
-    resultsTable, numberOfObservationsVector, numberOfStatesVector = loadCSVTable(folderPath*fileName)
+    resultsTable, numberOfObservationsVector, numberOfStatesVector = loadCSVTable(folderPath*"results/"*fileName)
     crpsTable = getindex.(resultsTable, 2)
-    plt = plotHyperparameterAnalysis(fileName, crpsTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
-    savefig(plt, "HMM_Forecast/tmp/"*folderPath*fileName)
-    display(plt)
+    pltCRPS = plotHyperparameterAnalysisCRPS(fileName, crpsTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
+    savefig(pltCRPS, "HMM_Forecast/tmp/"*folderPath*"plots/"*fileName*"_CRPS")
+    display(pltCRPS)
+    loglikeTestTable = getindex.(getindex.(resultsTable, 1), 1)
+    pltLoglike = plotHyperparameterAnalysisLoglike(fileName, loglikeTestTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
+    savefig(pltLoglike, "HMM_Forecast/tmp/"*folderPath*"plots/"*fileName*"_Loglike")
+    display(pltLoglike)
 end
 
 # Calcs the evaluation (CRPS) for basismodel in folder 'hyperparameter_analysis'. 

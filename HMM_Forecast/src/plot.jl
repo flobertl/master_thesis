@@ -211,7 +211,7 @@ function artificialPITHistogram(fileName::String)
     return plt
 end
 
-function plotHyperparameterAnalysis(title::String, tableResults, hyperparameterVector::Vector{Int}, numberOfStatesVector::Vector{Int}, hyperparameterName::String)
+function plotHyperparameterAnalysisCRPS(title::String, tableResults, hyperparameterVector::Vector{Int}, numberOfStatesVector::Vector{Int}, hyperparameterName::String)
         # Plot erstellen
     plt = plot(dpi = 300)
     for (i, hyperparameter) in enumerate(hyperparameterVector)
@@ -228,6 +228,28 @@ function plotHyperparameterAnalysis(title::String, tableResults, hyperparameterV
 
     xlabel!("Number of States")
     ylabel!("CRPS")
+    title!(title)
+    return plt
+end
+
+function plotHyperparameterAnalysisLoglike(title::String, tableResults, hyperparameterVector::Vector{Int}, numberOfStatesVector::Vector{Int}, hyperparameterName::String)
+        # Plot erstellen
+    plt = plot(dpi = 300)
+    for (i, hyperparameter) in enumerate(hyperparameterVector)
+        maxLoglike = maximum(tableResults[i , :])
+        loglike_values = tableResults[i , :] / maxLoglike
+        plot!(plt,
+            numberOfStatesVector, loglike_values;
+            label = "# Observations = $hyperparameter",
+            lw = 4,
+            marker = :circle,
+            markersize = 4,
+            legend=:outertopright,
+        )
+    end
+
+    xlabel!("Number of States")
+    ylabel!("Normed Loglikelihood")
     title!(title)
     return plt
 end
