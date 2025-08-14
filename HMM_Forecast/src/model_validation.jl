@@ -34,7 +34,7 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
         for (j, N) in enumerate(numberOfStatesVector)
             # Load HMM model and evaluate
             filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
-            hmm = loadHMM("hyperparameter_analysis/"*filename) |> updateHMMNumericalStable  
+            hmm = loadHMM("hyperparameter_analysis/models/"*filename) |> updateHMMNumericalStable  
             result = calcEvaluation((hmm, infoBins), discreteObservationsAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, historicWindowLength)
             results[i, j] = result
             printEvaluation(filename, result)

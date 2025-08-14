@@ -20,7 +20,7 @@ function trainBasisModel(hh, discretTyp::String, numberOfObservationsVector::Vec
             println("-------------- Train Basis Model with Discretization $discretTyp, $numberOfObservations Observations and $N states------------------")
             hmm, logliklihood_hmm = HMM_Forecast.runBWAlgoWithRandomInit((observationSpace, dataTrainingAsIndeces), N, iter);
             filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, N)
-            saveHMM(hmm, "hyperparameter_analysis/"*filename)
+            saveHMM(hmm, "hyperparameter_analysis/models/"*filename)
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end
