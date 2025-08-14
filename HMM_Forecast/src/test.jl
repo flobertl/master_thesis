@@ -297,7 +297,7 @@ end
 
 # HACK sollte ausgebessert werden
 # Test und Save funktion nicht abstrakt genug...
-function testSaveAndLoadCSVTable()
+# function testSaveAndLoadCSVTable()
 #     name = "Save and Load CSV-Table "
 #     table = [1. 2.; 3. 4.]
 #     states = [10, 20]

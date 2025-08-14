@@ -14,4 +14,4 @@ discretType = "B"
 HMM_Forecast.plotPITforBasismodel(hh,discretType, numberOfObservations, numberOfStates)
 
 # Artificial PIT Histograms
-HMM_Forecast.artificialPITHistogram("pit_histogram_overdispersed1")
+HMM_Forecast.artificialPITHistogram("pit_histogram_overdispersed")
