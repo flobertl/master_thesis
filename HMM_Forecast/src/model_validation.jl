@@ -42,15 +42,15 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
         end
     end
     resultsFile = @sprintf("hyperparameter_analysis/results/basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
-    saveCSVTable(resultsFile, results, numberOfObservationsVector, numberOfStatesVector)
+    saveResultsTable(resultsFile, results, numberOfObservationsVector, numberOfStatesVector)
     return results
 end
 
 # Loads saved csv table and plots
-function plotHyperparameterAnalysis(hh, discretTyp)
+function plotHyperparameterAnalysis(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)
     folderPath = "hyperparameter_analysis/"
     fileName = @sprintf("basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
-    resultsTable, numberOfObservationsVector, numberOfStatesVector = loadCSVTable(folderPath*"results/"*fileName)
+    resultsTable = loadResultsTable(folderPath*"results/"*fileName, numberOfObservationsVector, numberOfStatesVector)
     crpsTable = getindex.(resultsTable, 2)
     pltCRPS = plotHyperparameterAnalysisCRPS("CRPS "*fileName, crpsTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
     savefig(pltCRPS, "HMM_Forecast/tmp/"*folderPath*"plots/"*fileName*"_CRPS")

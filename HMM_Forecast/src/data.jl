@@ -1,4 +1,4 @@
-using XLSX, DataFrames, Dates, CSV, Statistics
+using XLSX, DataFrames, Dates, CSV, Statistics, Base
 
 
 # ------------------------------------------------------------------------------
@@ -207,16 +207,52 @@ function loadCSVTable(title::String)
     variablesB = sort(unique(df.VarB))
 
     # MAE-Matrix initialisieren
-    table = Array{Tuple{Tuple{Float64, Float64}, Float64}}(undef, length(variablesA), length(variablesB))
+    table = Array{Union{Missing, Tuple{Tuple{Float64, Float64}, Float64}}}(undef, length(variablesA), length(variablesB))
 
     # Füllen der Matrix
     for row in eachrow(df)
         i = findfirst(==(row.VarA), variablesA)
         j = findfirst(==(row.VarB), variablesB)
-        table[i, j] = eval(Meta.parse(row.Value))
+        if (i !== nothing) & (j !== nothing)
+            table[i, j] = eval(Meta.parse(row.Value))
+        end
     end
 
     return table, variablesA, variablesB
+end
+
+function saveResultsTable(title::String, table, observationsVector, statesVector)
+    rows = []
+
+    for (i, observations) in enumerate(observationsVector)
+        for (j, states) in enumerate(statesVector)
+            push!(rows, (Observations = observations, States = states, LogLikeTest = table[i, j][1][1], LogLikeTrain = table[i, j][1][2], CRPS = table[i, j][2]))
+        end
+    end
+    df = DataFrame(rows)
+    CSV.write(tmpPath*title*".csv", df)
+end
+
+function loadResultsTable(title::String, observationsVector, statesVector)
+    df = CSV.read(tmpPath*title*".csv", DataFrame)
+    subdf = filter(row -> row.Observations in observationsVector && row.States in statesVector, df)
+
+    # MAE-Matrix initialisieren
+    table = Array{Tuple{Tuple{Float64, Float64}, Float64}}(undef, length(observationsVector), length(statesVector))
+
+    # Füllen der Matrix
+    for row in eachrow(subdf)
+        i = findfirst(==(row.Observations), observationsVector)
+        j = findfirst(==(row.States), statesVector)
+        if isnothing(i) || isnothing(j)
+            throw(DomainError("Resultstable not complete evaluated. Some models are missing."))
+        end
+
+        table[i, j] = ((row.LogLikeTest, row.LogLikeTrain), row.CRPS)
+    end
+
+
+    return table
 end
 
 #-------------------------------------------------------------------------
