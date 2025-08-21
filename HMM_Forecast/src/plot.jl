@@ -236,7 +236,7 @@ function plotHyperparameterAnalysisLoglike(title::String, tableResults, hyperpar
         # Plot erstellen
     plt = plot(dpi = 300)
     for (i, hyperparameter) in enumerate(hyperparameterVector)
-        maxLoglike = maximum(tableResults[i , :])
+        maxLoglike = tableResults[i , :] |> filter(isfinite) |> maximum
         loglike_values = tableResults[i , :] / maxLoglike
         plot!(plt,
             numberOfStatesVector, loglike_values;

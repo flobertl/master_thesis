@@ -235,23 +235,17 @@ end
 
 function loadResultsTable(title::String, observationsVector, statesVector)
     df = CSV.read(tmpPath*title*".csv", DataFrame)
-    subdf = filter(row -> row.Observations in observationsVector && row.States in statesVector, df)
+    subdf = filter(row -> row.Observations in observationsVector && row.States in statesVector, df) #gnerates subdf
+    lookup = Dict((row.Observations, row.States) => ((row.LogLikeTest, row.LogLikeTrain), row.CRPS) for row in eachrow(subdf)) # transforms into dictionary
 
     # MAE-Matrix initialisieren
     table = Array{Tuple{Tuple{Float64, Float64}, Float64}}(undef, length(observationsVector), length(statesVector))
 
-    # Füllen der Matrix
-    for row in eachrow(subdf)
-        i = findfirst(==(row.Observations), observationsVector)
-        j = findfirst(==(row.States), statesVector)
-        if isnothing(i) || isnothing(j)
-            throw(DomainError("Resultstable not complete evaluated. Some models are missing."))
+    for (i, observation) in enumerate(observationsVector)
+        for (j, state) in enumerate(statesVector)
+            table[i, j] = get(lookup, (observation, state), ((NaN, NaN),NaN))
         end
-
-        table[i, j] = ((row.LogLikeTest, row.LogLikeTrain), row.CRPS)
     end
-
-
     return table
 end
 
