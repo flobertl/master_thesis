@@ -41,7 +41,7 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
             prevTime = printTimeAndResetTimeStamp(prevTime)
         end
     end
-    resultsFile = @sprintf("hyperparameter_analysis/results/basismodel_hh(%02d)_diskr(%c)_NEW",hh, discretTyp)
+    resultsFile = @sprintf("hyperparameter_analysis/results/basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
     saveResultsTable(resultsFile, results, numberOfObservationsVector, numberOfStatesVector)
     return results
 end

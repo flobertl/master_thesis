@@ -69,7 +69,7 @@ testData2WeeksForAllSeasons = vcat(testDataSpringIndeces[1:96*7*2], testDataSumm
 function testDataIndeces()
     testDataIndeces = []
     for month in 2:2:10
-        indeces = dateIndeces[2, month] : dateIndeces[2, month+1]-1
+        indeces = dateIndeces[3, month] : dateIndeces[3, month+1]-1
         append!(testDataIndeces, indeces)
     end
     december20Indeces = dateIndeces[3, 12]: endOfDecember20()
@@ -83,7 +83,7 @@ end
 function validationDataIndeces()::Vector{Int64}
     validationDataIndeces = []
     for month in 1:2:11
-        indeces = dateIndeces[2, month] : dateIndeces[2, month+1]-1
+        indeces = dateIndeces[3, month] : dateIndeces[3, month+1]-1
         append!(validationDataIndeces, indeces)
     end
     return validationDataIndeces
