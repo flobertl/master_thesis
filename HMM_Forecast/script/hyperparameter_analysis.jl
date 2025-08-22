@@ -16,12 +16,14 @@ for hh in hhs
     # HMM_Forecast.trainBasisModel(hh, "B", numberOfObservationsVector, numberOfStatesVector)
 
     # Run evaluation
-    HMM_Forecast.hyperparameterAnalysis(hh, "A", numberOfObservationsVector, numberOfStatesVector)
-    HMM_Forecast.hyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)
+    if hh != 1
+        HMM_Forecast.hyperparameterAnalysis(hh, "A", numberOfObservationsVector, numberOfStatesVector)
+        HMM_Forecast.hyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)
+    end
 
     # # Plot results
-    HMM_Forecast.plotHyperparameterAnalysis(hh, "A")
-    HMM_Forecast.plotHyperparameterAnalysis(hh, "B")
+    HMM_Forecast.plotHyperparameterAnalysis(hh, "A", numberOfObservationsVector, numberOfStatesVector)
+    HMM_Forecast.plotHyperparameterAnalysis(hh, "B", numberOfObservationsVector, numberOfStatesVector)
 end
 
 #HMM_Forecast.plotHyperparameterAnalysis(hh, "A", numberOfObservationsVector, numberOfStatesVector)
