@@ -1,4 +1,4 @@
-using Plots, StatsPlots, StatsBase
+using Plots, StatsPlots, StatsBase, Measures
 
 function plotHist(historyData)
     N = length(historyData)
@@ -211,24 +211,53 @@ function artificialPITHistogram(fileName::String)
     return plt
 end
 
-function plotHyperparameterAnalysisCRPS(title::String, tableResults, hyperparameterVector::Vector{Int}, numberOfStatesVector::Vector{Int}, hyperparameterName::String)
-        # Plot erstellen
-    plt = plot(dpi = 300)
-    for (i, hyperparameter) in enumerate(hyperparameterVector)
-        mae_values = tableResults[i , :]
-        plot!(plt,
-            numberOfStatesVector, mae_values;
-            label = "# Observations = $hyperparameter",
-            lw = 4,
-            marker = :circle,
-            markersize = 4,
-            legend=:outertopright
-        )
+function plotHyperparameterAnalysisCRPS(hh, tableResultsVector, hyperparameterVector::Vector{Int}, numberOfStatesVector::Vector{Int}, hyperparameterName::String)
+    
+    maxValue = maximum(maximum.(tableResultsVector))
+    minValue = minimum(minimum.(tableResultsVector))
+    lowerBoundYAxis = minValue - (maxValue - minValue) * 0.1
+    upperBoundYAxis = maxValue + (maxValue - minValue) * 0.12
+    
+    # Plot erstellen
+    subplt = Vector{Plots.Plot}(undef, 2) 
+    for i in 1:2
+        subplt[i] = plot(dpi = 300)
+        for (j, hyperparameter) in enumerate(hyperparameterVector)
+            mae_values = tableResultsVector[i][j , :]
+            plot!(subplt[i],
+                numberOfStatesVector, mae_values;
+                lw = 4,
+                marker = :circle,
+                markersize = 4,
+                legend=:false,
+                ylim = (lowerBoundYAxis, upperBoundYAxis),
+                top_margin = -7mm,
+                right_margin = [1mm, 5mm][i],
+                guidefontsize = 10,
+                xtickfontsize = 6,
+                ytickfontsize = 6,
+                title = ["Equal-mass Bins", "Equidistant Bins"][i],
+                #titleloc = :right, 
+                titlefont = font(11),
+                framestyle = :box,
+            )
+        end
+        xlabel!("Number of States")
+        ylabel!("CRPS")
     end
-
-    xlabel!("Number of States")
-    ylabel!("CRPS")
-    title!(title)
+    legendPlt = plot(hyperparameterVector', 
+                    label = ["$hyperparameter observations" for hyperparameter in hyperparameterVector] |> permutedims, 
+                    legend =:top, 
+                    framestyle = :none, 
+                    marker = :circle,
+                    legendfontsize = 7,
+                    legend_column = length(hyperparameterVector),
+                    bottom_margin = -1mm,
+                    dpi = 300)
+    plt = plot(legendPlt, subplt[1], subplt[2], 
+            suptitle = "Discretization Type Analysis for Household $hh",
+            layout = @layout([a{0.05h} ; [b c] ]), dpi = 300
+            ) 
     return plt
 end
 

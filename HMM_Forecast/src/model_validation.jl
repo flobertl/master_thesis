@@ -47,18 +47,23 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
 end
 
 # Loads saved csv table and plots
-function plotHyperparameterAnalysis(hh, discretTyp, numberOfObservationsVector, numberOfStatesVector)
+function plotHyperparameterAnalysis(hh, numberOfObservationsVector, numberOfStatesVector)
     folderPath = "hyperparameter_analysis/"
-    fileName = @sprintf("basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
-    resultsTable = loadResultsTable(folderPath*"results/"*fileName, numberOfObservationsVector, numberOfStatesVector)
-    crpsTable = getindex.(resultsTable, 2)
-    pltCRPS = plotHyperparameterAnalysisCRPS("CRPS "*fileName, crpsTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
-    savefig(pltCRPS, "HMM_Forecast/tmp/"*folderPath*"plots/"*fileName*"_CRPS")
+    modelName =  @sprintf("basismodel_hh(%02d)", hh)
+    crpsTable = []
+    for discretTyp in ["A", "B"]
+        discretTypeName = @sprintf("_diskr(%c)", discretTyp)
+        resultsTable = loadResultsTable(folderPath*"results/"*modelName*discretTypeName, numberOfObservationsVector, numberOfStatesVector)
+        push!(crpsTable , getindex.(resultsTable, 2))
+    end
+    pltCRPS = plotHyperparameterAnalysisCRPS(hh, crpsTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
+
+    savefig(pltCRPS, "HMM_Forecast/tmp/"*folderPath*"plots/"*modelName*"_CRPS")
     display(pltCRPS)
-    loglikeTestTable = getindex.(getindex.(resultsTable, 1), 1)
-    pltLoglike = plotHyperparameterAnalysisLoglike("Loglike "*fileName, loglikeTestTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
-    savefig(pltLoglike, "HMM_Forecast/tmp/"*folderPath*"plots/"*fileName*"_Loglike")
-    display(pltLoglike)
+    # loglikeTestTable = getindex.(getindex.(resultsTable, 1), 1)
+    # pltLoglike = plotHyperparameterAnalysisLoglike("Loglike "*fileName, loglikeTestTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
+    # savefig(pltLoglike, "HMM_Forecast/tmp/"*folderPath*"plots/"*fileName*"_Loglike")
+    # display(pltLoglike)
 end
 
 # Calcs the evaluation (CRPS) for basismodel in folder 'hyperparameter_analysis'. 
