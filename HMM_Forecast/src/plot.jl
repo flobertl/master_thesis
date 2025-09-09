@@ -1,4 +1,5 @@
-using Plots, StatsPlots, StatsBase, Measures
+using Plots, StatsPlots, Measures
+
 
 function plotHist(historyData)
     N = length(historyData)

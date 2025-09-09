@@ -18,7 +18,7 @@ function forwardAlgo(hmm::HMM, observations::Vector{Int})
     for t in 2:T
         for i in 1:N    
             zwischenresultat = alpha[t-1,:] .* hmm.transitionMatrix.transitionMatrix[:,i] .* hmm.observationMatrix.transitionMatrix[i, observations[t]]
-            alpha[t,i] = sum(zwischenresultat)
+            alpha[t,i] = sum(zwischenresultat)  
         end 
         likelihood_step[t] = sum(alpha[t,:])
         alpha[t,:] = alpha[t,:] ./ sum(alpha[t,:])
