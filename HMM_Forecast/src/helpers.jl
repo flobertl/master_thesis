@@ -1,6 +1,28 @@
 using Distributions, Random, LinearAlgebra, QuantEcon
 using HiddenMarkovModels: HMM as HMMPkg 
 
+# Given data and the indeces, it generates the regressor matrix x
+# The explainotry variables are the data of the 2 last days, the value exactly 1 week and 2 weeks ago, daytime and month (as sin/cos cyclically encoded)
+function translateDataToQRMatrixX(data, dateIndeces)
+    function datetime_transformation(index)
+        dateTime = dateTimesOf2YearsData()[dateIndeces[index]]
+        dayTime_Scaled = (Dates.hour(dateTime) + Dates.minute(dateTime)/60) * (2*pi/24)
+        month_Scaled = Dates.month(dateTime) * (2*pi/12)
+
+        return [sin(dayTime_Scaled), cos(dayTime_Scaled), sin(month_Scaled), cos(month_Scaled)]
+    end
+
+    X = zeros(Float32, length(data), 2*96+6)
+    for i in 1:length(data)
+        x_past2Days = [ if (index < 1) missing else data[index] end for index in (i-96*2):(i-1)]
+        x_shiftedvalues = [if (index < 1) missing else data[index] end for index in [i-96*7, i-96*14]]
+        x_daytime_month =  datetime_transformation(i)
+        x = vcat(x_past2Days, x_shiftedvalues, x_daytime_month)
+        X[i, :] = x
+    end
+    return X
+end 
+
 function isNumericalEqual(leftSide, rightSide)::Bool
     epsilon = 1E-10
     (rightSide - epsilon < leftSide) && (leftSide < rightSide + epsilon)
