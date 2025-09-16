@@ -14,8 +14,8 @@ function translateDataToQRMatrixX(data, dateIndeces)
 
     X = zeros(Float32, length(data), 2*96+6)
     for i in 1:length(data)
-        x_past2Days = [ if (index < 1) missing else data[index] end for index in (i-96*2):(i-1)]
-        x_shiftedvalues = [if (index < 1) missing else data[index] end for index in [i-96*7, i-96*14]]
+        x_past2Days = [ if (index < 1) NaN else data[index] end for index in (i-96*2):(i-1)]
+        x_shiftedvalues = [if (index < 1) NaN else data[index] end for index in [i-96*7, i-96*14]]
         x_daytime_month =  datetime_transformation(i)
         x = vcat(x_past2Days, x_shiftedvalues, x_daytime_month)
         X[i, :] = x

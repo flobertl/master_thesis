@@ -48,21 +48,9 @@ function endOfDecember20()
      (dateTimesOf2YearsData() |> length) -4
 end
 
-# Season Data
-dateIndeces = calcFirstQHofYearAndMonth()
-trainDataFallIndeces = dateIndeces[2, 9] : (dateIndeces[2, 12] - 1)
-testDataFallIndeces = dateIndeces[3, 9] : (dateIndeces[3, 12] - 1)
-trainDataWinterIndeces = dateIndeces[1, 12] : (dateIndeces[2, 3] - 1)
-testDataWinterIndeces = dateIndeces[2, 12] : (dateIndeces[3, 3] - 1)
-trainDataSpringIndeces = dateIndeces[2, 3] : (dateIndeces[2, 6] - 1)
-testDataSpringIndeces = dateIndeces[3, 3] : (dateIndeces[3, 6] - 1)
-trainDataSummerIndeces = dateIndeces[2, 6] : (dateIndeces[2, 9] - 1)
-testDataSummerIndeces = dateIndeces[3, 6] : (dateIndeces[3, 9] - 1)
-
-seasonStrings = ["spring", "summer", "fall", "winter"]
-
-# Indeces first 2 Weeks of Seasons 
-testData2WeeksForAllSeasons = vcat(testDataSpringIndeces[1:96*7*2], testDataSummerIndeces[1:96*7*2], testDataFallIndeces[1:96*7*2], testDataWinterIndeces) 
+function trainDateIndeces()
+    return dateIndeces[2,1]:dateIndeces[3,1]-1 |> Vector      
+end
 
 # Indeces Test Data Set
 # Every 2nd month (Feb, April, June,...) of the 3rd Year
@@ -88,3 +76,22 @@ function validationDataIndeces()::Vector{Int64}
     end
     return validationDataIndeces
 end
+
+#############################################################################
+## Legacy
+
+# Season Data
+dateIndeces = calcFirstQHofYearAndMonth()
+trainDataFallIndeces = dateIndeces[2, 9] : (dateIndeces[2, 12] - 1)
+testDataFallIndeces = dateIndeces[3, 9] : (dateIndeces[3, 12] - 1)
+trainDataWinterIndeces = dateIndeces[1, 12] : (dateIndeces[2, 3] - 1)
+testDataWinterIndeces = dateIndeces[2, 12] : (dateIndeces[3, 3] - 1)
+trainDataSpringIndeces = dateIndeces[2, 3] : (dateIndeces[2, 6] - 1)
+testDataSpringIndeces = dateIndeces[3, 3] : (dateIndeces[3, 6] - 1)
+trainDataSummerIndeces = dateIndeces[2, 6] : (dateIndeces[2, 9] - 1)
+testDataSummerIndeces = dateIndeces[3, 6] : (dateIndeces[3, 9] - 1)
+
+seasonStrings = ["spring", "summer", "fall", "winter"]
+
+# Indeces first 2 Weeks of Seasons 
+testData2WeeksForAllSeasons = vcat(testDataSpringIndeces[1:96*7*2], testDataSummerIndeces[1:96*7*2], testDataFallIndeces[1:96*7*2], testDataWinterIndeces) 
