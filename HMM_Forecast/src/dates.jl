@@ -44,11 +44,14 @@ function calcFirstQHofYearAndMonth()::Array{Int, 2}  # Made possible by ChatGPT
     return result
 end
 
+dateIndeces = calcFirstQHofYearAndMonth()
+
+
 function endOfDecember20()
      (dateTimesOf2YearsData() |> length) -4
 end
 
-function trainDateIndeces()
+function trainDataIndeces()
     return dateIndeces[2,1]:dateIndeces[3,1]-1 |> Vector      
 end
 
@@ -81,7 +84,6 @@ end
 ## Legacy
 
 # Season Data
-dateIndeces = calcFirstQHofYearAndMonth()
 trainDataFallIndeces = dateIndeces[2, 9] : (dateIndeces[2, 12] - 1)
 testDataFallIndeces = dateIndeces[3, 9] : (dateIndeces[3, 12] - 1)
 trainDataWinterIndeces = dateIndeces[1, 12] : (dateIndeces[2, 3] - 1)

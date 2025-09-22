@@ -358,9 +358,7 @@ end
 
 function testTransformLinQRData()
     name = "Transform LinQR Data "
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
-    df = DataFrame(XLSX.readtable(path, "Sheet1"))
-    originalObservations = df[:, string(1)]
+    originalObservations = loadOriginalData(hh)
 
     data = originalObservations[1:96*14+1]
     dateIndeces = 1:96*14+1 |> Vector

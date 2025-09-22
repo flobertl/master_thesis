@@ -21,13 +21,17 @@ end
 # ---------------------------------------------------------------------------
 # Productive Load Function
 
-# Ladet und normalisiert aus Datentabelle die Zeitreihe des entsprechenden Haushalts (hh)
-function readAndNormalizeData(hh::Int)::Vector{Float32}
-        # Load Data
+function loadOriginalData(hh::Int)::Vector{Float32}
     path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
     df = DataFrame(XLSX.readtable(path, "Sheet1"))
     originalObservations = df[:, string(hh)]
+    return originalObservations
+end
 
+# Ladet und normalisiert aus Datentabelle die Zeitreihe des entsprechenden Haushalts (hh)
+function readAndNormalizeData(hh::Int)::Vector{Float32}
+    # Load Data
+    originalObservations = loadOriginalData(hh)
     # Convert Data
     observations = originalObservations |> normalizeWithMaxElement
     return(observations)
@@ -220,6 +224,24 @@ function loadCSVTable(title::String)
 
     return table, variablesA, variablesB
 end
+
+function saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
+    title = "benchmark//LinQRTrainingsMatrix_hh($hh)"
+    quantiles = 0.01:0.01:0.99
+    coef_description = vcat("intercept", 1:198)
+    matrix = hcat(intercept, coefficients)
+    saveCSVTable(title, matrix, quantiles, coef_description)
+end
+
+function loadLinQRTrainingsMatrix(hh, (intercept, coefficients))
+    title = "benchmark//LinQRTrainingsMatrix_hh($hh)"
+    matrix, x, y = loadCSVTable(title)
+    intercept = matrix[:, 1]
+    coefficients = matrix[:,2:end]
+    return intercept, coefficients
+end
+
+
 
 function saveResultsTable(title::String, table, observationsVector, statesVector)
     rows = []

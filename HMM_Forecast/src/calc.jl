@@ -1,5 +1,4 @@
-using Random, ScikitLearn
-# Convention: In Calc all observations are as indeces
+using Random, ScikitLearn, PyCall
 
 function forwardAlgo(hmm::HMM, observations::Vector{Int})
     T = length(observations)
@@ -244,41 +243,37 @@ function forecastDistributionWithAlpha(hmm::HMM, forecastHorizon::Int, initAlpha
     return forecast, alpha_prev
 end
 
-    # Preprocessing: Generate Regressor Matrix and filter for non NaN values
-    X_raw = translateDataToQRMatrixX(trainData, trainDateIndeces)
-    nonNaNIndeces = filter( i -> !any(isnan, eachrow(X)[i]), 1:length(trainDateIndeces))
-    X = X[nonNaNIndeces, :]
-    y = trainData[nonNaNIndeces]
-
-
-# necessary makro for next function
-@sk_import linear_model: QuantileRegressor
 
 function trainLinQR(regressorMatrix, values)
+    sklin = pyimport("sklearn.linear_model")
 
     function makeLinQR(quantile, X, y) 
-        qr = QuantileRegressor(quantile=quantile, alpha=0.0, solver="highs")   # you can also set e.g. alpha=0.0, solver="highs"
+        qr = sklin.QuantileRegressor(quantile=quantile, alpha=0.0, solver="highs")   # you can also set e.g. alpha=0.0, solver="highs"
         fit!(qr, X, y)
-        return (qr.intercept_, coef_)
+        return (qr.intercept_, qr.coef_)
     end
     X = regressorMatrix
     y = values
     # Training
     intercept = Array{Float64}(undef, 99) 
     coefficients = Array{Float64, 2}(undef, 99, size(X)[2]) 
+    prevTime = now()
+
     for (i, quant) in enumerate(0.01:0.01:0.99)
         inter, coef = makeLinQR(quant, X, y)
         intercept[i] = inter
         coefficients[i, :] = coef
-    end
+        prevTime = printTimeAndResetTimeStamp(prevTime, "Training quantile $quant")
+    end 
     return intercept, coefficients
 end
 
-function forecastQR(regressorMatrix, (intercept, coefficients))
+function forecastLinQR(regressorMatrix, (intercept, coefficients))
     T = size(regressorMatrix)[1] 
-    forecastVector = Array{Float64}(undef, T)
+    forecastVector = Vector{Vector{Float64}}(undef, T)
+    
     for i in 1:T
-        forecastVector[i] = intercept + coefficients * regressorMatrix[i, :]'
+        forecastVector[i] = intercept + coefficients * regressorMatrix[i, :]
     end
     return forecastVector
 end

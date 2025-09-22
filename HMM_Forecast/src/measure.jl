@@ -45,9 +45,7 @@ end
 
 #----------------------------------------------------------------------
 ## Scoring rules
-
-function pinballContinuous((observationSpace, infoBins), observation, (distribution, distributionCDF), quantile::Float64)
-    quantForecast = quantileForecastContinuous((observationSpace, infoBins), (distribution, distributionCDF), quantile)
+function pinballScore(quantForecast, observation, quantile)
     if quantForecast >= observation
         return (1 - quantile)*(quantForecast- observation)
     elseif quantForecast < observation
@@ -55,6 +53,20 @@ function pinballContinuous((observationSpace, infoBins), observation, (distribut
     else
         println("FAIL!")
     end
+end
+
+function crpsScore(quantileForecasts, observation)
+    crps = 0.
+    for (i, quantile) in enumerate(0.01:0.01:0.99)
+        crps += pinballScore(quantileForecasts[i], observation, quantile)
+    end
+    return crps
+end
+
+function pinballContinuous((observationSpace, infoBins), observation, (distribution, distributionCDF), quantile::Float64)
+    quantForecast = quantileForecastContinuous((observationSpace, infoBins), (distribution, distributionCDF), quantile)
+    score = pinballScore(quantForecast, observation, quantile)
+    return score
 end
 
 # Calculates the mean CRPS based on the distribution vector over the discretized observation Space
