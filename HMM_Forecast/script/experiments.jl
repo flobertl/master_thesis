@@ -7,8 +7,9 @@ using ScikitLearn, Random, Distributions
 Random.seed!(123)
 
 N = 10000                          # number of samples
-x = 10 .* rand(N)              # uniform random values in [0, 10]
-epsi = rand(Normal(0, 1), N)        # normal error, mean 0, variance 1
+x = 10 .* rand(N) 
+push!(x, NaN)             # uniform random values in [0, 10]
+epsi = rand(Normal(0, 1), N+1)        # normal error, mean 0, variance 1
 y = x .+  epsi
 
 # Feature matrix must be (n_samples, n_features)

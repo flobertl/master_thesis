@@ -100,8 +100,8 @@ function transformDistributionVectorToFrequencyVector(observationSpace::Observat
     return frequencyObs
 end
 
-function printTimeAndResetTimeStamp(prevTime)
-    println(" ### Timing: {$((now() - prevTime).value/1000)}sec ### ")
+function printTimeAndResetTimeStamp(prevTime, prefix = "")
+    println(" ### $prefix Timing: {$((now() - prevTime).value/1000)}sec ### ")
     newTime = now()
     return newTime
 end
