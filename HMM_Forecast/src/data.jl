@@ -22,7 +22,7 @@ end
 # Productive Load Function
 
 function loadOriginalData(hh::Int)::Vector{Float32}
-    path = "C:/Users/Flo/Documents/UNI/Master Thesis/data/load/15households_2years.xlsx"
+    path = "../data/load/15households_2years.xlsx"
     df = DataFrame(XLSX.readtable(path, "Sheet1"))
     originalObservations = df[:, string(hh)]
     return originalObservations

@@ -52,8 +52,14 @@ function endOfDecember20()
 end
 
 function trainDataIndeces()
-    return dateIndeces[2,1]:dateIndeces[2,1] + 200 |> Vector      
+    return dateIndeces[2,1]:dateIndeces[3,1]-1 |> Vector      
 end
+
+# train Data for TESTING Purpose (only 2 days of data)
+function trainDataIndecesTEST()
+    return dateIndeces[2,1]:dateIndeces[2,1]+200 |> Vector      
+end
+
 
 # Indeces Test Data Set
 # Every 2nd month (Feb, April, June,...) of the 3rd Year

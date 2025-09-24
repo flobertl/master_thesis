@@ -64,6 +64,25 @@ function trainLinearQR(hh)
     saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
 end
 
+function TEST_trainLinearQR(hh)
+    prevTime = now()
+    originalObservations = readAndNormalizeData(hh)
+
+    # Preprocessing: Generate Regressor Matrix and filter for non NaN values
+    println("### Preprocessing ###")
+    X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
+    X_train = X[trainDataIndecesTEST(), :]
+    y_train = originalObservations[trainDataIndecesTEST()]
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+
+    # # Training
+    intercept, coefficients = trainLinQR(X_train, y_train)
+    println("### Total Training ###")
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+    saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
+end
+
 function evaluateLinQR(hh)    
     prevTime = now()
     
