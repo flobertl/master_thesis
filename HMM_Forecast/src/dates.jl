@@ -52,7 +52,7 @@ function endOfDecember20()
 end
 
 function trainDataIndeces()
-    return dateIndeces[2,1]:dateIndeces[3,1]-1 |> Vector      
+    return dateIndeces[2,1]:dateIndeces[2,1] + 200 |> Vector      
 end
 
 # Indeces Test Data Set

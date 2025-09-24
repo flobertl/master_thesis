@@ -16,14 +16,34 @@ function generate96qhDistro(observationSpace::ObservationSpace, trainData)::Vect
     return distributionPerQuarterHour
 end
 
-function generateBaselineForecast(observationSpace, trainData, H::Int64)::Vector{Vector{Float64}}
+function baselineForecast(hh)
+    prevTime = now()
+    # Load and preprocess data 
+    originalObservations = readAndNormalizeData(hh)
+    (observationSpace, infoBins), discreteObservations, discreteObservationsAsIndeces = preprocessing(originalObservations, "B", 300)
+   
+    # Split Train and Test Data
+    testDataOriginal = originalObservations[testDataIndeces()]
+    trainData = discreteObservations[trainDataIndeces()]
+
+    # Save first indeces
+    prevTime = printTimeAndResetTimeStamp(prevTime, "Data Preprocessing: ")
+    firstIndecesModulo96_Training = trainDataIndeces()[1] % 96 # =62
     quarterHourProb = generate96qhDistro(observationSpace, trainData)
-    forecast = map(i -> quarterHourProb[(i % 96) + 1], 1:H)
-    return forecast
+
+    prevTime = printTimeAndResetTimeStamp(prevTime, "Generate empiric 96 qh-distributions: ")
+    forecastVector =  Vector{Vector{Float64}}(undef, length(testDataOriginal))
+    for (i, index) in enumerate(testDataIndeces())
+        qhIndex = (index - firstIndecesModulo96_Training) % 96 + 1
+        forecastVector[i] = quarterHourProb[qhIndex]  # First qh should be one, last qh should be 96
+    end
+    CRPS =  meanCRPSContinuous((observationSpace, infoBins), testDataOriginal, forecastVector)
+    prevTime = printTimeAndResetTimeStamp(prevTime, "Calc Forecast and CRPS: ")
+    return CRPS
 end
 
 # Linear Quantile Regression
-function linearQR(hh)
+function trainLinearQR(hh)
     prevTime = now()
     originalObservations = readAndNormalizeData(hh)
 
@@ -42,8 +62,24 @@ function linearQR(hh)
     println("### Total Training ###")
     prevTime = printTimeAndResetTimeStamp(prevTime)
     saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
+end
 
-    # # Forecast
+function evaluateLinQR(hh)    
+    prevTime = now()
+    
+    # Load Model
+    (intercept, coefficients) = loadLinQRTrainingsMatrix(hh)
+
+
+    # Preprocessing: Generate Regressor Matrix and filter for non NaN values
+    originalObservations = readAndNormalizeData(hh)
+    println("### Preprocessing ###")
+    X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
+    X_test = X[testDataIndeces(), :]
+    y_test = originalObservations[testDataIndeces()]
+    prevTime = printTimeAndResetTimeStamp(prevTime)
+
+    # Forecast
     forecastVector = forecastLinQR(X_test, (intercept, coefficients))
     println("### Forecast ###")
     prevTime = printTimeAndResetTimeStamp(prevTime)
@@ -54,7 +90,6 @@ function linearQR(hh)
     for i in 1:T
         meanCRPS += crpsScore(forecastVector[i], y_test[i])/T
     end
-
     return meanCRPS
 end
 

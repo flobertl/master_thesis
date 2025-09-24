@@ -211,14 +211,14 @@ function loadCSVTable(title::String)
     variablesB = sort(unique(df.VarB))
 
     # MAE-Matrix initialisieren
-    table = Array{Union{Missing, Tuple{Tuple{Float64, Float64}, Float64}}}(undef, length(variablesA), length(variablesB))
+    table = Array{Float64, 2}(undef, length(variablesA), length(variablesB))
 
     # Füllen der Matrix
     for row in eachrow(df)
         i = findfirst(==(row.VarA), variablesA)
         j = findfirst(==(row.VarB), variablesB)
         if (i !== nothing) & (j !== nothing)
-            table[i, j] = eval(Meta.parse(row.Value))
+            table[i, j] = row.Value
         end
     end
 
@@ -233,7 +233,7 @@ function saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
     saveCSVTable(title, matrix, quantiles, coef_description)
 end
 
-function loadLinQRTrainingsMatrix(hh, (intercept, coefficients))
+function loadLinQRTrainingsMatrix(hh)
     title = "benchmark//LinQRTrainingsMatrix_hh($hh)"
     matrix, x, y = loadCSVTable(title)
     intercept = matrix[:, 1]
