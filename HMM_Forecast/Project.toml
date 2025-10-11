@@ -1,7 +1,7 @@
 name = "HMM_Forecast"
 uuid = "96072f82-7cac-44ee-9c87-41ea02be2930"
-authors = ["Flo Schimek <florian.schimek@gmx.at>"]
 version = "0.1.0"
+authors = ["Flo Schimek <florian.schimek@gmx.at>"]
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
