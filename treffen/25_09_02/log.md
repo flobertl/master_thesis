@@ -50,7 +50,7 @@
             - Im bestenfall schon Kapitel vorher abgeben und in Revision
         - November:
             - 1.Iteration Feedback (1 Woche)
-            - Intro, Conclusio, Abstracht (1 Woche)
+            - Intro, Conclusio, Abstract (1 Woche)
             - 2. Itertation Feedback (1 Woche)
             - Korrekturleses lassen (Trixi/Antonio, Christoph)
 
