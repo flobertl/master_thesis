@@ -86,6 +86,39 @@ function validationDataIndeces()::Vector{Int64}
     return validationDataIndeces
 end
 
+# Specific Season dates
+startJuni18 = 4*(24+15)+2 
+startSeptember18 = startJuni18 + 24*4*92
+startDezember18 = startSeptember18 + 24*4*91
+startMärz19 = startDezember18 + 24*4*90
+startJuni19 = startMärz19 + 24*4*92
+startSeptember19 = startJuni19 + 24*4*92
+startDezember19 = startSeptember19 + 24*4*91
+startMärz20 = startDezember19 + 24*4*91
+startJuni20 = startMärz20 + 24*4*92
+startSeptember20 = startJuni20 + 24*4*92
+startDezember20 = startSeptember20 + 24*4*91
+
+seasonsByYear = Dict(
+    "Sommer18" => (startJuni18,startSeptember18-1),
+    "Sommer19" => (startJuni19,startSeptember19-1),
+    "Sommer20" => (startJuni20,startSeptember20-1),
+    "Herbst18" => (startSeptember18,startDezember18-1),
+    "Herbst19" => (startSeptember19,startDezember19-1),
+    "Herbst20" => (startSeptember20,startDezember20-1),
+    "Frühling19" => (startMärz19,startJuni19-1),
+    "Frühling20" => (startMärz20,startJuni20-1),
+    "Winter18" => (startDezember18,startMärz19-1),
+    "Winter19" => (startDezember19,startMärz20-1)
+    )
+
+seasons = Dict(
+    "Summer"    => ((startJuni19,startSeptember19-1)),
+    "Autumn"    => ((startSeptember19,startDezember19-1)),
+    "Spring"  => ((startMärz19,startJuni19-1)),
+    "Winter"    => ((startDezember19,startMärz20-1))
+    )
+
 #############################################################################
 ## Legacy
 

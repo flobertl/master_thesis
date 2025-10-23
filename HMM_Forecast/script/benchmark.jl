@@ -9,9 +9,11 @@ using HMM_Forecast
 
 # @Antionio: Dann unteren Code mit Strg+/ auskommentieren und durchlaufen lassen. Rechnet wsl 2 Tage. 
 
-hhs = 1:5
-for hh in hhs
-    HMM_Forecast.trainLinearQR(hh)
-end
+HMM_Forecast.evaluateLinQR(5)
+
+# hhs = 1:5
+# for hh in hhs
+#     HMM_Forecast.evaluateLinQR(hh)
+# end
 
 println("/n ------------------ FINISH ---------------------")
