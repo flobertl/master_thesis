@@ -46,6 +46,34 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
     return results
 end
 
+function sensitivityAnalysisForSpecificModel(hh, discretTyp::String, numberOfObservations::Int, numberOfStates, historicWindowLengthVector = Vector{Int})
+    # Data
+    originalObservations = readAndNormalizeData(hh)
+    dateIndeces = calcFirstQHofYearAndMonth()  
+    trainDateIndeces = dateIndeces[2,1]:dateIndeces[3,1]-1 |> Vector      
+    testDateIndeces = validationDataIndeces()
+    testDataOriginal = originalObservations[testDateIndeces]
+
+    results = Array{Tuple{Int, Float64}}(undef, length(historicWindowLengthVector))
+
+    println("------------------ Evaluate basismodel_hh($hh) with discretization $discretTyp --------------------")
+    prevTime = now()
+    (observationSpace, infoBins), discreteObservations, discreteObservationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
+    filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, numberOfStates)
+    hmm = loadHMM("hyperparameter_analysis/models/"*filename) |> updateHMMNumericalStable  
+
+    for (i, H) in enumerate(historicWindowLengthVector)
+        # Load HMM model and evaluate
+        _, result = calcEvaluation((hmm, infoBins), discreteObservationsAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, H)
+        results[i] = (H, result)
+        #printEvaluation(filename*"_histWindowLength($H)", result)
+        prevTime = printTimeAndResetTimeStamp(prevTime)
+    end
+    resultsFile = @sprintf("sensitivity_analysis/results/basismodel_hh(%02d)_diskr(%c)",hh, discretTyp)
+    saveResultsSensitivityAnalysis(resultsFile, results, historicWindowLengthVector)
+    return results
+end
+
 # Loads saved csv table and plots
 function plotHyperparameterAnalysis(hh, numberOfObservationsVector, numberOfStatesVector)
     folderPath = "hyperparameter_analysis/"
