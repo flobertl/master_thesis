@@ -94,6 +94,25 @@ function plotHyperparameterAnalysis(hh, numberOfObservationsVector, numberOfStat
     # display(pltLoglike)
 end
 
+function plotSensitvityAnalysis(hh, historicWindowLengthVector)
+    folderPath = "sensitivity_analysis/"
+    modelName =  @sprintf("basismodel_hh(%02d)", hh)
+    results = []
+    for discretTyp in ["A", "B"]
+        discretTypeName = @sprintf("_diskr(%c)", discretTyp)
+        resultsTable = loadResultsSensitivityAnalysis(folderPath*"results/"*modelName*discretTypeName, historicWindowLengthVector)
+        push!(results , resultsTable)
+    end
+    pltCRPS = plotSensitivityAnalysisCRPS(hh, results, historicWindowLengthVector, "# HistoriecWindowLength")
+
+    savefig(pltCRPS, "HMM_Forecast/tmp/"*folderPath*"plots/"*modelName*"_CRPS")
+    display(pltCRPS)
+    # loglikeTestTable = getindex.(getindex.(resultsTable, 1), 1)
+    # pltLoglike = plotHyperparameterAnalysisLoglike("Loglike "*fileName, loglikeTestTable, numberOfObservationsVector, numberOfStatesVector, "# Observations")
+    # savefig(pltLoglike, "HMM_Forecast/tmp/"*folderPath*"plots/"*fileName*"_Loglike")
+    # display(pltLoglike)
+end
+
 # Calcs the evaluation (CRPS) for basismodel in folder 'hyperparameter_analysis'. 
 # See section 'Hyperparameter Analysis' for detailed methodology
 function plotPITforBasismodel(hh, discretTyp::String, numberOfObservations::Int, numberOfStates, historicWindowLength = 100)

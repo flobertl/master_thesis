@@ -262,6 +262,58 @@ function plotHyperparameterAnalysisCRPS(hh, tableResultsVector, hyperparameterVe
     return plt
 end
 
+function plotSensitivityAnalysisCRPS(hh, tableResultsVector, historicWindowLengthVector::Vector{Int}, hyperparameterName::String)
+    
+    maxValue = maximum(maximum.(tableResultsVector))
+    minValue = minimum(minimum.(tableResultsVector))
+    lowerBoundYAxis = minValue - (maxValue - minValue) * 0.1
+    upperBoundYAxis = maxValue + (maxValue - minValue) * 0.12
+    
+    # Plot erstellen
+    subplt = Vector{Plots.Plot}(undef, 2) 
+    for i in 1:2
+        subplt[i] = plot(dpi = 300)
+        mae_values = tableResultsVector[i][ :]
+        plot!(subplt[i],
+            historicWindowLengthVector, mae_values;
+            lw = 4,
+            marker = :circle,
+            markersize = 4,
+            legend=:false,
+            ylim = (lowerBoundYAxis, upperBoundYAxis),
+            top_margin = -7mm,
+            right_margin = [1mm, 5mm][i],
+            guidefontsize = 10,
+            xtickfontsize = 6,
+            ytickfontsize = 6,
+            xticks = (historicWindowLengthVector, string.(historicWindowLengthVector)),
+            title = ["Equal-mass Bins", "Equidistant Bins"][i],
+            #titleloc = :right, 
+            titlefont = font(11),
+            framestyle = :box,
+            xaxis=:log, 
+            #yaxis=:log,
+        )
+        xlabel!("Historic Window Length")
+        ylabel!("CRPS")
+    end
+    # legendPlt = plot(hyperparameterVector', 
+    #                 label = ["$hyperparameter observations" for hyperparameter in hyperparameterVector] |> permutedims, 
+    #                 legend =:top, 
+    #                 framestyle = :none, 
+    #                 marker = :circle,
+    #                 legendfontsize = 7,
+    #                 legend_column = length(hyperparameterVector),
+    #                 bottom_margin = -1mm,
+    #                 dpi = 300)
+    plt = plot( subplt[1], subplt[2], 
+            suptitle = "Sensitivity Analysis for HH$hh",
+            layout = (1,2), 
+            dpi = 300
+            ) 
+    return plt
+end
+
 function plotHyperparameterAnalysisLoglike(title::String, tableResults, hyperparameterVector::Vector{Int}, numberOfStatesVector::Vector{Int}, hyperparameterName::String)
         # Plot erstellen
     plt = plot(dpi = 300)

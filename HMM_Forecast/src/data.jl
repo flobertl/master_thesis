@@ -254,11 +254,10 @@ end
 
 function loadResultsSensitivityAnalysis(title::String, historicWindowLengthVector)
     df = CSV.read(tmpPath*title*".csv", DataFrame)
-    subdf = filter(row -> row.HistoricWindowLength in historicWindowLengthVector, df) #gnerates subdf
-    lookup = Dict((row.HistoricWindowLength) => (row.CRPS) for row in eachrow(subdf)) # transforms into dictionary
+    lookup = Dict((row.HistoricWindowLength) => (row.CRPS) for row in eachrow(df)) # transforms into dictionary
 
     # MAE-Matrix initialisieren
-    results = Array{Tuple{Float64, Float64}}(undef, length(historicWindowLengthVector))
+    results = Array{Float64}(undef, length(historicWindowLengthVector))
 
     for (i, historicWindowLength) in enumerate(historicWindowLengthVector)
         results[i] = get(lookup, (historicWindowLength), NaN)
