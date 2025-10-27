@@ -4,7 +4,7 @@ Pkg.activate("HMM_Forecast")
 using Revise, Dates, Statistics, Random, Plots
 using HMM_Forecast
 
-historicWindowLengthVector = [2] # 1, 3, 5, 10, 25, 50, 100, 200]
+historicWindowLengthVector = [1,2,  3, 5, 10, 25, 50, 100, 200]
 
 optimalModels = [
     (1, "A", 40, 100)
@@ -22,9 +22,9 @@ optimalModels = [
 for (hh, disType, N, M) in optimalModels
     println("Running sensitivity analysis for basismodel_hh($hh)_diskr($disType$M)_states($N)")
     # Run evaluation
-    HMM_Forecast.sensitivityAnalysisForSpecificModel(hh, disType, M, N, historicWindowLengthVector)
+    #HMM_Forecast.sensitivityAnalysisForSpecificModel(hh, disType, M, N, historicWindowLengthVector)
 
     # # Plot results
-    #HMM_Forecast.plotSensitvityAnalysis(hh, historicWindowLengthVector)
+    HMM_Forecast.plotSensitvityAnalysis(hh, historicWindowLengthVector)
 end
 

@@ -287,29 +287,29 @@ function plotSensitivityAnalysisCRPS(hh, tableResultsVector, historicWindowLengt
             xtickfontsize = 6,
             ytickfontsize = 6,
             xticks = (historicWindowLengthVector, string.(historicWindowLengthVector)),
+            yticks = ([1, 1.5, 2], string.([1, 1.5, 2])),
             title = ["Equal-mass Bins", "Equidistant Bins"][i],
             #titleloc = :right, 
             titlefont = font(11),
             framestyle = :box,
             xaxis=:log, 
-            #yaxis=:log,
+            yaxis=:log,
         )
         xlabel!("Historic Window Length")
         ylabel!("CRPS")
     end
-    # legendPlt = plot(hyperparameterVector', 
-    #                 label = ["$hyperparameter observations" for hyperparameter in hyperparameterVector] |> permutedims, 
-    #                 legend =:top, 
-    #                 framestyle = :none, 
-    #                 marker = :circle,
-    #                 legendfontsize = 7,
-    #                 legend_column = length(hyperparameterVector),
-    #                 bottom_margin = -1mm,
-    #                 dpi = 300)
-    plt = plot( subplt[1], subplt[2], 
+    legendPlt = plot([1], 
+                    label = ["Optimal model with variable historic window length evaluation"] |> permutedims, 
+                    legend =:top, 
+                    framestyle = :none, 
+                    marker = :circle,
+                    legendfontsize = 7,
+                    legend_column = 1,
+                    bottom_margin = -1mm,
+                    dpi = 300)
+    plt = plot( legendPlt, subplt[1], subplt[2], 
             suptitle = "Sensitivity Analysis for HH$hh",
-            layout = (1,2), 
-            dpi = 300
+            layout = @layout([a{0.05h} ; [b c] ]), dpi = 300
             ) 
     return plt
 end
