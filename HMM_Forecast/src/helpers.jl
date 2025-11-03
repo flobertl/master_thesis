@@ -113,12 +113,16 @@ function updateHMMNumericalStable(hmm::HMM)
     HMM(hmm.numberOfStateSpace, hmm.transitionMatrix, newObservationMatrix, hmm.startingDistribution, hmm.observationSpace)
 end
 
+function calcStationaryDistribution(hmm::HMM)::Vector{Float64}
+    P = hmm.transitionMatrix.transitionMatrix;
+    mc = MarkovChain(P);
+    stationaryDistro = stationary_distributions(mc)[1]
+    return stationaryDistro
+end
+
 function updateHMMWithStationaryInitDistro(oldHMM::HMM)::HMM
 
-    P = oldHMM.transitionMatrix.transitionMatrix;
-    mc = MarkovChain(P);
-    stationaryDistro = stationary_distributions(mc)[1] |> StochasticVector
-
+    stationaryDistro = calcsStationaryDistribution(oldHMM) |> StochasticVector
     newHMM = HMM(oldHMM.numberOfStateSpace, oldHMM.transitionMatrix, oldHMM.observationMatrix, stationaryDistro, oldHMM.observationSpace)
     # eigenvalues, eigenvectors = eigen(oldHMM.transitionMatrix.transitionMatrix')
     # indicesForEigenvector = findall(x -> isNumericalEqual(x, 1), map(real, filter(isreal, eigenvalues))) 

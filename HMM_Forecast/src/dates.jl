@@ -57,7 +57,7 @@ end
 
 # train Data for TESTING Purpose (only 2 days of data)
 function trainDataIndecesTEST()
-    return dateIndeces[2,1]:dateIndeces[2,1]+200 |> Vector      
+    return dateIndeces[2,1]:dateIndeces[2,1]+500 |> Vector      
 end
 
 

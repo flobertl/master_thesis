@@ -16,6 +16,7 @@ include("test.jl")
 
 include("model_validation.jl")
 include("model_training.jl")
+include("model_analysis.jl")
 
 
 end # module HMM

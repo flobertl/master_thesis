@@ -151,7 +151,7 @@ function plotPITHistogram((observationSpace, infoBins), observations, distributi
         # left_margin = 10pt,
         # size = (800, 500),
         xlim = (0, 1),
-        ylim = (0, 0.16),  # 10% above tallest bar
+        ylim = (0, 0.16),  
         dpi = 300
     )
 

@@ -23,8 +23,8 @@ pitHist = Array{Any}(undef, 5)
 ######## PIT PLOTS
 for (hh, discretType, numberOfStates, numberOfObservations) in optimalModels   
     # PIT Histograms
-    HMM_Forecast.plotPITYear(hh,discretType, numberOfObservations, numberOfStates) |> display
-    # HMM_Forecast.plotPITDaytime(hh,discretType, numberOfObservations, numberOfStates) |> display
+    HMM_Forecast.plotPITHistogramYear(hh,discretType, numberOfObservations, numberOfStates) |> display
+    # HMM_Forecast.plotPITHistogramDaytime(hh,discretType, numberOfObservations, numberOfStates) |> display
 end
 
 # Parameters
@@ -34,7 +34,7 @@ numberOfStates = 50
 discretType = "A"
 
 # PIT Histograms
-HMM_Forecast.plotPITDaytime(hh,discretType, numberOfObservations, numberOfStates)
+HMM_Forecast.plotPITHistogramDaytime(hh,discretType, numberOfObservations, numberOfStates)
 
 
 ############## Plot Violinplots
@@ -47,4 +47,14 @@ HMM_Forecast.plotExampleViolinForecastforBasismodel(hh, discretType, numberOfObs
 
 for timeinstance in 441:445
     HMM_Forecast.plotExampleViolinForecastforBasismodel(hh, discretType, numberOfObservations, numberOfStates, timeinstance,T,  H) |> display
+end
+
+#####################################################################
+## Plot convergence point histogram
+T = 20
+H = 200
+
+for (hh, discretType, numberOfStates, numberOfObservations) in optimalModels   
+    HMM_Forecast.plotConvergencePointsHistogram(hh, discretType, numberOfObservations, numberOfStates, T,  H, 0.01) |> display
+    HMM_Forecast.plotConvergencePointsHistogram(hh, discretType, numberOfObservations, numberOfStates, T,  H, 0.1) |> display
 end

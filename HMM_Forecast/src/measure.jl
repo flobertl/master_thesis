@@ -1,4 +1,5 @@
 # File for measure implementations.
+using LinearAlgebra
 
 ## Distribution measures
 function mean(observationSpace::ObservationSpace, distribution::Vector{Float64})
@@ -163,6 +164,32 @@ function r_squared_forMeanPointForecast(observationSpace::ObservationSpace, obse
     SS_res = map(i -> (observations[i] - pointForecast[i])^2, 1:H) |> sum
     SS_tot = map(i -> (observations[i] - meanObs)^2, 1:H) |> sum
     return 1 - SS_res/SS_tot
+end
+
+##### Function to find convergences point of stochastic Vectors
+function calcConcergencePoint(hmm, forecastVector, atol=0.01)
+    stationaryDistro = calcStationaryDistribution(hmm)' * hmm.observationMatrix.transitionMatrix |> vec
+
+    for H in eachindex(forecastVector)
+        curr = forecastVector[H]
+        d = LinearAlgebra.norm1(curr .- stationaryDistro)
+        if d < atol
+            return H
+        end
+    end
+    return NaN
+
+    throw(ArgumentError("Erwarte Matrix (Spalten = Folge) oder Vector von Vektoren."))
+end
+
+"""
+    convergence_point(forecastVector; reltol=0.01)
+
+Bequemer Wrapper, der nur den Vektor am Konvergenzpunkt zurückgibt (oder `nothing`).
+"""
+function convergence_point(forecastVector; reltol=0.01)
+    res = convergence_index(forecastVector; reltol=reltol)
+    res === nothing ? nothing : res.vector
 end
 
 # -----------------------------------------------
