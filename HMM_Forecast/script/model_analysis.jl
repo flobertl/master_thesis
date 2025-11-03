@@ -1,0 +1,50 @@
+# Function to run BasisModel runBasisModelAnalysis
+using(Pkg)
+Pkg.activate("HMM_Forecast")
+using Revise
+using HMM_Forecast
+
+
+optimalModels = [
+    (1, "A", 40, 100)
+    (2, "A", 30, 100)
+    (3, "A", 50, 50)
+    (4, "A", 60, 100)
+    (5, "A", 40, 100)
+    (1, "B", 80, 100)
+    (2, "B", 40, 100)
+    (3, "B", 50, 100)
+    (4, "B", 50, 100)
+    (5, "B", 80, 100)
+]
+
+pitHist = Array{Any}(undef, 5)
+
+######## PIT PLOTS
+for (hh, discretType, numberOfStates, numberOfObservations) in optimalModels   
+    # PIT Histograms
+    HMM_Forecast.plotPITYear(hh,discretType, numberOfObservations, numberOfStates) |> display
+    # HMM_Forecast.plotPITDaytime(hh,discretType, numberOfObservations, numberOfStates) |> display
+end
+
+# Parameters
+hh = 5
+numberOfObservations =  100
+numberOfStates = 50
+discretType = "A"
+
+# PIT Histograms
+HMM_Forecast.plotPITDaytime(hh,discretType, numberOfObservations, numberOfStates)
+
+
+############## Plot Violinplots
+timeinstance = 436
+T = 20
+H = 10
+(hh, discretType, numberOfStates, numberOfObservations) = optimalModels[6]
+HMM_Forecast.plotExampleViolinForecastforBasismodel(hh, discretType, numberOfObservations, numberOfStates, timeinstance,T,  H) |> display
+
+
+for timeinstance in 441:445
+    HMM_Forecast.plotExampleViolinForecastforBasismodel(hh, discretType, numberOfObservations, numberOfStates, timeinstance,T,  H) |> display
+end

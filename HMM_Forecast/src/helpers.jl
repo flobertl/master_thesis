@@ -87,7 +87,7 @@ function transformHMMToPkgHMM(hmm::HMM)
     HMMPkg(initDistr, A_, B_)
 end
 
-function transformDistributionVectorToFrequencyVector(observationSpace::ObservationSpace, distribution::Vector{Float64})::Vector{Int}
+function transformDistributionVectorToFrequencyVector(observationSpace::ObservationSpace, distribution::Vector{Float64})::Vector{Float32}
     numberOfFrequencies = map(round, distribution .* 1000)
     index = collect(1:observationSpace.dimension)
     observationVector = translateIndexToObservations(index, observationSpace)

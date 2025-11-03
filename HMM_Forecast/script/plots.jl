@@ -7,8 +7,8 @@ using HMM_Forecast
 # Parameters
 hh = 1
 numberOfObservations =  100
-numberOfStates = 20
-discretType = "B"
+numberOfStates = 40
+discretType = "A"
 
 # PIT Histograms
 HMM_Forecast.plotPITforBasismodel(hh,discretType, numberOfObservations, numberOfStates)
