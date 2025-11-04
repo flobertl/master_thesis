@@ -66,6 +66,7 @@ function plotExampleViolinForecastforBasismodel(hh, discretTyp::String, numberOf
     originalObservations = readAndNormalizeData(hh)
     (observationSpace, infoBins), discreteObservations, discreteObservationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
     evalDataIndeces = validationDataIndeces()
+    dateTimes = dateTimesOf2YearsData()
 
 
     N = numberOfStates
@@ -78,8 +79,11 @@ function plotExampleViolinForecastforBasismodel(hh, discretTyp::String, numberOf
     historicObservations = originalObservations[ evalDataIndeces[timeinstance] - historicWindowLength + 1: evalDataIndeces[timeinstance]]
     futureObservation =  originalObservations[ (evalDataIndeces[timeinstance] + 1): (evalDataIndeces[timeinstance] + forecastHorizon)]
 
+    dayTimes1 = Dates.Time.(dateTimes[(evalDataIndeces[timeinstance] - historicWindowLength + 1) : (evalDataIndeces[timeinstance] + forecastHorizon)])
+    dayTimesStrings = map(dt -> Dates.format(dt, "HH:MM"), dayTimes1)
+
     distributionForecastVector = forecastDistribution(hmm, historicObservationsAsIndeces, forecastHorizon)
-    violinPlot = plotDistributionForecastWithViolin(hmm, historicObservations,futureObservation, distributionForecastVector, filename*" at t($timeinstance)")
+    violinPlot = plotDistributionForecastWithViolin(hmm, historicObservations,futureObservation, distributionForecastVector, dayTimesStrings, "")
     
     # Save PIT histogram
     # folderPath = "HMM_Forecast/tmp/plots/"

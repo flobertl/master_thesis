@@ -92,20 +92,34 @@ function plotForecastSlidingWindow(hmm::HMM, observations, forecastHorizon::Int,
     return p
 end
 
-function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float64}}, header = "")
+function plotDistributionForecastWithViolin(hmm::HMM, observationHist, observationFuture, distributionForecast::Vector{Vector{Float64}}, daytimes,  header = "")
     T = length(observationHist)
     H = length(observationFuture)
 
     # Plot historical data
-    p = plot(collect(1:T), observationHist, title = header, label= "historical observations", legend=false) 
+    p = plot(
+            collect(1:T),
+             observationHist, 
+             title = header, 
+             label= "historical observations", 
+             framestyle = :box,
+             legend= true,
+             xticks = (5:5:25, daytimes[5:5:25]),
+             xlabel = "Time",
+             ylabel = "Watts",
+    ) 
 
     # Plot distribution via violin plots
-    for i in 1:H
+    frequency_i = transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[1])
+    violin!(p, [1+T], frequency_i, color=:lightcyan2, label = "predicted distributions" )
+
+
+    for i in 2:H
         frequency_i = transformDistributionVectorToFrequencyVector(hmm.observationSpace, distributionForecast[i])
-        violin!(p, [i+T], frequency_i, color=:lightcyan2)
+        violin!(p, [i+T], frequency_i, color=:lightcyan2, label = "")
     end
     if H < 25 
-        plot!(p, T:T+H, vcat([observationHist[end]], observationFuture), color = :red )
+        plot!(p, T:T+H, vcat([observationHist[end]], observationFuture), color = :red, label = "future observations" )
     else
         plot!(p, T:T+H, vcat([observationHist[end]], observationFuture), color = :black )
     end

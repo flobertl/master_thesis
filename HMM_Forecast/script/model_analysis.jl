@@ -1,7 +1,7 @@
 # Function to run BasisModel runBasisModelAnalysis
 using(Pkg)
 Pkg.activate("HMM_Forecast")
-using Revise
+using Revise, Plots
 using HMM_Forecast
 
 
@@ -39,11 +39,10 @@ HMM_Forecast.plotPITHistogramDaytime(hh,discretType, numberOfObservations, numbe
 
 ############## Plot Violinplots
 timeinstance = 436
-T = 20
-H = 10
-(hh, discretType, numberOfStates, numberOfObservations) = optimalModels[6]
-HMM_Forecast.plotExampleViolinForecastforBasismodel(hh, discretType, numberOfObservations, numberOfStates, timeinstance,T,  H) |> display
-
+T = 10
+H = 15
+(hh, discretType, numberOfStates, numberOfObservations) = optimalModels[8]
+savefig( HMM_Forecast.plotExampleViolinForecastforBasismodel(hh, discretType, numberOfObservations, numberOfStates, timeinstance,T,  H), pwd() )
 
 for timeinstance in 441:445
     HMM_Forecast.plotExampleViolinForecastforBasismodel(hh, discretType, numberOfObservations, numberOfStates, timeinstance,T,  H) |> display
