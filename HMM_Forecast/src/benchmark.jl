@@ -52,27 +52,6 @@ function trainLinearQR(hh)
     X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
     X_train = X[trainDataIndeces(), :]
     y_train = originalObservations[trainDataIndeces()]
-    X_test = X[testDataIndeces(), :]
-    y_test = originalObservations[testDataIndeces()]
-    prevTime = printTimeAndResetTimeStamp(prevTime)
-
-
-    # # Training
-    intercept, coefficients = trainLinQR(X_train, y_train)
-    println("### Total Training ###")
-    prevTime = printTimeAndResetTimeStamp(prevTime)
-    saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
-end
-
-function TEST_trainLinearQR(hh)
-    prevTime = now()
-    originalObservations = readAndNormalizeData(hh)
-
-    # Preprocessing: Generate Regressor Matrix and filter for non NaN values
-    println("### Preprocessing ###")
-    X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
-    X_train = X[trainDataIndecesTEST(), :]
-    y_train = originalObservations[trainDataIndecesTEST()]
     prevTime = printTimeAndResetTimeStamp(prevTime)
 
 
@@ -94,16 +73,21 @@ function evaluateLinQR(hh)
     originalObservations = readAndNormalizeData(hh)
     println("### Preprocessing ###")
     X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
-    X_test = X[testDataIndeces(), :]
-    y_test = originalObservations[testDataIndeces()]
+    X_test = X[validationDataIndeces(), :]
+    y_test = originalObservations[validationDataIndeces()]
     prevTime = printTimeAndResetTimeStamp(prevTime)
 
     # Forecast
     forecastVector = forecastLinQR(X_test, (intercept, coefficients))
     println("### Forecast ###")
-    prevTime = printTimeAndResetTimeStamp(prevTime)
+    # println(forecastVector[1])
+    # prevTime = printTimeAndResetTimeStamp(prevTime)
 
-    # CRPS
+    for index1 in eachindex(forecastVector)
+        forecastVector[index1] = sort(forecastVector[index1])
+    end
+
+    # # CRPS
     meanCRPS = 0.
     T = length(y_test)
     for i in 1:T

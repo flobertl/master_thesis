@@ -63,7 +63,7 @@ end
 
 # Indeces Test Data Set
 # Every 2nd month (Feb, April, June,...) of the 3rd Year
-function testDataIndeces()
+function testDataIndeces()::Vector{Int64}
     testDataIndeces = []
     for month in 2:2:10
         indeces = dateIndeces[3, month] : dateIndeces[3, month+1]-1

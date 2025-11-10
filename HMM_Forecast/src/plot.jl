@@ -1,4 +1,4 @@
-using Plots, StatsPlots, Measures, StatsBase
+using Plots, StatsPlots, Measures
 
 
 function plotHist(historyData)

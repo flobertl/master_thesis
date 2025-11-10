@@ -113,6 +113,25 @@ function plotSensitvityAnalysis(hh, historicWindowLengthVector)
     # display(pltLoglike)
 end
 
+function modelValidationOnTestData(model)
+    # Data
+    hh, discretTyp, numberOfStates, numberOfObservations = model
+    originalObservations = readAndNormalizeData(hh)
+    testDateIndeces = testDataIndeces()
+    testDataOriginal = originalObservations[testDateIndeces]
+    trainDateIndeces = trainDataIndeces()
+
+    (observationSpace, infoBins), discreteObservations, discreteObservationsAsIndeces = preprocessing(originalObservations, discretTyp, numberOfObservations)
+    filename = @sprintf("basismodel_hh(%02d)_diskr(%c%03d)_states(%03d)", hh, discretTyp, numberOfObservations, numberOfStates)
+    hmm = loadHMM("hyperparameter_analysis/models/"*filename) |> updateHMMNumericalStable  
+
+    result = calcEvaluation((hmm, infoBins), discreteObservationsAsIndeces, (trainDateIndeces, testDateIndeces), testDataOriginal, 30)
+    printEvaluation("Validation on Test Data for "*filename, result)
+    return result
+end
+
+
+
 
 #----------------------------------------------------------------------------------------------------------
 # Legacy
