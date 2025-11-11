@@ -18,13 +18,20 @@ optimalModels = [
     (5, "B", 80, 100)
 ]
 
-HMM_Forecast.modelValidationOnTestData(optimalModels[10])
+#HMM_Forecast.modelValidationOnTestData(optimalModels[8])
+
+for hh in 1:5
+    aResult = HMM_Forecast.modelValidationOnTestData(optimalModels[hh*2 - 1 ])
+    bResult = HMM_Forecast.modelValidationOnTestData(optimalModels[hh*2])
+    baseResult = HMM_Forecast.baselineForecast(hh)
+    println("HH$hh & $(round(aResult, digits=4)) & $(round(bResult, digits=4)) & & $(round(baseResult, digits=4)) & ")
+end
 
 
 
-#HMM_Forecast.trainLinearQR(5)
+#HMM_Forecast.trainLinearQR(1)
 HMM_Forecast.evaluateLinQR(5)
-# hhs = 1:5
+# hhs = 2:4
 # for hh in hhs
 #     HMM_Forecast.evaluateLinQR(hh)
 # end

@@ -1,46 +1,52 @@
 # Benchmarking models
+using Statistics
 
 # Baseline
-function generate96qhDistro(observationSpace::ObservationSpace, trainData)::Vector{Vector{Float64}}
-    M = observationSpace.dimension
-    observations = translateIndexToObservations(collect(1:M), observationSpace)
-    
-    distributionPerQuarterHour = Vector{Vector{Float64}}(undef, 96)
+function generate96qhEmpiricQuantiles(trainData)::Vector{Vector{Float64}}
+
+    quantileForecastPerQuarterHour = Vector{Vector{Float64}}(undef, 96)
     for qh in 1:96 
-        numberOfQH = length(trainData[qh:96:end])
-        distributionPerQuarterHour[qh] = map(i -> count(obser -> obser == observations[i], trainData[qh:96:end])/numberOfQH, 1:M)
-        if sum(distributionPerQuarterHour[qh]) != 1
-            println("Value qh($qh) is $(sum(distributionPerQuarterHour[qh]))")
-        end
+        quantileForecastPerQuarterHour[qh] = [quantile(trainData[qh:96:end], quant, sorted=false) for quant in 0.01:0.01:0.99]
     end
-    return distributionPerQuarterHour
+    return quantileForecastPerQuarterHour
 end
 
 function baselineForecast(hh)
     prevTime = now()
     # Load and preprocess data 
     originalObservations = readAndNormalizeData(hh)
-    (observationSpace, infoBins), discreteObservations, discreteObservationsAsIndeces = preprocessing(originalObservations, "B", 300)
    
     # Split Train and Test Data
-    testDataOriginal = originalObservations[testDataIndeces()]
-    trainData = discreteObservations[trainDataIndeces()]
+    trainDataOriginal = originalObservations[trainDataIndeces()]
+    testDataOriginal = originalObservations[trainDataIndeces()]
+    testDataIndeces = trainDataIndeces()
 
-    # Save first indeces
+    # Get empirical quarter-hourly distributions
     prevTime = printTimeAndResetTimeStamp(prevTime, "Data Preprocessing: ")
-    firstIndecesModulo96_Training = trainDataIndeces()[1] % 96 # =62
-    quarterHourProb = generate96qhDistro(observationSpace, trainData)
+    firstIndecesModulo96_Training = trainDataIndeces()[1] % 96 # = 62
+    
+    quarterHourProb = generate96qhEmpiricQuantiles(trainDataOriginal)
 
     prevTime = printTimeAndResetTimeStamp(prevTime, "Generate empiric 96 qh-distributions: ")
+    
+    # Generate Forecast for Test Data 
     forecastVector =  Vector{Vector{Float64}}(undef, length(testDataOriginal))
-    for (i, index) in enumerate(testDataIndeces())
+    for (i, index) in enumerate(testDataIndeces)
         qhIndex = (index - firstIndecesModulo96_Training) % 96 + 1
         forecastVector[i] = quarterHourProb[qhIndex]  # First qh should be one, last qh should be 96
     end
-    CRPS =  meanCRPSContinuous((observationSpace, infoBins), testDataOriginal, forecastVector)
+    
+    # Calculate CRPS
+    meanCRPS = 0.
+    T = length(testDataIndeces)
+    for i in 1:T
+        meanCRPS += crpsScore(forecastVector[i], testDataOriginal[i])/T
+    end
     prevTime = printTimeAndResetTimeStamp(prevTime, "Calc Forecast and CRPS: ")
-    return CRPS
+    plotPITHistogramFromQuantilesForecast(testDataOriginal, forecastVector, "Baseline Model HH=$hh") |> display
+    return meanCRPS
 end
+
 
 # Linear Quantile Regression
 function trainLinearQR(hh)
@@ -73,8 +79,8 @@ function evaluateLinQR(hh)
     originalObservations = readAndNormalizeData(hh)
     println("### Preprocessing ###")
     X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
-    X_test = X[validationDataIndeces(), :]
-    y_test = originalObservations[validationDataIndeces()]
+    X_test = X[trainDataIndeces(), :]
+    y_test = originalObservations[trainDataIndeces()]
     prevTime = printTimeAndResetTimeStamp(prevTime)
 
     # Forecast
@@ -93,6 +99,8 @@ function evaluateLinQR(hh)
     for i in 1:T
         meanCRPS += crpsScore(forecastVector[i], y_test[i])/T
     end
+    plotPITHistogramFromQuantilesForecast(y_test, forecastVector, "LinQR Model HH=$hh") |> display
+
     return meanCRPS
 end
 
