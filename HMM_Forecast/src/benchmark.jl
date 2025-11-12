@@ -11,15 +11,14 @@ function generate96qhEmpiricQuantiles(trainData)::Vector{Vector{Float64}}
     return quantileForecastPerQuarterHour
 end
 
-function baselineForecast(hh)
+function historicSsamplingBaseline(hh)
     prevTime = now()
     # Load and preprocess data 
     originalObservations = readAndNormalizeData(hh)
    
     # Split Train and Test Data
     trainDataOriginal = originalObservations[trainDataIndeces()]
-    testDataOriginal = originalObservations[trainDataIndeces()]
-    testDataIndeces = trainDataIndeces()
+    testDataOriginal = originalObservations[testDataIndeces()]
 
     # Get empirical quarter-hourly distributions
     prevTime = printTimeAndResetTimeStamp(prevTime, "Data Preprocessing: ")
@@ -31,14 +30,54 @@ function baselineForecast(hh)
     
     # Generate Forecast for Test Data 
     forecastVector =  Vector{Vector{Float64}}(undef, length(testDataOriginal))
-    for (i, index) in enumerate(testDataIndeces)
+    for (i, index) in enumerate(testDataIndeces())
         qhIndex = (index - firstIndecesModulo96_Training) % 96 + 1
         forecastVector[i] = quarterHourProb[qhIndex]  # First qh should be one, last qh should be 96
     end
     
     # Calculate CRPS
     meanCRPS = 0.
-    T = length(testDataIndeces)
+    T = length(testDataIndeces())
+    for i in 1:T
+        meanCRPS += crpsScore(forecastVector[i], testDataOriginal[i])/T
+    end
+    prevTime = printTimeAndResetTimeStamp(prevTime, "Calc Forecast and CRPS: ")
+    plotPITHistogramFromQuantilesForecast(testDataOriginal, forecastVector, "Baseline Model HH=$hh") |> display
+    return meanCRPS
+end
+
+function persistanceBaseline(hh)
+    prevTime = now()
+    # Load and preprocess data 
+    originalObservations = readAndNormalizeData(hh)
+   
+    # Split Train and Test Data
+    trainDataOriginal = originalObservations[trainDataIndeces()]
+    testDataOriginal = originalObservations[testDataIndeces()]
+    trainDataOriginalShiftedByOne = originalObservations[trainDataIndeces() .- 1]
+    testDataOriginalShiftedByOne = originalObservations[testDataIndeces() .- 1]
+
+    # Get empirical quarter-hourly distributions
+    prevTime = printTimeAndResetTimeStamp(prevTime, "Data Preprocessing: ")
+    firstIndecesModulo96_Training = trainDataIndeces()[1] % 96 # = 62
+
+    trainDataOriginalShiftedByOne = originalObservations[trainDataIndeces() .- 1]
+    error = trainDataOriginal .- trainDataOriginalShiftedByOne
+    
+    distributionOfErrorPerQH = generate96qhEmpiricQuantiles(error)
+
+    prevTime = printTimeAndResetTimeStamp(prevTime, "Generate empiric 96 qh-distributions: ")
+    
+    # Generate Forecast for Test Data 
+    forecastVector =  Vector{Vector{Float64}}(undef, length(testDataOriginal))
+    for (i, index) in enumerate(testDataIndeces())
+        qhIndex = (index - firstIndecesModulo96_Training) % 96 + 1
+        forecastVector[i] = testDataOriginalShiftedByOne[i] .+ distributionOfErrorPerQH[qhIndex]  # First qh should be one, last qh should be 96
+    end
+    
+    # Calculate CRPS
+    meanCRPS = 0.
+    T = length(testDataIndeces())
     for i in 1:T
         meanCRPS += crpsScore(forecastVector[i], testDataOriginal[i])/T
     end
