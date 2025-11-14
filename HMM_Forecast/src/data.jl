@@ -225,16 +225,16 @@ function loadCSVTable(title::String)
     return table, variablesA, variablesB
 end
 
-function saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
-    title = "benchmark//LinQRTrainingsMatrix_hh($hh)"
+function saveLinQRTrainingsMatrix(hh, (intercept, coefficients), historicWindowLength)
+    title = "benchmark//LinQRTrainingsMatrix_hh($hh)_$historicWindowLength"
     quantiles = 0.01:0.01:0.99
-    coef_description = vcat("intercept", 1:10)
+    coef_description = vcat("intercept", 1:(6+historicWindowLength))
     matrix = hcat(intercept, coefficients)
     saveCSVTable(title, matrix, quantiles, coef_description)
 end
 
-function loadLinQRTrainingsMatrix(hh)
-    title = "benchmark//LinQRTrainingsMatrix_hh($hh)"
+function loadLinQRTrainingsMatrix(hh, historicWindowLength)
+    title = "benchmark//LinQRTrainingsMatrix_hh($hh)_$historicWindowLength"
     matrix, x, y = loadCSVTable(title)
     intercept = matrix[:, 1]
     coefficients = matrix[:,2:end]

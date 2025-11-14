@@ -88,38 +88,37 @@ end
 
 
 # Linear Quantile Regression
-function trainLinearQR(hh)
+function trainLinearQR(hh, historicWindowLength = 10 )
     prevTime = now()
     originalObservations = readAndNormalizeData(hh)
 
     # Preprocessing: Generate Regressor Matrix and filter for non NaN values
     println("### Preprocessing ###")
-    X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
+    X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations), historicWindowLength)
     X_train = X[trainDataIndeces(), :]
     y_train = originalObservations[trainDataIndeces()]
     prevTime = printTimeAndResetTimeStamp(prevTime)
-
 
     # # Training
     intercept, coefficients = trainLinQR(X_train, y_train)
     println("### Total Training ###")
     prevTime = printTimeAndResetTimeStamp(prevTime)
-    saveLinQRTrainingsMatrix(hh, (intercept, coefficients))
+    saveLinQRTrainingsMatrix(hh, (intercept, coefficients), historicWindowLength)
 end
 
-function evaluateLinQR(hh)    
+function evaluateLinQR(hh, historicWindowLength = 10)    
     prevTime = now()
     
     # Load Model
-    (intercept, coefficients) = loadLinQRTrainingsMatrix(hh)
+    (intercept, coefficients) = loadLinQRTrainingsMatrix(hh, historicWindowLength)
 
 
     # Preprocessing: Generate Regressor Matrix and filter for non NaN values
     originalObservations = readAndNormalizeData(hh)
     println("### Preprocessing ###")
-    X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations))
-    X_test = X[trainDataIndeces(), :]
-    y_test = originalObservations[trainDataIndeces()]
+    X = translateDataToQRMatrixX(originalObservations, 1:length(originalObservations), historicWindowLength)
+    X_test = X[testDataIndeces(), :]
+    y_test = originalObservations[testDataIndeces()]
     prevTime = printTimeAndResetTimeStamp(prevTime)
 
     # Forecast
@@ -161,3 +160,7 @@ function evalPointForecast(observations, pointForecast)
     end
     return sum(relativeErrors)/H
 end
+
+
+# LSTM models
+funct
