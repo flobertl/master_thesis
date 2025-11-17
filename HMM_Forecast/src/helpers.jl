@@ -1,27 +1,40 @@
 using Distributions, Random, LinearAlgebra, QuantEcon
 using HiddenMarkovModels: HMM as HMMPkg 
 
+# Define a transformation from datetime to sin/cos features
+function datetime_transformation(dateIndeces, index)
+    dateTime = dateTimesOf2YearsData()[dateIndeces[index]]
+    dayTime_Scaled = (Dates.hour(dateTime) + Dates.minute(dateTime)/60) * (2*pi/24)
+    month_Scaled = Dates.month(dateTime) * (2*pi/12)
+
+    return [sin(dayTime_Scaled), cos(dayTime_Scaled), sin(month_Scaled), cos(month_Scaled)]
+end
+
 # Given data and the indeces, it generates the regressor matrix x
 # The explainotry variables are the data of the 2 last days, the value exactly 1 week and 2 weeks ago, daytime and month (as sin/cos cyclically encoded)
 function translateDataToQRMatrixX(data, dateIndeces, historicWindowLength)
-    function datetime_transformation(index)
-        dateTime = dateTimesOf2YearsData()[dateIndeces[index]]
-        dayTime_Scaled = (Dates.hour(dateTime) + Dates.minute(dateTime)/60) * (2*pi/24)
-        month_Scaled = Dates.month(dateTime) * (2*pi/12)
-
-        return [sin(dayTime_Scaled), cos(dayTime_Scaled), sin(month_Scaled), cos(month_Scaled)]
-    end
-
     X = zeros(Float32, length(data), historicWindowLength+6)
     for i in 1:length(data)
         x_past2Days = [ if (index < 1) NaN else data[index] end for index in (i-historicWindowLength):(i-1)]
         x_shiftedvalues = [if (index < 1) NaN else data[index] end for index in [i-96*7, i-96*14]]
-        x_daytime_month =  datetime_transformation(i)
+        x_daytime_month =  datetime_transformation(dateIndeces, i)
         x = vcat(x_past2Days, x_shiftedvalues, x_daytime_month)
         X[i, :] = x
     end
     return X
 end 
+
+# Given the original observations, it creates the input features for one index
+function createInputFeatures(data, idx, historicWindowLength)
+        X = zeros(Float32, 5, historicWindowLength)
+    for (count, i) in enumerate(idx-historicWindowLength:idx-1)
+        load = [data[i]]
+        x_daytime_month =  datetime_transformation([i], 1)
+        x = vcat(load, x_daytime_month)
+        X[:, count] = x
+    end
+    return X
+end
 
 function isNumericalEqual(leftSide, rightSide)::Bool
     epsilon = 1E-10
@@ -154,3 +167,36 @@ function updateHMMWithStationaryInitDistro(oldHMM::HMM)::HMM
 
     return newHMM
 end
+
+# LSTM helper functions
+##############################################
+function createBatchesForLSTM(size, originalObservations, trainDataIndeces)
+    permutatedIndeces = shuffle(trainDataIndeces)
+
+    batches = []
+    for i in 1:size:length(permutatedIndeces)-size
+        batchIndeces = permutatedIndeces[i:i+size-1]
+        x, y = createDataForLSTM(L, H, originalObservations, batchIndeces)
+        push!(batches, (x, y))
+    end
+    return batches
+end
+
+function createDataForLSTM(L, H, originalObservations, indeces)
+    x = zeros(Float32, 5, L, length(indeces))
+    y = zeros(Float32, H, length(indeces))
+    for (j,idx) in enumerate(indeces)
+        x[:, :, j] = createInputFeatures(originalObservations, idx, L)
+        y[:, j]   = originalObservations[idx:idx+H-1]
+    end
+    return (x, y)
+end
+
+struct LastStepLayer end
+(l::LastStepLayer)(x) = x[:, end, :]
+
+struct ReshapeLayer
+    K::Int
+    H::Int
+end
+(r::ReshapeLayer)(x) = reshape(x, r.K, r.H, size(x,2))

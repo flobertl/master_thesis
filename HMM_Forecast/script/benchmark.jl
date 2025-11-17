@@ -20,23 +20,25 @@ optimalModels = [
 
 #HMM_Forecast.modelValidationOnTestData(optimalModels[8])
 
-for hh in 1:5
-    qrResult = HMM_Forecast.evaluateLinQR(hh, 10)
-    # aResult = HMM_Forecast.modelValidationOnTestData(optimalModels[hh*2 - 1 ])
-    # bResult = HMM_Forecast.modelValidationOnTestData(optimalModels[hh*2])
-    #baseResult = HMM_Forecast.baselineForecast(hh)
-    println(" \n HH$hh & $(round(qrResult, digits=4)) & \n")
-end
+# for hh in 1:5
+#     qrResult = HMM_Forecast.evaluateLinQR(hh, 10)
+#     # aResult = HMM_Forecast.modelValidationOnTestData(optimalModels[hh*2 - 1 ])
+#     # bResult = HMM_Forecast.modelValidationOnTestData(optimalModels[hh*2])
+#     #baseResult = HMM_Forecast.baselineForecast(hh)
+#     println(" \n HH$hh & $(round(qrResult, digits=4)) & \n")
+# end
 
 
-
+### LinQR
 #HMM_Forecast.trainLinearQR(1,1)
-
-
 # HMM_Forecast.evaluateLinQR(5, 10)
 # hhs = 2:4
 # for hh in hhs
 #     HMM_Forecast.evaluateLinQR(hh, 1)
 # end
+
+### LSTM
+HMM_Forecast.trainLSTMModel(1, 10)
+HMM_Forecast.evaluateLSTMModel(1)
 
 println("/n ------------------ FINISH ---------------------")

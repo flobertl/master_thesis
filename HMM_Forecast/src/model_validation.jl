@@ -21,7 +21,7 @@ function hyperparameterAnalysis(hh, discretTyp::String, numberOfObservationsVect
     # Data
     originalObservations = readAndNormalizeData(hh)
     dateIndeces = calcFirstQHofYearAndMonth()  
-    trainDateIndeces = dateIndeces[2,1]:dateIndeces[3,1]-1 |> Vector      
+    trainDateIndeces = trainDataIndeces()      
     testDateIndeces = validationDataIndeces()
     testDataOriginal = originalObservations[testDateIndeces]
 

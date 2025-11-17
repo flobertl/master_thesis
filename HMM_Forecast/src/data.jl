@@ -1,4 +1,5 @@
 using XLSX, DataFrames, Dates, CSV, Statistics, Base
+using BSON: @save, @load
 
 
 # ------------------------------------------------------------------------------
@@ -239,6 +240,18 @@ function loadLinQRTrainingsMatrix(hh, historicWindowLength)
     intercept = matrix[:, 1]
     coefficients = matrix[:,2:end]
     return intercept, coefficients
+end
+
+function saveLSTM(hh, model)
+    title = "benchmark//LSTMModel_hh($hh)"
+    @save tmpPath*title model
+end
+
+function loadLSTM(hh)
+    title = "benchmark//LSTMModel_hh($hh)"
+    model = nothing
+    @load tmpPath*title model
+    return model
 end
 
 function saveResultsSensitivityAnalysis(title::String, results, historicWindowLengthVector)
