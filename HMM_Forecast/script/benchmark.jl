@@ -38,6 +38,12 @@ optimalModels = [
 # end
 
 ### LSTM
+for hh in 2:5
+    #HMM_Forecast.trainLSTMModel(hh, 20)
+    evaluateResult = HMM_Forecast.evaluateLSTMModel(hh)
+    println(" \n HH$hh & $(round(evaluateResult, digits=4))")
+end
+
 HMM_Forecast.trainLSTMModel(1, 10)
 HMM_Forecast.evaluateLSTMModel(1)
 

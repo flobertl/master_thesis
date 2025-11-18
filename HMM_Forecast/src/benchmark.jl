@@ -234,6 +234,8 @@ function trainLSTMModel(hh, numEpochs::Int)
         Dense(64 => K*H),         # 3) K*H Outputs
         ReshapeLayer(K, H)
     )
+
+    myModel_old = myModel
     opt_state = Flux.setup(Adam(1e-3), myModel)
 
 
@@ -267,8 +269,11 @@ function trainLSTMModel(hh, numEpochs::Int)
         validation_loss_new = loss_batch(myModel, x_val, y_val)
         println("Validation Loss: $validation_loss_new")
         if validation_loss_old < validation_loss_new
+            myModel = myModel_old
+            println("Early stopping at epoch $epoch")
             break
         end
+        myModel_old = myModel
     end
     saveLSTM(hh, myModel)
 
