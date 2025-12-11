@@ -13,12 +13,12 @@ end
 # Given data and the indeces, it generates the regressor matrix x
 # The explainotry variables are the data of the 2 last days, the value exactly 1 week and 2 weeks ago, daytime and month (as sin/cos cyclically encoded)
 function translateDataToQRMatrixX(data, dateIndeces, historicWindowLength)
-    X = zeros(Float32, length(data), historicWindowLength+6)
+    X = zeros(Float32, length(data), historicWindowLength)
     for i in 1:length(data)
         x_past2Days = [ if (index < 1) NaN else data[index] end for index in (i-historicWindowLength):(i-1)]
-        x_shiftedvalues = [if (index < 1) NaN else data[index] end for index in [i-96*7, i-96*14]]
-        x_daytime_month =  datetime_transformation(dateIndeces, i)
-        x = vcat(x_past2Days, x_shiftedvalues, x_daytime_month)
+        # x_shiftedvalues = [if (index < 1) NaN else data[index] end for index in [i-96*7, i-96*14]]
+        # x_daytime_month =  datetime_transformation(dateIndeces, i)
+        x = vcat(x_past2Days) #), x_shiftedvalues, x_daytime_month)
         X[i, :] = x
     end
     return X

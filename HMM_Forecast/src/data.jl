@@ -229,7 +229,7 @@ end
 function saveLinQRTrainingsMatrix(hh, (intercept, coefficients), historicWindowLength)
     title = "benchmark//LinQRTrainingsMatrix_hh($hh)_$historicWindowLength"
     quantiles = 0.01:0.01:0.99
-    coef_description = vcat("intercept", 1:(6+historicWindowLength))
+    coef_description = vcat("intercept", 1:(historicWindowLength))
     matrix = hcat(intercept, coefficients)
     saveCSVTable(title, matrix, quantiles, coef_description)
 end

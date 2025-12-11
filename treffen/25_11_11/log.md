@@ -22,6 +22,7 @@
 - Formale Sachen
     - Mache manchmal \cdot (vorallem bei a und b) manchmal ned 
     - Mix zwischen Discretisation Type A vs equal-mass bins
+    - wann textcite und wann nur cite?
 
 
 ## Log

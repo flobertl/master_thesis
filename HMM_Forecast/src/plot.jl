@@ -262,7 +262,7 @@ function plotHyperparameterAnalysisCRPS(hh, tableResultsVector, hyperparameterVe
                     bottom_margin = -1mm,
                     dpi = 300)
     plt = plot(legendPlt, subplt[1], subplt[2], 
-            suptitle = "Hyperparameter Analysis for HH$hh",
+            suptitle = "Hyperparameter Tuning for HH$hh",
             layout = @layout([a{0.05h} ; [b c] ]), dpi = 300
             ) 
     return plt

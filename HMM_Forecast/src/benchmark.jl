@@ -297,7 +297,6 @@ function evaluateLSTMModel(hh)
         forecastVector[t] = [y_estimate[1, 1, t] ]
         for i in 1:K-1        # Logik: es startet bei quantil 0.01 und geht bis 0.99. Aber um jedes 1%-quantil zu bekommen,
             spread = 0.98/(K-1)*100 |> round  
-            if (t, i) == (1, 1) println("spread: $spread") end
             quantiles = [y_estimate[i, 1, t] + (k/spread) * (y_estimate[i+1, 1, t] - y_estimate[i, 1, t]) for k in 1:spread]
             append!(forecastVector[t], quantiles)
         end

@@ -30,7 +30,7 @@ optimalModels = [
 
 
 ### LinQR
-#HMM_Forecast.trainLinearQR(1,1)
+HMM_Forecast.trainLinearQR(1)
 # HMM_Forecast.evaluateLinQR(5, 10)
 # hhs = 2:4
 # for hh in hhs
